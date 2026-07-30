@@ -48,6 +48,7 @@ from flask_cors import CORS
 # Our own helper modules, both in this same folder.
 import data_loader
 import engine
+import indicators
 
 # ----------------------------------------------------------------------
 # SETTINGS YOU MAY WANT TO CHANGE
@@ -310,6 +311,101 @@ def session_info(session_id):
 
 
 # ======================================================================
+# SHARED SETUP FOR BOTH BACKTEST ENDPOINTS
+# ======================================================================
+
+def _prepare_backtest(session, body):
+    """
+    Everything that happens BEFORE a backtest runs: work out the benchmark,
+    the stock universe and the settings, then build the aligned price table.
+
+    Both /api/backtest and /api/regime-analysis need exactly this, so it
+    lives in one place - if the validation rules ever change, they change
+    for both endpoints at once.
+
+    Raises ValueError with a friendly message if anything is wrong.
+    Returns (prices, benchmark, settings, benchmark_ticker, universe).
+    """
+    # ---- Which file is the benchmark? ---------------------------------
+    benchmark_ticker = body.get("benchmark")
+    if not benchmark_ticker:
+        raise ValueError("Please choose which file is the benchmark / index.")
+    if benchmark_ticker not in session["series"]:
+        raise ValueError(f"'{benchmark_ticker}' is not one of the loaded files.")
+
+    # ---- Which stocks form the universe? ------------------------------
+    # Default: everything loaded EXCEPT the benchmark itself.
+    requested_universe = body.get("universe") or []
+    if requested_universe:
+        universe = [t for t in requested_universe
+                    if t in session["series"] and t != benchmark_ticker]
+    else:
+        universe = [t for t in session["series"] if t != benchmark_ticker]
+
+    if len(universe) < 2:
+        raise ValueError(
+            "At least 2 stock files (plus the benchmark) are needed to run a "
+            "momentum ranking. Load more CSV files."
+        )
+
+    # ---- Read and sanity-check the strategy settings ------------------
+    settings = {
+        "lookback": int(body.get("lookback", 126)),
+        "top_n": int(body.get("top_n", 10)),
+        "cadence": str(body.get("cadence", "monthly")),
+        "every_n_days": int(body.get("every_n_days", 21)),
+        "weighting": str(body.get("weighting", "equal")),
+        "cash_buffer": bool(body.get("cash_buffer", True)),
+        "cost_bps": float(body.get("cost_bps", 0.0)),
+        "start_capital": float(body.get("start_capital", 100000.0)),
+        "risk_free_rate": float(body.get("risk_free_rate", 0.0)) / 100.0,
+        "min_roc": body.get("min_roc", None),
+    }
+    if settings["min_roc"] not in (None, ""):
+        settings["min_roc"] = float(settings["min_roc"]) / 100.0
+    else:
+        settings["min_roc"] = None
+
+    if settings["cadence"] not in engine.VALID_CADENCES:
+        raise ValueError(f"Unknown rebalance cadence '{settings['cadence']}'.")
+    if settings["weighting"] not in engine.VALID_WEIGHTINGS:
+        raise ValueError(f"Unknown weighting scheme '{settings['weighting']}'.")
+    if settings["lookback"] < 2:
+        raise ValueError("The lookback window must be at least 2 trading days.")
+    if settings["top_n"] < 1:
+        raise ValueError("Top N must be at least 1.")
+
+    # ---- Build the aligned price tables -------------------------------
+    series_list = [
+        {"ticker": ticker, "frame": session["series"][ticker]["frame"]}
+        for ticker in universe
+    ]
+    price_matrix = data_loader.build_price_matrix(series_list)
+    benchmark_close = session["series"][benchmark_ticker]["frame"]["Close"]
+
+    prices, benchmark = data_loader.align_with_benchmark(price_matrix, benchmark_close)
+
+    # Optional date window chosen by the user on the website.
+    start_date = body.get("start_date")
+    end_date = body.get("end_date")
+    if start_date:
+        prices = prices.loc[prices.index >= pd.to_datetime(start_date)]
+        benchmark = benchmark.loc[benchmark.index >= pd.to_datetime(start_date)]
+    if end_date:
+        prices = prices.loc[prices.index <= pd.to_datetime(end_date)]
+        benchmark = benchmark.loc[benchmark.index <= pd.to_datetime(end_date)]
+
+    if len(prices) <= settings["lookback"] + 2:
+        raise ValueError(
+            f"Only {len(prices)} trading days are available, which is not enough "
+            f"for a {settings['lookback']}-day lookback. Choose a shorter lookback "
+            "or widen the date range."
+        )
+
+    return prices, benchmark, settings, benchmark_ticker, universe
+
+
+# ======================================================================
 # ENDPOINT 5 - RUN THE BACKTEST
 # ======================================================================
 
@@ -324,84 +420,14 @@ def backtest():
         body = request.get_json(silent=True) or {}
         session = _get_session(body.get("session_id"))
 
-        # ---- Which file is the benchmark? -----------------------------
-        benchmark_ticker = body.get("benchmark")
-        if not benchmark_ticker:
-            return _fail("Please choose which file is the benchmark / index.")
-        if benchmark_ticker not in session["series"]:
-            return _fail(f"'{benchmark_ticker}' is not one of the loaded files.")
-
-        # ---- Which stocks form the universe? --------------------------
-        # Default: everything loaded EXCEPT the benchmark itself.
-        requested_universe = body.get("universe") or []
-        if requested_universe:
-            universe = [t for t in requested_universe
-                        if t in session["series"] and t != benchmark_ticker]
-        else:
-            universe = [t for t in session["series"] if t != benchmark_ticker]
-
-        if len(universe) < 2:
-            return _fail(
-                "At least 2 stock files (plus the benchmark) are needed to run a "
-                "momentum ranking. Load more CSV files."
-            )
-
-        # ---- Read and sanity-check the strategy settings --------------
-        settings = {
-            "lookback": int(body.get("lookback", 126)),
-            "top_n": int(body.get("top_n", 10)),
-            "cadence": str(body.get("cadence", "monthly")),
-            "every_n_days": int(body.get("every_n_days", 21)),
-            "weighting": str(body.get("weighting", "equal")),
-            "cash_buffer": bool(body.get("cash_buffer", True)),
-            "cost_bps": float(body.get("cost_bps", 0.0)),
-            "start_capital": float(body.get("start_capital", 100000.0)),
-            "risk_free_rate": float(body.get("risk_free_rate", 0.0)) / 100.0,
-            "min_roc": body.get("min_roc", None),
-        }
-        if settings["min_roc"] not in (None, ""):
-            settings["min_roc"] = float(settings["min_roc"]) / 100.0
-        else:
-            settings["min_roc"] = None
-
-        if settings["cadence"] not in engine.VALID_CADENCES:
-            return _fail(f"Unknown rebalance cadence '{settings['cadence']}'.")
-        if settings["weighting"] not in engine.VALID_WEIGHTINGS:
-            return _fail(f"Unknown weighting scheme '{settings['weighting']}'.")
-        if settings["lookback"] < 2:
-            return _fail("The lookback window must be at least 2 trading days.")
-        if settings["top_n"] < 1:
-            return _fail("Top N must be at least 1.")
-
-        # ---- Build the aligned price tables ---------------------------
-        series_list = [
-            {"ticker": ticker, "frame": session["series"][ticker]["frame"]}
-            for ticker in universe
-        ]
-        price_matrix = data_loader.build_price_matrix(series_list)
-        benchmark_close = session["series"][benchmark_ticker]["frame"]["Close"]
-
-        prices, benchmark = data_loader.align_with_benchmark(price_matrix, benchmark_close)
-
-        # Optional date window chosen by the user on the website.
-        start_date = body.get("start_date")
-        end_date = body.get("end_date")
-        if start_date:
-            prices = prices.loc[prices.index >= pd.to_datetime(start_date)]
-            benchmark = benchmark.loc[benchmark.index >= pd.to_datetime(start_date)]
-        if end_date:
-            prices = prices.loc[prices.index <= pd.to_datetime(end_date)]
-            benchmark = benchmark.loc[benchmark.index <= pd.to_datetime(end_date)]
-
-        if len(prices) <= settings["lookback"] + 2:
-            return _fail(
-                f"Only {len(prices)} trading days are available, which is not enough "
-                f"for a {settings['lookback']}-day lookback. Choose a shorter lookback "
-                "or widen the date range."
-            )
+        prices, benchmark, settings, benchmark_ticker, universe = _prepare_backtest(session, body)
 
         # ---- Run it ----------------------------------------------------
         result = engine.analyse(prices, benchmark, settings)
+        # These are pandas objects kept for the regime comparison; they must
+        # never reach the browser.
+        for private_key in ("_equity", "_benchmark", "_regime_exec"):
+            result.pop(private_key, None)
 
         # Remember the answer so the export buttons can rebuild the CSVs
         # without running the whole backtest a second time.
@@ -426,6 +452,122 @@ def backtest():
     except Exception as exc:
         traceback.print_exc()
         return _fail(f"The backtest failed: {exc}", 500)
+
+
+# ======================================================================
+# ENDPOINT 5b - THE INDEX REGIME FILTER
+# ======================================================================
+
+def _resolve_regime_inputs(session, body):
+    """
+    Shared helper: read the regime settings out of the request and build the
+    daily Risk-ON / Risk-OFF table from whichever index the user picked.
+
+    Returns (regime_frame, regime_settings). `regime_frame` is None when the
+    filter is switched off.
+    """
+    mode = str(body.get("regime_mode", "disabled")).lower()
+    if mode not in indicators.VALID_REGIME_MODES:
+        raise ValueError(
+            f"Unknown regime mode '{mode}'. Use one of: "
+            + ", ".join(indicators.VALID_REGIME_MODES)
+        )
+
+    regime_settings = {
+        "regime_mode": mode,
+        "regime_index": body.get("regime_index") or body.get("benchmark"),
+        "ema_period": int(body.get("ema_period", 200)),
+        "atr_period": int(body.get("atr_period", 10)),
+        "st_multiplier": float(body.get("st_multiplier", 3.0)),
+    }
+
+    if mode == "disabled":
+        return None, regime_settings
+
+    # The filter can run off ANY loaded file - usually the benchmark, but a
+    # trader might prefer to gate a small-cap universe on the S&P 500, or
+    # even on a single bellwether stock.
+    index_ticker = regime_settings["regime_index"]
+    if not index_ticker:
+        raise ValueError("Choose which index the regime filter should watch.")
+    if index_ticker not in session["series"]:
+        raise ValueError(f"'{index_ticker}' is not one of the loaded files.")
+
+    if regime_settings["ema_period"] < 2:
+        raise ValueError("The EMA period must be at least 2 days.")
+    if regime_settings["atr_period"] < 1:
+        raise ValueError("The Supertrend ATR period must be at least 1 day.")
+    if regime_settings["st_multiplier"] <= 0:
+        raise ValueError("The Supertrend multiplier must be greater than 0.")
+
+    index_frame = session["series"][index_ticker]["frame"]
+    regime_frame = indicators.build_regime(
+        index_frame,
+        mode=mode,
+        ema_period=regime_settings["ema_period"],
+        atr_period=regime_settings["atr_period"],
+        multiplier=regime_settings["st_multiplier"],
+    )
+    return regime_frame, regime_settings
+
+
+@app.post("/api/regime-analysis")
+def regime_analysis():
+    """
+    Run the momentum strategy TWICE - with the macro filter and without -
+    and return both, side by side, with the deltas already worked out.
+
+    This is the endpoint behind the "Regime Filter" dashboard. It accepts
+    everything /api/backtest does, plus:
+
+        regime_mode    "disabled" | "ema" | "supertrend" | "both"
+        regime_index   which loaded file the filter watches (e.g. "^GSPC")
+        ema_period     default 200
+        atr_period     default 10
+        st_multiplier  default 3.0
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        session = _get_session(body.get("session_id"))
+
+        prices, benchmark, settings, benchmark_ticker, universe = _prepare_backtest(session, body)
+        regime_frame, regime_settings = _resolve_regime_inputs(session, body)
+
+        if regime_frame is None:
+            return _fail(
+                "The regime filter is switched off, so there is nothing to compare. "
+                "Choose EMA, Supertrend or Both first."
+            )
+
+        # Line the regime up with the trading calendar the backtest uses.
+        regime_frame = regime_frame.reindex(prices.index).ffill()
+        regime_frame["regime"] = regime_frame["regime"].fillna(True).astype(bool)
+
+        result = engine.compare_with_regime(prices, benchmark, settings, regime_frame)
+
+        # Keep the filtered run as "the" result, so the existing export
+        # buttons download the filtered trade log rather than the baseline.
+        session["last_result"] = result["filtered"]
+        session["last_settings"] = {**settings, **regime_settings,
+                                    "benchmark": benchmark_ticker,
+                                    "universe_size": len(universe)}
+        session["last_regime"] = result
+
+        result.update({
+            "ok": True,
+            "benchmark": benchmark_ticker,
+            "universe_size": len(universe),
+            "trading_days": int(len(prices)),
+            "settings": session["last_settings"],
+            "regime_settings": regime_settings,
+        })
+        return jsonify(result)
+
+    except ValueError as exc:
+        return _fail(str(exc))
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"The regime analysis failed: {exc}", 500)
 
 
 # ======================================================================

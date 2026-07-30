@@ -33,6 +33,9 @@ Everything below is that idea written out carefully, with trading costs.
 import numpy as np
 import pandas as pd
 
+# The EMA / Supertrend regime machinery lives in its own file next door.
+from indicators import summarise_regime
+
 # ----------------------------------------------------------------------
 # CONSTANTS
 # ----------------------------------------------------------------------
@@ -199,13 +202,17 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
 # SECTION 3 - THE MAIN BACKTEST LOOP
 # ======================================================================
 
-def run_backtest(prices, benchmark, settings):
+def run_backtest(prices, benchmark, settings, regime=None):
     """
     Walk through history and build the portfolio's equity curve.
 
     `prices`    - wide table of daily closes (rows = dates, columns = tickers)
     `benchmark` - the index's daily closes on exactly the same dates
     `settings`  - a dictionary of the user's choices from the website
+    `regime`    - OPTIONAL daily True/False series from indicators.py.
+                  True means "Risk-ON, stay invested"; False means
+                  "Risk-OFF, hold 100% cash today". Pass None to run the
+                  strategy with no macro filter at all.
 
     Returns a big dictionary containing the equity curves, the metrics, the
     rebalance history and the per-trade log.
@@ -228,6 +235,30 @@ def run_backtest(prices, benchmark, settings):
     # behind us, so the earliest tradable row is row number `lookback`.
     rebalance_positions = build_rebalance_dates(calendar, cadence, every_n_days, lookback)
     last_position = len(calendar) - 1
+
+    # ------------------------------------------------------------------
+    # THE REGIME MASK, AND WHY IT IS SHIFTED BY ONE DAY
+    # ------------------------------------------------------------------
+    # The filter reads the index's CLOSING price to decide Risk-ON or
+    # Risk-OFF. You cannot act on a closing price until the market has
+    # closed, so the earliest that decision can affect you is the NEXT day.
+    #
+    # Shifting by one day is what keeps this test honest. Without the shift
+    # we would be selling on the morning of a crash using that evening's
+    # information - a mistake called "lookahead bias" that makes any
+    # strategy look brilliant and is completely impossible in real life.
+    if regime is not None:
+        # `fill_value=True` on the shift keeps the dtype as a clean boolean.
+        # (Letting a NaN appear first would turn the column into `object`,
+        # which pandas then warns about downcasting.)
+        regime_daily = regime.reindex(calendar).ffill().fillna(True).infer_objects(copy=False).astype(bool)
+        regime_exec = regime_daily.shift(1, fill_value=True).astype(bool)
+    else:
+        # No filter: we are invested every single day.
+        regime_exec = pd.Series(True, index=calendar)
+
+    regime_switch_costs = 0.0
+    regime_switch_count = 0
 
     # ------------------------------------------------------------------
     # Containers we fill as we walk forward through time.
@@ -272,6 +303,15 @@ def run_backtest(prices, benchmark, settings):
             (target_weights.reindex(all_tickers).fillna(0.0)
              - drifted_weights.reindex(all_tickers).fillna(0.0)).abs().sum()
         )
+
+        # If the regime filter has us sitting in cash on this rebalance day,
+        # no shares actually change hands, so there is nothing to pay for.
+        # We still work out the target weights above, because we need to
+        # know what to buy the moment the filter lets us back in.
+        invested_at_rebalance = bool(regime_exec.loc[rebalance_date])
+        if not invested_at_rebalance:
+            turnover = 0.0
+
         cost_fraction = turnover * (cost_bps / 10000.0)
         cost_amount = equity * cost_fraction
         equity = equity * (1.0 - cost_fraction)
@@ -297,10 +337,49 @@ def run_backtest(prices, benchmark, settings):
             # 100% cash: the portfolio simply does not move.
             portfolio_growth = np.ones(len(window))
 
+        # ---- Overlay the Risk-ON / Risk-OFF filter --------------------
+        # `portfolio_growth` above is what the book WOULD do if we held it
+        # every day. Now we mute the days the filter says to be in cash.
+        #
+        # We do that on daily RETURNS rather than on the cumulative curve,
+        # because a return of 0% is exactly what "sitting in cash" means,
+        # and re-compounding the muted returns gives the filtered curve.
+        window_dates = window.index
+
+        # Turn the growth path into one return per day. Element k here is
+        # the return earned ON window_dates[k + 1].
+        daily_returns = (portfolio_growth[1:] / portfolio_growth[:-1]) - 1.0
+
+        # Was the filter letting us hold shares on each of those days?
+        invested_today = regime_exec.reindex(window_dates[1:]).fillna(True).to_numpy()
+
+        # In cash the portfolio simply does not move: the return becomes 0.
+        effective_returns = np.where(invested_today, daily_returns, 0.0)
+
+        # Charge for getting out and back in. Every flip means selling the
+        # whole book or rebuying it, so turnover is a full 1.0 each time.
+        # Only periods that actually hold something can incur this.
+        if picks and regime is not None:
+            previous_state = bool(regime_exec.loc[window_dates[0]])
+            for day_number, state in enumerate(invested_today):
+                if bool(state) != previous_state:
+                    regime_switch_count += 1
+                    switch_cost = cost_bps / 10000.0
+                    # Fold the cost straight into that day's return.
+                    effective_returns[day_number] = (
+                        (1.0 + effective_returns[day_number]) * (1.0 - switch_cost) - 1.0
+                    )
+                    regime_switch_costs += switch_cost
+                    previous_state = bool(state)
+
+        # Re-compound the muted returns back into a growth path that starts
+        # at 1.0 on the rebalance date.
+        filtered_growth = np.concatenate([[1.0], np.cumprod(1.0 + effective_returns)])
+
         # Record every day of this period on the equity curve. We skip the
         # first row because that date was already written by the previous
         # period (or by the starting value).
-        period_values = equity * portfolio_growth
+        period_values = equity * filtered_growth
         equity_dates.extend(list(window.index[1:]))
         equity_values.extend([float(v) for v in period_values[1:]])
 
@@ -309,7 +388,12 @@ def run_backtest(prices, benchmark, settings):
         period_return = (equity / period_start_equity) - 1.0 if period_start_equity else 0.0
 
         # ---- What are we left holding? (weights drift with prices) ----
-        if picks:
+        # If the filter had us in cash on the final day of the period, we
+        # are holding nothing at all - so the next rebalance has to buy the
+        # whole book from scratch and pay full turnover for it.
+        ended_in_cash = not bool(regime_exec.loc[window_dates[-1]])
+
+        if picks and not ended_in_cash:
             final_growth = growth.iloc[-1]
             grown_weights = target_weights.reindex(held) * final_growth
             total_grown = float(grown_weights.sum()) + cash_weight
@@ -380,6 +464,11 @@ def run_backtest(prices, benchmark, settings):
         "trade_rows": trade_rows,
         "risk_free": risk_free,
         "start_capital": start_capital,
+        # The regime as it was actually TRADED (already shifted by a day),
+        # trimmed to the days the strategy was really running.
+        "regime_exec": regime_exec.loc[equity_curve.index],
+        "regime_switch_count": regime_switch_count,
+        "regime_switch_costs": regime_switch_costs,
     }
 
 
@@ -538,12 +627,14 @@ def _clean(value):
 # SECTION 5 - THE ONE FUNCTION THE WEB SERVER CALLS
 # ======================================================================
 
-def analyse(prices, benchmark, settings):
+def analyse(prices, benchmark, settings, regime=None):
     """
     Run the whole thing and package the answer for the website:
     equity curves, drawdowns, metrics, monthly grid, and both log tables.
+
+    `regime` is the optional daily Risk-ON/Risk-OFF mask from indicators.py.
     """
-    result = run_backtest(prices, benchmark, settings)
+    result = run_backtest(prices, benchmark, settings, regime=regime)
 
     equity = result["equity_curve"]
     bench = result["benchmark_curve"]
@@ -599,5 +690,186 @@ def analyse(prices, benchmark, settings):
             "average_holdings": round(average_holdings, 2),
             "total_costs": round(sum(row["cost_paid"] for row in result["rebalance_rows"]), 2),
             "start_capital": result["start_capital"],
+            "regime_switches": result["regime_switch_count"],
         },
+        # Kept in pandas form for compare_with_regime() below; the API layer
+        # never sends these raw objects to the browser.
+        "_equity": equity,
+        "_benchmark": bench,
+        "_regime_exec": result["regime_exec"],
+    }
+
+
+# ======================================================================
+# SECTION 6 - FILTER ON vs FILTER OFF, SIDE BY SIDE
+# ======================================================================
+
+def compare_with_regime(prices, benchmark, settings, regime_frame):
+    """
+    Run the SAME momentum strategy twice - once with the macro filter and
+    once without - and lay the two results side by side.
+
+    This is the honest way to judge a filter. A filter that improves returns
+    but only by being lucky once is not worth having; what you want to see
+    is a smaller worst-case drawdown and a steadier ride, in exchange for
+    giving up some of the upside.
+
+    `regime_frame` is the table from indicators.build_regime().
+
+    Returns a dictionary holding both full result sets plus a comparison
+    block with the deltas already worked out.
+    """
+    # ---- The baseline: no filter at all, always invested ---------------
+    unfiltered = analyse(prices, benchmark, settings, regime=None)
+
+    # ---- The same strategy, with the macro filter applied --------------
+    regime_series = regime_frame["regime"] if regime_frame is not None else None
+    filtered = analyse(prices, benchmark, settings, regime=regime_series)
+
+    # ---- Exposure: how much of the time were we actually invested? -----
+    # We measure this on the regime as TRADED, over exactly the days the
+    # strategy was live - not over the whole file - so the percentage
+    # answers "while I was running this, how often did I hold shares?".
+    traded_regime = filtered["_regime_exec"]
+    exposure = summarise_regime(traded_regime)
+
+    # ---- Build the comparison table ------------------------------------
+    on_metrics = filtered["metrics"]
+    off_metrics = unfiltered["metrics"]
+
+    def delta(key, invert=False):
+        """
+        Difference between the filtered and unfiltered runs.
+
+        `invert` is for metrics where LESS is better (drawdown). For those
+        we report the improvement as a positive number, so a positive delta
+        always reads as "the filter helped".
+        """
+        a, b = on_metrics.get(key), off_metrics.get(key)
+        if a is None or b is None:
+            return None
+        return _clean((b - a) if invert else (a - b))
+
+    comparison = {
+        "total_return": {
+            "off": off_metrics.get("total_return"),
+            "on": on_metrics.get("total_return"),
+            "delta": delta("total_return"),
+        },
+        "cagr": {
+            "off": off_metrics.get("cagr"),
+            "on": on_metrics.get("cagr"),
+            "delta": delta("cagr"),
+        },
+        "max_drawdown": {
+            "off": off_metrics.get("max_drawdown"),
+            "on": on_metrics.get("max_drawdown"),
+            # Drawdowns are negative, so "on minus off" being positive means
+            # the filtered run fell LESS far. That is the improvement.
+            "delta": delta("max_drawdown"),
+        },
+        "sharpe": {
+            "off": off_metrics.get("sharpe"),
+            "on": on_metrics.get("sharpe"),
+            "delta": delta("sharpe"),
+        },
+        "sortino": {
+            "off": off_metrics.get("sortino"),
+            "on": on_metrics.get("sortino"),
+            "delta": delta("sortino"),
+        },
+        "annual_volatility": {
+            "off": off_metrics.get("annual_volatility"),
+            "on": on_metrics.get("annual_volatility"),
+            "delta": delta("annual_volatility"),
+        },
+        "win_rate": {
+            "off": off_metrics.get("win_rate"),
+            "on": on_metrics.get("win_rate"),
+            "delta": delta("win_rate"),
+        },
+        # With no filter you are invested every single day, by definition.
+        "time_in_market": {
+            "off": 1.0,
+            "on": _clean(exposure["time_in_market"]),
+            "delta": _clean((exposure["time_in_market"] or 0) - 1.0),
+        },
+        "time_in_cash": {
+            "off": 0.0,
+            "on": _clean(exposure["time_in_cash"]),
+            "delta": _clean(exposure["time_in_cash"]),
+        },
+        "regime_switches": {
+            "off": 0,
+            "on": exposure["switches"],
+            "delta": None,  # a count, not a difference - nothing to compare
+        },
+    }
+
+    # ---- One combined chart series: both curves plus the benchmark -----
+    equity_on = filtered["_equity"]
+    equity_off = unfiltered["_equity"]
+    bench_curve = filtered["_benchmark"]
+
+    dd_on = drawdown_series(equity_on)
+    dd_off = drawdown_series(equity_off)
+
+    shared_dates = equity_on.index.intersection(equity_off.index)
+    curve = []
+    for stamp in shared_dates:
+        curve.append({
+            "date": stamp.strftime("%Y-%m-%d"),
+            "filter_on": round(float(equity_on.loc[stamp]), 2),
+            "filter_off": round(float(equity_off.loc[stamp]), 2),
+            "benchmark": round(float(bench_curve.loc[stamp]), 2),
+            "dd_on": round(float(dd_on.loc[stamp]) * 100.0, 4),
+            "dd_off": round(float(dd_off.loc[stamp]) * 100.0, 4),
+            # 1 = Risk-ON (invested), 0 = Risk-OFF (cash). The timeline
+            # strip under the chart reads this.
+            "risk_on": int(bool(traded_regime.loc[stamp])),
+        })
+
+    # ---- The stretches of cash, as date ranges -------------------------
+    # Far lighter to send than one row per day, and it is exactly what the
+    # timeline strip and the "when was I out?" list need.
+    periods = []
+    if len(traded_regime):
+        current_state = bool(traded_regime.iloc[0])
+        block_start = traded_regime.index[0]
+        for stamp, state in traded_regime.items():
+            if bool(state) != current_state:
+                periods.append({
+                    "start": block_start.strftime("%Y-%m-%d"),
+                    "end": stamp.strftime("%Y-%m-%d"),
+                    "risk_on": current_state,
+                })
+                current_state = bool(state)
+                block_start = stamp
+        periods.append({
+            "start": block_start.strftime("%Y-%m-%d"),
+            "end": traded_regime.index[-1].strftime("%Y-%m-%d"),
+            "risk_on": current_state,
+        })
+
+    # Strip the private pandas objects before this goes anywhere near JSON.
+    for payload in (filtered, unfiltered):
+        payload.pop("_equity", None)
+        payload.pop("_benchmark", None)
+        payload.pop("_regime_exec", None)
+
+    return {
+        "filtered": filtered,
+        "unfiltered": unfiltered,
+        "comparison": comparison,
+        "exposure": {
+            "time_in_market": _clean(exposure["time_in_market"]),
+            "time_in_cash": _clean(exposure["time_in_cash"]),
+            "switches": exposure["switches"],
+            "days_in_market": exposure["days_in_market"],
+            "days_in_cash": exposure["days_in_cash"],
+            "total_days": exposure["total_days"],
+        },
+        "curve": curve,
+        "regime_periods": periods,
+        "max_drawdown_reduction": comparison["max_drawdown"]["delta"],
     }

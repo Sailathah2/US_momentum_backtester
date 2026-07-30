@@ -115,6 +115,22 @@ export async function runBacktest(payload) {
 }
 
 /**
+ * Run the momentum strategy twice - with the macro regime filter and
+ * without it - and get both results back for side-by-side comparison.
+ *
+ * Takes everything runBacktest takes, plus: regime_mode, regime_index,
+ * ema_period, atr_period, st_multiplier.
+ */
+export async function runRegimeAnalysis(payload) {
+  try {
+    const { data } = await http.post("/regime-analysis", payload);
+    return data;
+  } catch (error) {
+    throw new Error(readableError(error));
+  }
+}
+
+/**
  * Download one of the result tables as a CSV file.
  * `kind` is "trades", "rebalances", "timeseries" or "monthly".
  */

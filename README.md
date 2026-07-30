@@ -165,7 +165,66 @@ nothing is hidden from you.
 
 Then press **Run backtest**.
 
-### Step 3 · Read the results
+### Step 3 · (Optional) Add the index regime filter
+
+The momentum strategy decides *which* stocks to buy. The regime filter decides
+something bigger: **whether to be in the market at all**.
+
+It watches one index and flips the whole portfolio between two states:
+
+| State | Meaning |
+|-------|---------|
+| **Risk-ON** | The index is trending up → run the strategy normally. |
+| **Risk-OFF** | The index is trending down → hold **100% cash**, zero market exposure. |
+
+**The four modes**
+
+| Mode | Rule |
+|------|------|
+| **Off** | No filter. Fully invested at all times. |
+| **EMA only** | Invested while the index closes **above** its moving average. |
+| **Supertrend only** | Invested while the index closes above its Supertrend line. The line widens in volatile markets, so ordinary noise doesn't shake you out. |
+| **Both** (recommended) | Needs **both** indicators to agree before changing state. |
+
+**Why "Both" is recommended — hysteresis**
+
+A filter that flips the instant any one indicator wobbles will sell you out and buy
+you back repeatedly, bleeding money on costs each time. That churn is called
+*whipsaw*. So "Both" mode is deliberately stubborn:
+
+- Currently Risk-ON → go OFF **only if** close < EMA **and** close < Supertrend
+- Currently Risk-OFF → go ON **only if** close > EMA **and** close > Supertrend
+- The two disagree → **keep the state you're already in**
+
+On five years of real data this roughly halves the churn: `both` produced **17
+switches** where EMA alone gave 31 and Supertrend alone gave 34.
+
+**The parameters**
+
+| Setting | Default | What it does |
+|---------|---------|--------------|
+| **Index to watch** | your benchmark | Any loaded file. You can gate a small-cap universe on the S&P 500, or on a single bellwether stock. |
+| **EMA period** | 200 | The classic long-term trend line. Shorter reacts sooner but changes its mind far more often. |
+| **ATR period** | 10 | How many days of movement feed the volatility estimate. |
+| **Multiplier** | 3.0 | How far the trailing stop sits from price, in ATRs. Higher = looser, fewer exits. |
+
+Press **Compare filter ON vs OFF**. The same strategy runs **twice** — with the
+filter and without — so you can see exactly what it cost and what it saved:
+
+- **Three-line equity chart** — blue (filter ON), violet (filter OFF), amber (index).
+- **Regime timeline strip** under the chart — green where invested, grey where in
+  cash. Line a grey block up with a dip in the violet line to see a fall the filter
+  dodged; line it up with a rally to see what it cost you.
+- **Head-to-head table** — every metric side by side with the difference.
+- **Exposure breakdown** — time in market vs time in cash, plus the switch count.
+- **Drawdown comparison** — the two underwater curves overlaid.
+
+> **Reading it honestly.** A good filter usually *gives up some return* in exchange
+> for a shallower worst-case fall. If the return row is red, check the drawdown row
+> before concluding it failed. And if the switch count looks high, try a longer EMA
+> or a bigger multiplier — both make the filter slower to change its mind.
+
+### Step 4 · Read the results
 
 - **The eight tiles** — headline numbers, each with the benchmark's equivalent
   underneath so you always know whether you actually beat buy-and-hold.
@@ -201,7 +260,8 @@ Then press **Run backtest**.
 day_4/
 ├── backend/
 │   ├── app.py            # The web server. Handles uploads, runs backtests, builds CSV exports.
-│   ├── engine.py         # The backtesting brain: the strategy loop and all the performance maths.
+│   ├── engine.py         # The backtesting brain: the strategy loop, the regime overlay, and all the performance maths.
+│   ├── indicators.py     # EMA, ATR, Supertrend and the Risk-ON/Risk-OFF state machine.
 │   ├── data_loader.py    # The CSV translator: column mapping, date parsing, calendar alignment.
 │   └── requirements.txt  # The Python libraries to install.
 │
@@ -217,9 +277,13 @@ day_4/
 │           ├── Header.jsx            # Masthead + backend status dot.
 │           ├── UploadZone.jsx        # Step 1: drag-drop and folder scanning.
 │           ├── BacktestControls.jsx  # Step 2: every strategy setting.
+│           ├── RegimeControls.jsx    # Step 3: the macro filter settings.
 │           ├── MetricCards.jsx       # The row of headline numbers.
 │           ├── EquityChart.jsx       # Portfolio vs benchmark growth.
-│           ├── DrawdownChart.jsx     # The underwater chart.
+│           ├── EquityComparisonChart.jsx  # Filter ON vs OFF vs benchmark + regime strip.
+│           ├── ComparisonMetricsCard.jsx  # The head-to-head metrics table.
+│           ├── ExposureChart.jsx     # Time in market vs time in cash.
+│           ├── DrawdownChart.jsx     # The underwater chart (also does ON-vs-OFF).
 │           ├── MonthlyHeatmap.jsx    # The calendar grid of returns.
 │           └── TradeLogTable.jsx     # Rebalance log, trade log, CSV exports.
 │
@@ -262,6 +326,19 @@ A few decisions worth knowing about, so you can trust the numbers:
   of something else is 0.8 turnover; at 10 bps that costs 0.08% of the portfolio.
 - **Win rate counts rebalance periods, not days** — that's the meaningful unit of
   this strategy.
+- **The regime filter is shifted one day, deliberately.** The filter reads the
+  index's *closing* price, and you cannot act on a close until the market has shut.
+  So the decision only affects the **next** day. Without that shift the backtest
+  would be selling on the morning of a crash using that evening's information —
+  "lookahead bias", which makes any strategy look brilliant and is impossible in
+  real life.
+- **ATR uses Wilder's smoothing** (alpha = 1/period), not a simple `span` average.
+  Using the wrong one produces a Supertrend that quietly disagrees with every
+  charting platform.
+- **Regime switches are charged as full round trips** — going to cash sells the
+  whole book, coming back rebuys it, so each flip costs turnover of 1.0 at your bps
+  setting. Rebalances that happen while in cash cost nothing, because no shares
+  actually move.
 - **There is only ever one y-axis on a chart.** Two different scales on one chart is
   the easiest way to fool yourself, so the app never does it.
 

@@ -16,13 +16,24 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { AlertCircle, BookOpen, Coins, Layers, Percent, X } from "lucide-react";
 
-import { checkHealth, exportCsv, runBacktest, scanFolder, uploadFiles } from "./api";
+import {
+  checkHealth,
+  exportCsv,
+  runBacktest,
+  runRegimeAnalysis,
+  scanFolder,
+  uploadFiles,
+} from "./api";
 import BacktestControls from "./components/BacktestControls";
+import ComparisonMetricsCard from "./components/ComparisonMetricsCard";
 import DrawdownChart from "./components/DrawdownChart";
 import EquityChart from "./components/EquityChart";
+import EquityComparisonChart from "./components/EquityComparisonChart";
+import ExposureChart from "./components/ExposureChart";
 import Header from "./components/Header";
 import MetricCards from "./components/MetricCards";
 import MonthlyHeatmap from "./components/MonthlyHeatmap";
+import RegimeControls from "./components/RegimeControls";
 import TradeLogTable from "./components/TradeLogTable";
 import UploadZone from "./components/UploadZone";
 
@@ -44,6 +55,13 @@ const DEFAULT_SETTINGS = {
   start_capital: 100000,
   start_date: "",
   end_date: "",
+
+  // ---- Index regime filter (the macro "am I invested at all?" switch) ----
+  regime_mode: "disabled", // disabled | ema | supertrend | both
+  regime_index: "", // which loaded file the filter watches
+  ema_period: 200, // the classic long-term trend line
+  atr_period: 10, // Supertrend's volatility lookback
+  st_multiplier: 3.0, // how many ATRs away the trailing stop sits
 };
 
 export default function App() {
@@ -60,6 +78,8 @@ export default function App() {
 
   // --- What came back from the backtest --------------------------------
   const [result, setResult] = useState(null);
+  // The filter-ON-vs-OFF comparison, when the user runs that instead.
+  const [regimeResult, setRegimeResult] = useState(null);
 
   // --- Transient UI state ----------------------------------------------
   const [loadingFiles, setLoadingFiles] = useState(false);
@@ -94,16 +114,25 @@ export default function App() {
     setSymbols(payload.symbols || []);
     setWarnings([...(payload.warnings || []), ...(payload.files_failed || [])]);
     setResult(null); // the old result belongs to the old files
+    setRegimeResult(null);
 
     setSettings((previous) => {
-      const stillLoaded = (payload.symbols || []).some(
-        (symbol) => symbol.ticker === previous.benchmark
+      const loaded = payload.symbols || [];
+      const stillLoaded = loaded.some((symbol) => symbol.ticker === previous.benchmark);
+      const regimeStillLoaded = loaded.some(
+        (symbol) => symbol.ticker === previous.regime_index
       );
+      // Keep the user's choice if it survived; otherwise take the server's
+      // suggestion (a file whose name contained "spy", "nifty", etc.).
+      const benchmark = stillLoaded
+        ? previous.benchmark
+        : payload.suggested_benchmark || "";
       return {
         ...previous,
-        // Keep the user's choice if it survived; otherwise take the server's
-        // suggestion (a file whose name contained "spy", "nifty", etc.).
-        benchmark: stillLoaded ? previous.benchmark : payload.suggested_benchmark || "",
+        benchmark,
+        // The regime filter defaults to watching the same index as the
+        // benchmark, which is what almost everyone wants.
+        regime_index: regimeStillLoaded ? previous.regime_index : benchmark,
       };
     });
   }, []);
@@ -140,16 +169,19 @@ export default function App() {
     setSymbols([]);
     setWarnings([]);
     setResult(null);
+    setRegimeResult(null);
     setError(null);
     setSettings(DEFAULT_SETTINGS);
   }
 
+  /** The plain momentum backtest, with no macro filter. */
   async function handleRun() {
     setError(null);
     setRunning(true);
     try {
       const payload = await runBacktest({ session_id: sessionId, ...settings });
       setResult(payload);
+      setRegimeResult(null); // a plain run replaces any comparison on screen
       // Slide down to the results once they are ready.
       requestAnimationFrame(() => {
         document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
@@ -157,6 +189,37 @@ export default function App() {
     } catch (exception) {
       setError(exception.message);
       setResult(null);
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  /**
+   * The regime comparison: runs the SAME strategy twice, once with the
+   * macro filter and once without, and shows both.
+   */
+  async function handleRunRegime() {
+    setError(null);
+    setRunning(true);
+    try {
+      const payload = await runRegimeAnalysis({ session_id: sessionId, ...settings });
+      setRegimeResult(payload);
+      // The filtered run becomes "the" result, so the metric tiles, monthly
+      // grid and trade log below all describe the filtered strategy.
+      setResult({
+        ...payload.filtered,
+        ok: true,
+        benchmark: payload.benchmark,
+        universe_size: payload.universe_size,
+        trading_days: payload.trading_days,
+        settings: payload.settings,
+      });
+      requestAnimationFrame(() => {
+        document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+      });
+    } catch (exception) {
+      setError(exception.message);
+      setRegimeResult(null);
     } finally {
       setRunning(false);
     }
@@ -246,6 +309,22 @@ export default function App() {
                 symbols={symbols}
               />
             )}
+
+            {symbols.length > 0 && (
+              <RegimeControls
+                settings={settings}
+                onChange={setSettings}
+                onRun={handleRunRegime}
+                busy={running}
+                symbols={symbols}
+                canRun={
+                  Boolean(settings.benchmark) &&
+                  Boolean(settings.regime_index) &&
+                  symbols.length > 2 &&
+                  !running
+                }
+              />
+            )}
           </div>
 
           {/* ---- RIGHT: the results ------------------------------------ */}
@@ -262,20 +341,51 @@ export default function App() {
                   summary={result.summary}
                 />
 
-                <RunSummary result={result} />
+                <RunSummary result={result} regimeResult={regimeResult} />
 
-                <EquityChart
-                  data={result.curve}
-                  startCapital={result.summary.start_capital}
-                  benchmarkName={result.benchmark}
-                />
+                {/* ---- REGIME COMPARISON (only after that run) --------
+                    When the user ran the filter comparison we show the
+                    three-line chart, the head-to-head table and the
+                    exposure split. Otherwise we fall back to the ordinary
+                    two-line equity chart. */}
+                {regimeResult ? (
+                  <>
+                    <EquityComparisonChart
+                      data={regimeResult.curve}
+                      startCapital={result.summary.start_capital}
+                      benchmarkName={regimeResult.benchmark}
+                    />
 
-                <DrawdownChart
-                  data={result.curve}
-                  maxDrawdown={result.metrics.max_drawdown}
-                  maxDrawdownDate={result.metrics.max_drawdown_date}
-                  benchmarkName={result.benchmark}
-                />
+                    <ComparisonMetricsCard
+                      comparison={regimeResult.comparison}
+                      maxDrawdownReduction={regimeResult.max_drawdown_reduction}
+                    />
+
+                    <ExposureChart exposure={regimeResult.exposure} />
+
+                    <DrawdownChart
+                      data={regimeResult.curve}
+                      maxDrawdown={result.metrics.max_drawdown}
+                      maxDrawdownDate={result.metrics.max_drawdown_date}
+                      compare
+                    />
+                  </>
+                ) : (
+                  <>
+                    <EquityChart
+                      data={result.curve}
+                      startCapital={result.summary.start_capital}
+                      benchmarkName={result.benchmark}
+                    />
+
+                    <DrawdownChart
+                      data={result.curve}
+                      maxDrawdown={result.metrics.max_drawdown}
+                      maxDrawdownDate={result.metrics.max_drawdown_date}
+                      benchmarkName={result.benchmark}
+                    />
+                  </>
+                )}
 
                 <MonthlyHeatmap rows={result.monthly} />
 
@@ -381,8 +491,15 @@ function WelcomePanel({ hasFiles }) {
  * A one-line recap of the settings that produced the result on screen, so a
  * screenshot of the page is always self-explanatory.
  */
-function RunSummary({ result }) {
+function RunSummary({ result, regimeResult }) {
   const s = result.settings || {};
+
+  // A short label describing the macro filter, if one was used.
+  const regimeLabel = {
+    ema: `EMA ${s.ema_period}`,
+    supertrend: `Supertrend ${s.atr_period}/${s.st_multiplier}`,
+    both: `EMA ${s.ema_period} + ST ${s.atr_period}/${s.st_multiplier}`,
+  }[s.regime_mode];
 
   const cadenceLabel =
     s.cadence === "days" ? `every ${s.every_n_days} trading days` : s.cadence;
@@ -439,6 +556,21 @@ function RunSummary({ result }) {
             </p>
           </div>
         ))}
+
+        {/* The macro filter, when one was applied. */}
+        {regimeResult && regimeLabel && (
+          <div className="rounded-lg border border-market-up/40 bg-market-up/10 px-3 py-2">
+            <p className="text-2xs uppercase tracking-wider text-market-up">
+              Regime filter
+            </p>
+            <p className="mt-0.5 font-mono text-xs font-bold text-cream-50">
+              {regimeLabel}
+            </p>
+            <p className="font-mono text-[10px] text-brief-muted">
+              watching {s.regime_index}
+            </p>
+          </div>
+        )}
 
         <div className="ml-auto rounded-lg border border-precision-600/40 bg-precision-600/10 px-3 py-2">
           <p className="text-2xs uppercase tracking-wider text-precision-300">Benchmark</p>

@@ -57,8 +57,35 @@ function DrawdownTooltip({ active, payload, label }) {
   );
 }
 
-export default function DrawdownChart({ data, maxDrawdown, maxDrawdownDate, benchmarkName }) {
+/**
+ * The chart runs in two modes.
+ *
+ *   NORMAL      portfolio vs benchmark  (keys portfolio_dd / benchmark_dd)
+ *   COMPARISON  filter ON vs filter OFF (keys dd_on / dd_off), used by the
+ *               regime dashboard so you can see the two underwater shapes
+ *               on top of each other.
+ *
+ * `compare` switches between them. The colours stay consistent with the
+ * equity charts: blue is always the filtered strategy, violet the
+ * unfiltered one, amber the benchmark.
+ */
+export default function DrawdownChart({
+  data,
+  maxDrawdown,
+  maxDrawdownDate,
+  benchmarkName,
+  compare = false,
+}) {
   if (!data?.length) return null;
+
+  const FILTER_OFF = "#8B5CF6"; // Violet
+
+  // Which two series are we drawing, and what do we call them?
+  const primaryKey = compare ? "dd_on" : "portfolio_dd";
+  const secondaryKey = compare ? "dd_off" : "benchmark_dd";
+  const primaryName = compare ? "Filter ON" : "Momentum portfolio";
+  const secondaryName = compare ? "Filter OFF" : benchmarkName || "Benchmark";
+  const secondaryColor = compare ? FILTER_OFF : BENCHMARK;
 
   return (
     <section className="brief-card p-5">
@@ -127,20 +154,20 @@ export default function DrawdownChart({ data, maxDrawdown, maxDrawdownDate, benc
 
             <Area
               type="monotone"
-              dataKey="portfolio_dd"
-              name="Momentum portfolio"
+              dataKey={primaryKey}
+              name={primaryName}
               stroke={PORTFOLIO}
               strokeWidth={2}
               fill="url(#portfolioDrawdownFill)"
               isAnimationActive={false}
             />
-            {/* The benchmark stays an unfilled line, so the two never muddy
-                each other where they overlap. */}
+            {/* The second series stays an unfilled line, so the two never
+                muddy each other where they overlap. */}
             <Area
               type="monotone"
-              dataKey="benchmark_dd"
-              name={benchmarkName || "Benchmark"}
-              stroke={BENCHMARK}
+              dataKey={secondaryKey}
+              name={secondaryName}
+              stroke={secondaryColor}
               strokeWidth={2}
               fill="none"
               isAnimationActive={false}
@@ -152,6 +179,13 @@ export default function DrawdownChart({ data, maxDrawdown, maxDrawdownDate, benc
       <p className="mt-2 text-2xs leading-relaxed text-brief-muted">
         0% means the portfolio is at an all-time high that day. The deeper and wider
         a dip, the harder the strategy would have been to live through.
+        {compare && (
+          <>
+            {" "}
+            Where the blue area is shallower than the violet line, the regime filter
+            kept you out of a fall.
+          </>
+        )}
       </p>
     </section>
   );

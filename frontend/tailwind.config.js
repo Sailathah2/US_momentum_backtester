@@ -74,6 +74,24 @@ export default {
         series: {
           portfolio: "#3B82F6", // Precision Blue
           benchmark: "#D97706", // Amber - deliberately not green or red
+
+          // The regime dashboard draws THREE lines at once. This trio was
+          // run through the same colour-vision check: every pair stays at
+          // least 16 apart under protanopia, deuteranopia and tritanopia,
+          // and all three sit in the readable lightness band for a dark
+          // background. Blue always means "the filtered strategy", violet
+          // "the unfiltered strategy", amber "the index".
+          filterOn: "#3B82F6", // Precision Blue  - strategy WITH the filter
+          filterOff: "#8B5CF6", // Violet          - strategy WITHOUT it
+        },
+
+        // -- Regime state ---------------------------------------------
+        // The timeline strip under the chart. Green = invested, slate =
+        // in cash. Both are always accompanied by a written label and a
+        // date range, so the colour is never the only cue.
+        regime: {
+          on: "#22C55E",
+          off: "#475569",
         },
       },
 
