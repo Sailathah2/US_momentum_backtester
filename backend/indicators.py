@@ -34,6 +34,11 @@ import pandas as pd
 # The regime filter modes the website offers.
 VALID_REGIME_MODES = ("disabled", "ema", "supertrend", "both")
 
+# Which candles the regime filter reads. "daily" uses one bar per trading
+# day; "weekly" squashes each week into a single bar first, which makes the
+# trend line far smoother and the filter much slower to change its mind.
+VALID_REGIME_TIMEFRAMES = ("daily", "weekly")
+
 
 # ======================================================================
 # SECTION 1 - EXPONENTIAL MOVING AVERAGE (EMA)
@@ -236,16 +241,77 @@ def supertrend(high, low, close, period=10, multiplier=3.0):
 
 
 # ======================================================================
+# SECTION 3b - SQUASHING DAILY BARS INTO WEEKLY ONES
+# ======================================================================
+
+def to_weekly(frame):
+    """
+    Turn a table of DAILY candles into WEEKLY candles.
+
+    Each week becomes one bar:
+        Open  = the week's first open      High = the week's highest high
+        Low   = the week's lowest low      Close = the week's last close
+
+    WHY THE LABEL DATE MATTERS SO MUCH
+    ----------------------------------
+    We label each weekly bar with the **last day the market was actually
+    open** that week - not with the calendar Friday.
+
+    If we used the calendar Friday and that Friday happened to be a market
+    holiday, the label would be a date that does not exist anywhere in our
+    price history. Later, when the weekly signal is mapped back onto the
+    daily calendar, that entire week's answer would be silently thrown away.
+    Using the real last trading day makes that impossible.
+
+    (This is the same grouping trick `build_rebalance_dates` in engine.py
+    uses to find the last trading day of each month.)
+    """
+    if len(frame) == 0:
+        return frame.copy()
+
+    # Group every row by which calendar week it falls in.
+    week_of = frame.index.to_period("W")
+
+    aggregation = {}
+    for column, how in (("Open", "first"), ("High", "max"),
+                        ("Low", "min"), ("Close", "last")):
+        if column in frame.columns:
+            aggregation[column] = how
+
+    weekly = frame.groupby(week_of).agg(aggregation)
+
+    # Replace the period index with the real last trading date of each week.
+    last_trading_day = frame.groupby(week_of).apply(lambda block: block.index[-1])
+    weekly.index = pd.DatetimeIndex(last_trading_day.values)
+    weekly.index.name = frame.index.name
+
+    return weekly.sort_index()
+
+
+# ======================================================================
 # SECTION 4 - THE REGIME STATE MACHINE
 # ======================================================================
 
 def build_regime(index_frame, mode="both", ema_period=200,
-                 atr_period=10, multiplier=3.0):
+                 atr_period=10, multiplier=3.0, timeframe="daily"):
     """
-    Turn the index's price history into a daily Risk-ON / Risk-OFF answer.
+    Turn the index's price history into a Risk-ON / Risk-OFF answer.
 
     `index_frame` is the benchmark's table, with a Close column and ideally
     High and Low too. `mode` is one of: disabled, ema, supertrend, both.
+
+    DAILY OR WEEKLY CANDLES
+    -----------------------
+    `timeframe="daily"`  - one bar per trading day (the original behaviour).
+    `timeframe="weekly"` - each week is squashed into one bar first.
+
+    On weekly candles the period numbers count WEEKS, exactly as they would
+    on a charting website: an EMA of 40 means 40 weekly bars, roughly nine
+    months of trend. A weekly filter is far smoother and changes its mind
+    much less often, at the cost of reacting later.
+
+    The answer is always returned on the ORIGINAL daily dates, so the rest
+    of the program never has to care which timeframe was used.
 
     THE THREE MODES
     ---------------
@@ -276,19 +342,26 @@ def build_regime(index_frame, mode="both", ema_period=200,
     """
     if mode not in VALID_REGIME_MODES:
         raise ValueError(f"Unknown regime mode '{mode}'.")
+    if timeframe not in VALID_REGIME_TIMEFRAMES:
+        raise ValueError(f"Unknown regime timeframe '{timeframe}'.")
 
-    close = index_frame["Close"].astype(float)
+    # Remember the days we must answer for, then (optionally) do all the
+    # indicator maths on weekly bars instead.
+    daily_index = index_frame.index
+    working_frame = to_weekly(index_frame) if timeframe == "weekly" else index_frame
+
+    close = working_frame["Close"].astype(float)
 
     # Some index CSVs carry only a close price (no high/low columns). In that
     # case we use the close for all three. The Supertrend still works - its
     # bands just become a little narrower, because a day's high-to-low range
     # is treated as zero and only the day-to-day gaps register.
-    if "High" in index_frame.columns and index_frame["High"].notna().any():
-        high = index_frame["High"].astype(float).fillna(close)
+    if "High" in working_frame.columns and working_frame["High"].notna().any():
+        high = working_frame["High"].astype(float).fillna(close)
     else:
         high = close
-    if "Low" in index_frame.columns and index_frame["Low"].notna().any():
-        low = index_frame["Low"].astype(float).fillna(close)
+    if "Low" in working_frame.columns and working_frame["Low"].notna().any():
+        low = working_frame["Low"].astype(float).fillna(close)
     else:
         low = close
 
@@ -302,7 +375,7 @@ def build_regime(index_frame, mode="both", ema_period=200,
         result["ema_bullish"] = True
         result["st_bullish"] = True
         result["regime"] = True  # always invested
-        return result
+        return _to_daily(result, daily_index, timeframe)
 
     # ---- Work out each indicator's own opinion --------------------------
     ema_line = exponential_moving_average(close, ema_period)
@@ -364,7 +437,54 @@ def build_regime(index_frame, mode="both", ema_period=200,
     # A day with no indicator value yet counts as invested, so that the
     # filtered and unfiltered backtests begin identically.
     result["regime"] = result["regime"].fillna(True).astype(bool)
-    return result
+    return _to_daily(result, daily_index, timeframe)
+
+
+def _to_daily(result, daily_index, timeframe):
+    """
+    Spread a WEEKLY answer back across the daily calendar.
+
+    THE RULE THAT KEEPS THIS HONEST
+    -------------------------------
+    A weekly bar is not finished until its last trading day closes, so its
+    verdict must NOT be applied to the days inside that same week - that
+    would be reading a price before it happened.
+
+    Forward-filling from the bar's own label gives exactly the right shape:
+
+        Fri 10th (week A closes)  -> week A's verdict lands here
+        Mon 13th .. Thu 16th      -> still week A's verdict (carried forward)
+        Fri 17th (week B closes)  -> week B's verdict lands here
+
+    So no day ever sees a verdict computed from its own week's later prices.
+    The engine then shifts everything one more day when it trades, which is
+    the normal "you cannot act on a close until tomorrow" lag.
+    """
+    if timeframe != "weekly":
+        return result
+
+    # Union-then-select so a weekly label that is not itself in the daily
+    # index can still contribute its value, instead of being dropped.
+    full_index = result.index.union(daily_index)
+
+    # Reindexing puts blanks in, and a True/False column with a blank in it
+    # stops being a boolean column. So we carry the flags across as numbers
+    # (1.0 / 0.0), forward-fill those, and turn them back into True/False at
+    # the end - which keeps the dtypes clean throughout.
+    flag_names = [name for name in ("regime", "ema_bullish", "st_bullish")
+                  if name in result.columns]
+    numbers = result.drop(columns=flag_names)
+    flags = result[flag_names].astype(float)
+
+    numbers = numbers.reindex(full_index).ffill().loc[daily_index]
+    flags = flags.reindex(full_index).ffill().loc[daily_index]
+
+    # Before the first completed week there is no verdict yet, so stay
+    # invested - that keeps the filtered and unfiltered runs starting from
+    # the same place.
+    flags = flags.fillna(1.0).astype(bool)
+
+    return pd.concat([numbers, flags], axis=1)[result.columns]
 
 
 def summarise_regime(regime_series):

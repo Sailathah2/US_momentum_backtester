@@ -42,8 +42,27 @@ const MODES = [
   },
 ];
 
-// Common EMA lengths. 200 is the classic long-term trend line.
-const EMA_PRESETS = [20, 50, 100, 200];
+// Common EMA lengths, per timeframe.
+//
+// The numbers count BARS of whichever candle you picked, exactly as they do
+// on a charting website. So 200 on daily candles is 200 days (~10 months),
+// while 40 on weekly candles is 40 weeks (~9 months).
+const EMA_PRESETS = {
+  daily: [20, 50, 100, 200],
+  weekly: [10, 20, 30, 40],
+};
+
+// What each timeframe starts on when you switch to it.
+const DEFAULT_EMA = { daily: 200, weekly: 40 };
+
+// Roughly how long a given number of bars covers, in plain English.
+function describeSpan(bars, timeframe) {
+  // ~252 trading days a year; ~52 weeks a year.
+  const years = timeframe === "weekly" ? bars / 52 : bars / 252;
+  if (years >= 1) return `about ${years.toFixed(1)} year${years >= 2 ? "s" : ""}`;
+  const months = Math.round(years * 12);
+  return `about ${months} month${months === 1 ? "" : "s"}`;
+}
 
 // How much to move to cash on a Risk-OFF day. 100% is the classic
 // "get out of the market entirely"; the lower values let you de-risk
@@ -61,6 +80,7 @@ export default function RegimeControls({
   const set = (key, value) => onChange({ ...settings, [key]: value });
 
   const mode = settings.regime_mode;
+  const timeframe = settings.regime_timeframe || "daily";
   const usesEma = mode === "ema" || mode === "both";
   const usesSupertrend = mode === "supertrend" || mode === "both";
   const active = mode !== "disabled";
@@ -101,6 +121,18 @@ export default function RegimeControls({
       </div>
       {activeMode && <p className="field-help">{activeMode.blurb}</p>}
 
+      {/* A genuinely surprising consequence of the hysteresis rule, worth
+          saying out loud so it does not look like a broken control. */}
+      {mode === "both" && (
+        <p className="field-help">
+          <strong className="text-cream-100">Heads up:</strong> because the state only
+          moves when both indicators agree, changing the EMA period here often makes{" "}
+          <em>no difference at all</em> — the disagreements it creates just get
+          absorbed by the retention rule. Use <strong>EMA only</strong> if you want to
+          see that setting bite.
+        </p>
+      )}
+
       {/* Everything below only matters once a filter is switched on. */}
       {active && (
         <div className="mt-4 animate-riseIn space-y-4">
@@ -126,18 +158,65 @@ export default function RegimeControls({
             </p>
           </div>
 
+          {/* ---------------- CANDLE TIMEFRAME ------------------------ */}
+          <div>
+            <label className="field-label">Candles to read</label>
+            <div className="mt-1.5 flex gap-1.5">
+              {["daily", "weekly"].map((option) => (
+                <button
+                  key={option}
+                  className={`chip flex-1 !py-2 capitalize ${
+                    timeframe === option ? "chip-active" : ""
+                  }`}
+                  onClick={() => {
+                    // Switching timeframe also snaps the EMA length to a
+                    // sensible default for it. Leaving 200 in place when you
+                    // move to weekly would silently mean 200 WEEKS - nearly
+                    // four years - which is almost never what you wanted.
+                    onChange({
+                      ...settings,
+                      regime_timeframe: option,
+                      ema_period: DEFAULT_EMA[option],
+                    });
+                  }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <p className="field-help">
+              {timeframe === "daily" ? (
+                <>
+                  One bar per trading day. Reacts quickly, but flips more often.
+                </>
+              ) : (
+                <>
+                  Each week becomes one candle, so the trend line is far smoother and
+                  the filter changes its mind much less. It also reacts later — you
+                  give up some agility for far fewer whipsaws.{" "}
+                  <strong className="text-cream-100">
+                    Periods now count weeks, not days.
+                  </strong>
+                </>
+              )}
+            </p>
+          </div>
+
           {/* ---------------- EMA PERIOD ------------------------------ */}
           {usesEma && (
             <div>
-              <label className="field-label">EMA period (days)</label>
+              <label className="field-label">
+                EMA period ({timeframe === "weekly" ? "weeks" : "days"})
+              </label>
               <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {EMA_PRESETS.map((days) => (
+                {EMA_PRESETS[timeframe].map((bars) => (
                   <button
-                    key={days}
-                    className={`chip ${settings.ema_period === days ? "chip-active" : ""}`}
-                    onClick={() => set("ema_period", days)}
+                    key={bars}
+                    className={`chip ${settings.ema_period === bars ? "chip-active" : ""}`}
+                    onClick={() => set("ema_period", bars)}
                   >
-                    {days}
+                    {bars}
+                    {timeframe === "weekly" ? "w" : ""}
                   </button>
                 ))}
                 <input
@@ -150,8 +229,11 @@ export default function RegimeControls({
               </div>
               <p className="field-help">
                 The index is &quot;healthy&quot; while its close is above this average.{" "}
-                <strong>200</strong> is the classic long-term trend line; shorter
-                values react sooner but change their mind far more often.
+                <strong className="text-cream-100">
+                  {settings.ema_period} {timeframe === "weekly" ? "weeks" : "days"} is{" "}
+                  {describeSpan(settings.ema_period, timeframe)} of trend.
+                </strong>{" "}
+                Shorter values react sooner but change their mind far more often.
               </p>
             </div>
           )}
@@ -160,7 +242,9 @@ export default function RegimeControls({
           {usesSupertrend && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="field-label">ATR period</label>
+                <label className="field-label">
+                  ATR period ({timeframe === "weekly" ? "weeks" : "days"})
+                </label>
                 <input
                   type="number"
                   min={1}
@@ -169,8 +253,8 @@ export default function RegimeControls({
                   onChange={(e) => set("atr_period", Number(e.target.value) || 1)}
                 />
                 <p className="field-help">
-                  How many days of price movement feed the volatility estimate. 10 is
-                  standard.
+                  How many {timeframe === "weekly" ? "weeks" : "days"} of price
+                  movement feed the volatility estimate. 10 is standard.
                 </p>
               </div>
               <div>

@@ -37,6 +37,12 @@ export default function TradeLogTable({ rebalances, trades, onExport, exporting 
   const isRebalanceTab = tab === "rebalances";
   const source = isRebalanceTab ? rebalances : trades;
 
+  // The volatility columns are only meaningful when that ranking was on -
+  // the backend leaves `stddev` blank otherwise.
+  const showsScore = Boolean(
+    trades?.length && trades[0].stddev !== null && trades[0].stddev !== undefined
+  );
+
   // Filter by the search box: match on any date or ticker text in the row.
   const filtered = useMemo(() => {
     if (!source) return [];
@@ -207,6 +213,11 @@ export default function TradeLogTable({ rebalances, trades, onExport, exporting 
                   <th className="text-right">ROC at entry</th>
                   <th className="text-right">Index ROC</th>
                   <th className="text-right">Rel. strength</th>
+                  {/* These two only appear when the volatility-adjusted
+                      ranking was actually used, so the table stays narrow
+                      in the ordinary case. */}
+                  {showsScore && <th className="text-right">Std dev</th>}
+                  {showsScore && <th className="text-right">Score</th>}
                   <th className="text-right">Entry</th>
                   <th className="text-right">Exit</th>
                   <th className="text-right">Return</th>
@@ -226,6 +237,20 @@ export default function TradeLogTable({ rebalances, trades, onExport, exporting 
                     <td className={`num ${toneClass(row.relative_strength)}`}>
                       {pct(row.relative_strength)}
                     </td>
+                    {showsScore && (
+                      <td className="num text-brief-muted">
+                        {row.stddev === null || row.stddev === undefined
+                          ? "—"
+                          : row.stddev.toFixed(4)}
+                      </td>
+                    )}
+                    {showsScore && (
+                      <td className="num font-semibold text-cream-50">
+                        {row.rank_score === null || row.rank_score === undefined
+                          ? "—"
+                          : row.rank_score.toFixed(2)}
+                      </td>
+                    )}
                     <td className="num text-brief-muted">{row.entry_price.toFixed(2)}</td>
                     <td className="num text-brief-muted">{row.exit_price.toFixed(2)}</td>
                     <td className={`num font-semibold ${toneClass(row.trade_return)}`}>

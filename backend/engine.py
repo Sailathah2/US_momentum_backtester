@@ -146,12 +146,18 @@ def build_rebalance_dates(calendar, cadence, every_n_days, first_valid_position)
 # ======================================================================
 
 def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
-                    cash_buffer, min_roc):
+                    cash_buffer, min_roc, stock_ema=None, rolling_sd=None):
     """
     Do steps 1-4 of the strategy for a SINGLE rebalance day.
 
+    `stock_ema`  - optional table of each stock's own EMA. When supplied, a
+                   stock must be trading ABOVE its own EMA to be eligible.
+    `rolling_sd` - optional table of each stock's recent volatility. When
+                   supplied, stocks are ranked by ROC / volatility instead
+                   of raw ROC.
+
     Returns a dictionary describing the decision:
-        picks        -> list of {ticker, roc, weight}
+        picks        -> list of {ticker, roc, weight, stddev, score}
         cash_weight  -> the share of money left sitting in cash (0.0 - 1.0)
         benchmark_roc-> the index's momentum on this day, for the log
     """
@@ -167,6 +173,17 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     # A stock is only tradable if we have a real price at BOTH ends of the
     # window (a company that listed last month has no 252-day history).
     tradable = today_prices.notna() & past_prices.notna() & (past_prices > 0) & (today_prices > 0)
+
+    # ---- STEP 1b: the stock's own health check ------------------------
+    # Optional gate: the stock must be trading above its OWN moving average.
+    # Beating a falling index is not much of an achievement if the stock is
+    # falling too - this insists each pick is in its own uptrend as well.
+    # Stocks without enough history have a blank EMA and are excluded, which
+    # is the safe choice.
+    if stock_ema is not None:
+        ema_row = stock_ema.iloc[position]
+        tradable = tradable & ema_row.notna() & (today_prices > ema_row)
+
     roc = roc[tradable]
 
     benchmark_roc = (benchmark.iloc[position] / benchmark.iloc[position - lookback]) - 1.0
@@ -175,12 +192,43 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     # This is the "relative strength" rule: beating the market is the entry
     # ticket. `min_roc` is an extra optional hurdle (e.g. "and it must also
     # be up at least 5% in absolute terms").
+    #
+    # NOTE: this filter always uses the RAW momentum, even when the ranking
+    # below is volatility-adjusted. Beating the index is the strategy's
+    # defining rule; the volatility setting only changes the running order
+    # of whoever already qualified.
     hurdle = max(float(benchmark_roc), float(min_roc)) if min_roc is not None else float(benchmark_roc)
     survivors = roc[roc > hurdle]
 
     # ---- STEP 3: RANK strongest first and keep the top X --------------
-    survivors = survivors.sort_values(ascending=False)
-    chosen = survivors.head(int(top_n))
+    stddev_values = None
+    if rolling_sd is not None and len(survivors):
+        # Volatility-adjusted ranking: how much momentum did each stock
+        # deliver PER UNIT of daily wobble? A steady 30% climb scores better
+        # than a wild 40% one, because it is more likely to be a real trend
+        # and less likely to hand the gain straight back.
+        sd_row = rolling_sd.iloc[position].reindex(survivors.index)
+
+        # A zero standard deviation means the price never moved all week -
+        # usually a halted or delisted stock whose last price we have been
+        # carrying forward. Dividing by it produces INFINITY, which would
+        # nail that dead stock to the top of the ranking for ever. So any
+        # stock without a real, positive volatility is dropped here.
+        usable = sd_row.notna() & (sd_row > 0)
+        survivors = survivors[usable]
+        stddev_values = sd_row[usable]
+
+        ranking = survivors / stddev_values
+    else:
+        ranking = survivors
+
+    ranking = ranking.sort_values(ascending=False)
+    chosen_index = ranking.head(int(top_n)).index
+
+    # `chosen` always holds the RAW momentum, so the logs and the ROC
+    # weighting keep meaning the same thing whichever ranking was used.
+    chosen = survivors.reindex(chosen_index)
+    chosen_scores = ranking.reindex(chosen_index)
 
     n_chosen = len(chosen)
     if n_chosen == 0:
@@ -190,7 +238,12 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     # ---- STEP 4: WEIGHT the chosen stocks ------------------------------
     if weighting == "roc":
         # Momentum-proportional: the strongest stock gets the biggest slice.
-        strength = chosen.clip(lower=0.0)
+        #
+        # We size by whichever number did the RANKING. If the volatility
+        # adjustment is switched on, the steadier climbers were the ones that
+        # earned their place, so they are the ones that get the bigger slice -
+        # it would be odd to rank on one measure and size on another.
+        strength = chosen_scores.clip(lower=0.0)
         if strength.sum() <= 0:
             raw_weights = pd.Series(1.0 / n_chosen, index=chosen.index)
         else:
@@ -212,10 +265,22 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     invested = float(raw_weights.sum())
     cash_weight = max(0.0, 1.0 - invested)
 
-    picks = [
-        {"ticker": str(ticker), "roc": float(chosen[ticker]), "weight": float(raw_weights[ticker])}
-        for ticker in chosen.index
-    ]
+    picks = []
+    for ticker in chosen.index:
+        pick = {
+            "ticker": str(ticker),
+            "roc": float(chosen[ticker]),
+            "weight": float(raw_weights[ticker]),
+            # `score` is what actually decided the running order: the raw
+            # momentum normally, or momentum-per-unit-of-wobble when the
+            # volatility adjustment is on.
+            "score": float(chosen_scores[ticker]),
+            "stddev": (
+                float(stddev_values[ticker]) if stddev_values is not None else None
+            ),
+        }
+        picks.append(pick)
+
     return {"picks": picks, "cash_weight": cash_weight, "benchmark_roc": float(benchmark_roc)}
 
 
@@ -251,10 +316,43 @@ def run_backtest(prices, benchmark, settings, regime=None):
     if min_roc is not None:
         min_roc = float(min_roc)
 
+    # ------------------------------------------------------------------
+    # TWO OPTIONAL EXTRA SCREENS, WORKED OUT ONCE UP FRONT
+    # ------------------------------------------------------------------
+    # Both of these are computed for EVERY stock and EVERY day in one go,
+    # which is far faster than recalculating them at each rebalance.
+
+    # 1. Each stock's own moving average, for the "must be in its own
+    #    uptrend" gate. `min_periods` leaves the early days blank so a
+    #    barely-listed stock cannot sneak through on a half-formed average.
+    stock_ema_period = int(settings.get("stock_ema_period") or 0)
+    if stock_ema_period >= 2:
+        stock_ema = prices.ewm(
+            span=stock_ema_period, adjust=False, min_periods=stock_ema_period
+        ).mean()
+    else:
+        stock_ema = None
+
+    # 2. Each stock's recent volatility - the standard deviation of its
+    #    daily returns - for the volatility-adjusted ranking.
+    stddev_period = int(settings.get("stddev_period") or 0)
+    if stddev_period >= 2:
+        rolling_sd = prices.pct_change().rolling(
+            stddev_period, min_periods=stddev_period
+        ).std()
+    else:
+        rolling_sd = None
+
     calendar = prices.index
     # We can only measure momentum once we have `lookback` days of history
     # behind us, so the earliest tradable row is row number `lookback`.
-    rebalance_positions = build_rebalance_dates(calendar, cadence, every_n_days, lookback)
+    #
+    # The optional screens need their own run-up too. If we started trading
+    # before they had enough data, every stock would be screened out and the
+    # portfolio would sit in cash for a stretch at the start - which looks
+    # like a bug rather than a warm-up. So we wait for the slowest of them.
+    warmup = max(lookback, stock_ema_period, stddev_period)
+    rebalance_positions = build_rebalance_dates(calendar, cadence, every_n_days, warmup)
     last_position = len(calendar) - 1
 
     # ------------------------------------------------------------------
@@ -326,6 +424,7 @@ def run_backtest(prices, benchmark, settings, regime=None):
         decision = select_holdings(
             prices, benchmark, start_pos, lookback, top_n,
             weighting, cash_buffer, min_roc,
+            stock_ema=stock_ema, rolling_sd=rolling_sd,
         )
         picks = decision["picks"]
         cash_weight = decision["cash_weight"]
@@ -486,6 +585,12 @@ def run_backtest(prices, benchmark, settings, regime=None):
                 "roc_at_entry": round(pick["roc"], 6),
                 "benchmark_roc": round(benchmark_roc, 6),
                 "relative_strength": round(pick["roc"] - benchmark_roc, 6),
+                # Blank unless the volatility adjustment was switched on.
+                "stddev": (
+                    round(pick["stddev"], 6) if pick.get("stddev") is not None else None
+                ),
+                # The number that actually decided the running order.
+                "rank_score": round(pick["score"], 6),
                 "entry_price": round(entry_price, 4),
                 "exit_price": round(exit_price, 4),
                 "trade_return": round(stock_return, 6),

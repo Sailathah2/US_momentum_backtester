@@ -21,6 +21,14 @@ const CADENCES = [
 // (21 days is about a month, 252 days is about a year.)
 const LOOKBACKS = [20, 60, 126, 252];
 
+// Moving-average lengths for the "stock must be in its own uptrend" gate.
+// 0 means the gate is switched off.
+const STOCK_EMA_PRESETS = [0, 50, 100, 200];
+
+// Windows for measuring how jumpy a stock has been, used by the
+// volatility-adjusted ranking. 0 means "rank on raw momentum", as before.
+const STDDEV_PRESETS = [0, 20, 60, 126];
+
 export default function BacktestControls({ settings, onChange, onRun, busy, symbols }) {
   /** Update one setting without disturbing the others. */
   const set = (key, value) => onChange({ ...settings, [key]: value });
@@ -124,6 +132,83 @@ export default function BacktestControls({ settings, onChange, onRun, busy, symb
         </p>
       </div>
 
+      {/* ---------------- STOCK MUST BE ABOVE ITS OWN EMA ------------ */}
+      <div className="mb-4">
+        <label className="field-label">Stock must be above its own EMA</label>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {STOCK_EMA_PRESETS.map((days) => (
+            <button
+              key={days}
+              className={`chip ${settings.stock_ema_period === days ? "chip-active" : ""}`}
+              onClick={() => set("stock_ema_period", days)}
+            >
+              {days === 0 ? "Off" : `${days}d`}
+            </button>
+          ))}
+          {settings.stock_ema_period > 0 && (
+            <input
+              type="number"
+              min={2}
+              className="field !w-24 !py-1.5 !text-xs"
+              value={settings.stock_ema_period}
+              onChange={(e) => set("stock_ema_period", Number(e.target.value) || 2)}
+            />
+          )}
+        </div>
+        <p className="field-help">
+          An extra health check on each candidate. Beating the index is not much of
+          an achievement if the index is falling and the stock is falling too — this
+          insists the stock is also in <strong>its own</strong> uptrend.{" "}
+          {settings.stock_ema_period === 0
+            ? "Currently off: stocks only have to beat the index."
+            : `A stock is only eligible if it closes above its own ${settings.stock_ema_period}-day average.`}
+        </p>
+      </div>
+
+      {/* ---------------- VOLATILITY-ADJUSTED RANKING ---------------- */}
+      <div className="mb-4">
+        <label className="field-label">Volatility adjustment (std dev)</label>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {STDDEV_PRESETS.map((days) => (
+            <button
+              key={days}
+              className={`chip ${settings.stddev_period === days ? "chip-active" : ""}`}
+              onClick={() => set("stddev_period", days)}
+            >
+              {days === 0 ? "Nil" : `${days}d`}
+            </button>
+          ))}
+          {settings.stddev_period > 0 && (
+            <input
+              type="number"
+              min={2}
+              className="field !w-24 !py-1.5 !text-xs"
+              value={settings.stddev_period}
+              onChange={(e) => set("stddev_period", Number(e.target.value) || 2)}
+            />
+          )}
+        </div>
+        <p className="field-help">
+          {settings.stddev_period === 0 ? (
+            <>
+              <strong>Nil:</strong> stocks are ranked on raw momentum — the biggest
+              gainer wins, however wild the ride was.
+            </>
+          ) : (
+            <>
+              Ranks by{" "}
+              <span className="font-mono text-cream-100">
+                ROC({settings.lookback}) ÷ StdDev({settings.stddev_period})
+              </span>{" "}
+              — momentum earned <em>per unit of wobble</em>. A steady 30% climber now
+              outranks a violent 40% one. The entry rule is unchanged: a stock still
+              has to beat the index first; this only decides the running order among
+              those that did.
+            </>
+          )}
+        </p>
+      </div>
+
       {/* ---------------- TOP N + WEIGHTING -------------------------- */}
       <div className="mb-4 grid grid-cols-2 gap-3">
         <div>
@@ -152,6 +237,13 @@ export default function BacktestControls({ settings, onChange, onRun, busy, symb
           <p className="field-help">
             Equal = same money in each. Momentum = the strongest stock gets the
             biggest slice.
+            {settings.weighting === "roc" && settings.stddev_period > 0 && (
+              <>
+                {" "}
+                With the volatility adjustment on, &quot;strongest&quot; means the best{" "}
+                <em>risk-adjusted</em> score — the same number that ranked them.
+              </>
+            )}
           </p>
         </div>
       </div>

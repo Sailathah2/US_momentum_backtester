@@ -363,6 +363,10 @@ def _prepare_backtest(session, body):
         # How much of the portfolio moves to cash on a Risk-OFF day.
         # 100 = sell everything (the strictest, and the default).
         "risk_off_cash_pct": float(body.get("risk_off_cash_pct", 100.0)),
+        # Optional extra screens. 0 (or missing) means "switched off", so
+        # leaving these alone reproduces the original strategy exactly.
+        "stock_ema_period": int(body.get("stock_ema_period") or 0),
+        "stddev_period": int(body.get("stddev_period") or 0),
     }
     if settings["min_roc"] not in (None, ""):
         settings["min_roc"] = float(settings["min_roc"]) / 100.0
@@ -379,6 +383,15 @@ def _prepare_backtest(session, body):
         raise ValueError("Top N must be at least 1.")
     if not 0.0 <= settings["risk_off_cash_pct"] <= 100.0:
         raise ValueError("The Risk-OFF cash percentage must be between 0 and 100.")
+    if settings["stock_ema_period"] and settings["stock_ema_period"] < 2:
+        raise ValueError("The stock EMA period must be at least 2 days (or 0 to switch it off).")
+    if settings["stddev_period"] and settings["stddev_period"] < 2:
+        raise ValueError("The volatility window must be at least 2 days (or 0 to switch it off).")
+
+    # Every screen needs its own run-up before the first trade, so the total
+    # history required is however long the slowest of them is.
+    warmup = max(settings["lookback"], settings["stock_ema_period"],
+                 settings["stddev_period"])
 
     # ---- Build the aligned price tables -------------------------------
     series_list = [
@@ -400,10 +413,16 @@ def _prepare_backtest(session, body):
         prices = prices.loc[prices.index <= pd.to_datetime(end_date)]
         benchmark = benchmark.loc[benchmark.index <= pd.to_datetime(end_date)]
 
-    if len(prices) <= settings["lookback"] + 2:
+    if len(prices) <= warmup + 2:
+        # Name whichever setting is actually the blocker, so the fix is obvious.
+        blocker = "lookback"
+        if warmup == settings["stock_ema_period"] and warmup > settings["lookback"]:
+            blocker = "stock EMA period"
+        elif warmup == settings["stddev_period"] and warmup > settings["lookback"]:
+            blocker = "volatility window"
         raise ValueError(
             f"Only {len(prices)} trading days are available, which is not enough "
-            f"for a {settings['lookback']}-day lookback. Choose a shorter lookback "
+            f"for a {warmup}-day {blocker}. Choose a shorter {blocker} "
             "or widen the date range."
         )
 
@@ -478,8 +497,16 @@ def _resolve_regime_inputs(session, body):
             + ", ".join(indicators.VALID_REGIME_MODES)
         )
 
+    timeframe = str(body.get("regime_timeframe", "daily")).lower()
+    if timeframe not in indicators.VALID_REGIME_TIMEFRAMES:
+        raise ValueError(
+            f"Unknown regime timeframe '{timeframe}'. Use one of: "
+            + ", ".join(indicators.VALID_REGIME_TIMEFRAMES)
+        )
+
     regime_settings = {
         "regime_mode": mode,
+        "regime_timeframe": timeframe,
         "regime_index": body.get("regime_index") or body.get("benchmark"),
         "ema_period": int(body.get("ema_period", 200)),
         "atr_period": int(body.get("atr_period", 10)),
@@ -506,12 +533,30 @@ def _resolve_regime_inputs(session, body):
         raise ValueError("The Supertrend multiplier must be greater than 0.")
 
     index_frame = session["series"][index_ticker]["frame"]
+
+    # On weekly candles the periods count WEEKS, so a 200-week EMA needs
+    # nearly four years of history before it produces its first number. Check
+    # up front and say so plainly, rather than returning a filter that never
+    # actually switches on.
+    if timeframe == "weekly":
+        weekly_bars = len(indicators.to_weekly(index_frame))
+        needed = regime_settings["ema_period"] if mode in ("ema", "both") else 0
+        needed = max(needed, regime_settings["atr_period"] if mode in ("supertrend", "both") else 0)
+        if weekly_bars < needed:
+            raise ValueError(
+                f"'{index_ticker}' only covers {weekly_bars} weekly candles, but the "
+                f"settings need {needed}. On weekly candles the periods count WEEKS "
+                f"({needed} weeks is about {needed / 52.0:.1f} years). Use a shorter "
+                "period, load more history, or switch back to daily candles."
+            )
+
     regime_frame = indicators.build_regime(
         index_frame,
         mode=mode,
         ema_period=regime_settings["ema_period"],
         atr_period=regime_settings["atr_period"],
         multiplier=regime_settings["st_multiplier"],
+        timeframe=timeframe,
     )
     return regime_frame, regime_settings
 
@@ -605,6 +650,7 @@ def export():
             rows = result["trades"]
             headers = ["period", "rebalance_date", "exit_date", "ticker", "weight",
                        "roc_at_entry", "benchmark_roc", "relative_strength",
+                       "stddev", "rank_score",
                        "entry_price", "exit_price", "trade_return", "contribution"]
         elif kind == "rebalances":
             rows = result["rebalances"]

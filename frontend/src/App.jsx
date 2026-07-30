@@ -51,6 +51,10 @@ const DEFAULT_SETTINGS = {
   top_n: 10,
   weighting: "equal",
   cash_buffer: true,
+  // Optional extra screens on the stock picking. Both off by default, so the
+  // portal behaves exactly as before until you switch them on.
+  stock_ema_period: 0, // 0 = off; else stock must close above its own EMA
+  stddev_period: 0, // 0 = nil; else rank by ROC / StdDev
   cost_bps: 0,
   start_capital: 100000,
   start_date: "",
@@ -58,6 +62,7 @@ const DEFAULT_SETTINGS = {
 
   // ---- Index regime filter (the macro "am I invested at all?" switch) ----
   regime_mode: "disabled", // disabled | ema | supertrend | both
+  regime_timeframe: "daily", // daily | weekly candles for the filter
   regime_index: "", // which loaded file the filter watches
   ema_period: 200, // the classic long-term trend line
   atr_period: 10, // Supertrend's volatility lookback
@@ -499,10 +504,13 @@ function RunSummary({ result, regimeResult }) {
   const s = result.settings || {};
 
   // A short label describing the macro filter, if one was used.
+  // On weekly candles the period numbers count weeks, so say so - "EMA 40"
+  // means something very different from "EMA 40w".
+  const bar = s.regime_timeframe === "weekly" ? "w" : "";
   const regimeLabel = {
-    ema: `EMA ${s.ema_period}`,
-    supertrend: `Supertrend ${s.atr_period}/${s.st_multiplier}`,
-    both: `EMA ${s.ema_period} + ST ${s.atr_period}/${s.st_multiplier}`,
+    ema: `EMA ${s.ema_period}${bar}`,
+    supertrend: `Supertrend ${s.atr_period}${bar}/${s.st_multiplier}`,
+    both: `EMA ${s.ema_period}${bar} + ST ${s.atr_period}${bar}/${s.st_multiplier}`,
   }[s.regime_mode];
 
   const cadenceLabel =
@@ -518,6 +526,19 @@ function RunSummary({ result, regimeResult }) {
       label: "Weighting",
       value: s.weighting === "roc" ? "momentum" : "equal",
     },
+    // Only worth showing when they are actually switched on.
+    ...(s.stock_ema_period
+      ? [{ icon: Layers, label: "Stock EMA gate", value: `> ${s.stock_ema_period}d` }]
+      : []),
+    ...(s.stddev_period
+      ? [
+          {
+            icon: Percent,
+            label: "Ranked by",
+            value: `ROC/SD(${s.stddev_period})`,
+          },
+        ]
+      : []),
     { icon: Coins, label: "Cost", value: `${s.cost_bps} bps` },
     {
       icon: Coins,
@@ -571,7 +592,8 @@ function RunSummary({ result, regimeResult }) {
               {regimeLabel}
             </p>
             <p className="font-mono text-[10px] text-brief-muted">
-              watching {s.regime_index} &middot; {s.risk_off_cash_pct ?? 100}% cash off
+              {s.regime_timeframe === "weekly" ? "weekly" : "daily"} &middot;{" "}
+              {s.regime_index} &middot; {s.risk_off_cash_pct ?? 100}% cash off
             </p>
           </div>
         )}

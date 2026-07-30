@@ -157,6 +157,8 @@ nothing is hidden from you.
 | **Lookback window** | How far back momentum is measured, in trading days. | `20` reacts fast and trades often; `252` follows slow, year-long trends. `126` ≈ six months. |
 | **Rebalance every** | How often the portfolio is re-picked. | Monthly is a good starting point. Weekly tracks momentum closer but pays more costs. |
 | **Hold top N** | How many stocks to own. | Fewer = more concentrated and more volatile. |
+| **Stock must be above its own EMA** | An extra health check on each candidate. Beating the index is not much of an achievement if the index is falling and the stock is falling too — this insists the stock is in **its own** uptrend as well. | `Off` for the original behaviour; `100d` or `200d` to demand a genuine uptrend. |
+| **Volatility adjustment (std dev)** | `Nil` ranks on raw momentum — the biggest gainer wins, however wild the ride. Set a window and stocks are ranked by **ROC ÷ StdDev** instead: momentum earned *per unit of wobble*, so a steady 30% climber outranks a violent 40% one. | `60d` is a good starting point. |
 | **Weighting** | Equal = same money in each. Momentum = the strongest gets the biggest slice. | Momentum weighting increases both return *and* risk. |
 | **Keep unfilled slots in cash** | **Ticked:** each of your N slots is worth 1/N. Only 3 stocks qualified? You invest 30% and hold 70% cash. **Unticked:** always 100% invested — those 3 stocks get a third each. | Untick it to see how much the cash buffer costs you in a bull market. |
 | **Trading cost (bps)** | Fees + slippage. 1 bp = 0.01%. | `0` for gross returns; `10` is a realistic retail estimate. Watch weekly rebalancing get much worse. |
@@ -204,10 +206,24 @@ switches** where EMA alone gave 31 and Supertrend alone gave 34.
 | Setting | Default | What it does |
 |---------|---------|--------------|
 | **Index to watch** | your benchmark | Any loaded file. You can gate a small-cap universe on the S&P 500, or on a single bellwether stock. |
+| **Candles to read** | Daily | **Daily** = one bar per trading day; reacts quickly but flips more often. **Weekly** = each week becomes one candle, so the trend is far smoother and the filter changes its mind much less, at the cost of reacting later. |
 | **EMA period** | 200 | The classic long-term trend line. Shorter reacts sooner but changes its mind far more often. |
 | **ATR period** | 10 | How many days of movement feed the volatility estimate. |
 | **Multiplier** | 3.0 | How far the trailing stop sits from price, in ATRs. Higher = looser, fewer exits. |
 | **Cash when Risk-OFF** | 100% | How much of the portfolio moves to cash on a Risk-OFF day. **100%** = fully defensive, sell everything. **50%** = halve the position and ride the rest out. **0%** = the filter does nothing. |
+
+**About weekly candles.** When you switch to weekly, the period numbers count
+**weeks**, exactly as they do on any charting website — so an EMA of `40` means 40
+weekly bars, roughly nine months of trend. Switching timeframe snaps the EMA to a
+sensible default for it (200 daily / 40 weekly), because leaving `200` in place
+would silently mean 200 *weeks* — nearly four years. The panel always spells out
+the span underneath ("40 weeks is about 9 months of trend"), and the portal refuses
+the run with a clear message if your file is too short for the period you asked for.
+
+On five years of test data, switching the same `Both` filter from daily to weekly
+cut the regime switches from **17 to 7** and improved max drawdown from −52.2% to
+−47.8%, at the cost of lower total return — the classic smoothness-versus-agility
+trade.
 
 **About partial cash.** Going 100% to cash is the strictest setting, but it is not
 always the best one — you miss the recovery bounce as well as the fall. Holding
@@ -348,6 +364,23 @@ A few decisions worth knowing about, so you can trust the numbers:
 - **ATR uses Wilder's smoothing** (alpha = 1/period), not a simple `span` average.
   Using the wrong one produces a Supertrend that quietly disagrees with every
   charting platform.
+- **The volatility adjustment changes the ranking, not the entry rule.** A stock
+  still has to beat the index on **raw** momentum to qualify — that is the
+  strategy's defining filter. The std-dev setting only decides the running order
+  among the stocks that already qualified.
+- **A stock with zero volatility is dropped, not ranked first.** A halted or
+  delisted name whose last price is being carried forward has a std-dev of zero,
+  and `ROC ÷ 0` is infinity — which would nail that dead stock to the top of the
+  ranking for ever. Any candidate without a real, positive volatility is excluded.
+- **The std-dev is not annualised.** For a fixed window it is the same constant
+  factor for every stock, so it cannot change the ordering.
+- **Weekly regime bars are labelled with the week's last *trading* day**, not the
+  calendar Friday, and a week's verdict only reaches the days *after* it closes.
+  Both details prevent a weekly signal from leaking information backwards into its
+  own week.
+- **Every screen waits for its own run-up.** The first trade happens only once the
+  slowest of the lookback, stock EMA and volatility windows has enough history —
+  otherwise the portfolio would sit in cash at the start and look broken.
 - **Regime switches are charged on how much the exposure moved.** Going 100% to
   cash sells the whole book (turnover 1.0); going to 40% cash sells only 40% of it,
   and costs 40% as much. Rebalances are charged the same way — while fully in cash
