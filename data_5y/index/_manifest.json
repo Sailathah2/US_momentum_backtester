@@ -1,0 +1,86 @@
+{
+  "generated_by": "Tradewithsai - US Stock Data Downloader",
+  "generated_at": "2026-07-30T02:22:36",
+  "period": "5y",
+  "interval": "1d",
+  "files": [
+    {
+      "ticker": "^GSPC",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^DJI",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^IXIC",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^RUT",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^NDX",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^OEX",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^MID",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^NYA",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^DJT",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^DJU",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^VIX",
+      "rows": 1256,
+      "first": "2021-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^VXN",
+      "rows": 1254,
+      "first": "2021-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "^TNX",
+      "rows": 1255,
+      "first": "2021-07-29",
+      "last": "2026-07-29"
+    }
+  ]
+}

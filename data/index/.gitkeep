@@ -1,0 +1,2 @@
+# Keep this folder in git even though the CSV files in it are not tracked.
+# Put your benchmark / index CSV file here.

@@ -1,0 +1,124 @@
+/*
+  ==========================================================
+  index.css -- global styling for the Morning Brief theme
+  ==========================================================
+  Tailwind supplies almost all styling through class names. This file only
+  sets the few page-wide defaults that cannot be expressed as a class.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    /* Smooth scrolling when the page jumps to the results section. */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-brief-bg text-cream-100 font-sans antialiased;
+    /* `tabular-nums` makes every digit the same width, so columns of prices
+       line up perfectly - essential for reading financial data. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A subtle, dark scrollbar that fits the theme instead of the bright
+     default one Windows draws. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-brief-surface;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brief-line rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-600;
+  }
+}
+
+@layer components {
+  /* An elevated card: used for every panel on the page. */
+  .brief-card {
+    @apply bg-brief-panel border border-brief-line rounded-xl shadow-panel;
+  }
+
+  /* The small uppercase label that sits above each section, like a
+     newspaper column heading. */
+  .brief-eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-[0.18em] text-brief-muted;
+  }
+
+  /* The solid blue primary action button. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-precision-600
+           px-4 py-2.5 text-sm font-semibold text-white transition
+           hover:bg-precision-500 focus:outline-none focus:ring-2
+           focus:ring-precision-400 focus:ring-offset-2 focus:ring-offset-brief-bg
+           disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  /* A quieter outlined button for secondary actions. */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border
+           border-brief-line bg-brief-surface px-4 py-2.5 text-sm font-medium
+           text-cream-100 transition hover:border-precision-500 hover:text-white
+           focus:outline-none focus:ring-2 focus:ring-precision-400
+           disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  /* A small pill used for cadence / lookback choices. */
+  .chip {
+    @apply rounded-md px-3 py-1.5 text-xs font-semibold transition
+           border border-brief-line text-brief-muted hover:text-cream-50
+           hover:border-precision-500;
+  }
+
+  .chip-active {
+    @apply border-precision-500 bg-precision-600/15 text-precision-300;
+  }
+
+  /* Text inputs and dropdowns in the settings panel. */
+  .field {
+    @apply w-full rounded-lg border border-brief-line bg-brief-surface px-3 py-2
+           text-sm text-cream-50 outline-none transition
+           placeholder:text-brief-muted/60
+           focus:border-precision-500 focus:ring-1 focus:ring-precision-500;
+  }
+
+  /* The small grey caption under each setting explaining what it does. */
+  .field-help {
+    @apply mt-1 text-2xs leading-relaxed text-brief-muted;
+  }
+
+  .field-label {
+    @apply block text-xs font-semibold text-cream-200;
+  }
+
+  /* Table styling shared by the rebalance log and trade log. */
+  .data-table {
+    @apply w-full border-collapse text-left text-2xs;
+  }
+
+  .data-table thead th {
+    @apply sticky top-0 z-10 whitespace-nowrap border-b border-brief-line
+           bg-brief-panel px-3 py-2.5 font-semibold uppercase
+           tracking-[0.12em] text-brief-muted;
+  }
+
+  .data-table tbody td {
+    @apply whitespace-nowrap border-b border-brief-line/50 px-3 py-2 text-cream-100;
+  }
+
+  .data-table tbody tr:hover td {
+    @apply bg-precision-600/10;
+  }
+
+  /* Numbers in a table should always be monospaced and right-aligned. */
+  .num {
+    @apply text-right font-mono;
+  }
+}

@@ -1,0 +1,9794 @@
+{
+  "generated_by": "Tradewithsai - US Stock Data Downloader",
+  "generated_at": "2026-07-30T02:08:47",
+  "period": "1y",
+  "interval": "1d",
+  "files": [
+    {
+      "ticker": "AACG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AAPG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AARD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ABAT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ABCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ABEO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ABOS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ABSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ABTC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ABUS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACDC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACET",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACHV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACIU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACNB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACOG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACRV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ACTG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ADAG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ADAM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ADAMZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ADSE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ADTN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ADUR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ADV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AEBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AEC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AENT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AEVA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AEYE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AFBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AFCG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AFRI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AFYA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AGCC",
+      "rows": 192,
+      "first": "2025-10-22",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AGEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AGMB",
+      "rows": 119,
+      "first": "2026-02-06",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AGNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AGPU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AHCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AHG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIAI",
+      "rows": 52,
+      "first": "2026-05-14",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIBZ",
+      "rows": 35,
+      "first": "2026-06-09",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIFC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIFU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIIR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIOT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIRG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIRJ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIRJW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AIRT",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "AIRTP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AISP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AKBA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AKTS",
+      "rows": 138,
+      "first": "2026-01-09",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALDX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALEC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALGT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALKT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALLO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALLT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALMR",
+      "rows": 71,
+      "first": "2026-04-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALMU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALOT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALOY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALPS",
+      "rows": 185,
+      "first": "2025-10-31",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALTI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALTO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALVO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ALVOW",
+      "rows": 1,
+      "first": "2026-07-17",
+      "last": "2026-07-17"
+    },
+    {
+      "ticker": "ALXO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMAL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMBR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMCI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMCX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMPG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMPH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMPL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMRN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMSC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMSF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AMTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANAB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANGI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANIK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANIX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANNA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANNX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANPA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANTA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ANTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AOSL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AOUT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "APC",
+      "rows": 115,
+      "first": "2026-02-12",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "APEI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "API",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "APOG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "APPS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "APWC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "APYX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AQST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARBE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARCT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARDX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AREC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARHS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARKO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AROW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARQQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARRY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARTNA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARTV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ARVN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASLE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASMB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASPI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASPS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASRV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASTE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASTL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASUR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ASYS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATEC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATEX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATGL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATHE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATLC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATLCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATLCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATLCZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATLO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATLX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATNI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATOM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ATRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AUBN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AUC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AUDC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AUPH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AURA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AURE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AUROW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AUTL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVBH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVIR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVLN",
+      "rows": 62,
+      "first": "2026-04-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVNW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AVXL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AXG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "AZTA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BAER",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BAND",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BANFP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BANX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BBCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BBNX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BBOT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BBSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BCAL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BCAX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BCBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BCIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BCML",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BCYC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BDSX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BDTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BEEP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BETR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BFC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BFST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BGIN",
+      "rows": 193,
+      "first": "2025-10-21",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BGM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BHFAL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BHFAM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BHFAN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BHFAO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BHFAP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BHRB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BIOA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BJRI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BLDP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BLFS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BLKB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BLMN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BLNK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BLUW",
+      "rows": 250,
+      "first": "2025-07-31",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BLZE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BMBL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BMEA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BMHL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BMM",
+      "rows": 128,
+      "first": "2026-01-26",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BMRC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BNAI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BNC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BNR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BNTC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BODI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BOF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BOLD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BOOM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BOTJ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BPOPM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BPRN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BRAI",
+      "rows": 115,
+      "first": "2026-02-12",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BRBI",
+      "rows": 214,
+      "first": "2025-09-19",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "BRCB",
+      "rows": 220,
+      "first": "2025-09-12",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BRID",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BRLT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BRR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BRUN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BRUNW",
+      "rows": 1,
+      "first": "2026-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BSBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BSET",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BSIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BSRR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BSVN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BTBT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BTMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BTQ",
+      "rows": 210,
+      "first": "2025-09-26",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BULLW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BUUU",
+      "rows": 240,
+      "first": "2025-08-14",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BVC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BVFL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BVS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BWAY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BWB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BWBBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BWEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BWFG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BWMN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BXBL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BYFC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BYND",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BYRN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BZAI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BZFD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "BZUN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CAAS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CABA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CAC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CADL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CAMP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CAN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CAPR",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "CARE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CARL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CASH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CASS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CAST",
+      "rows": 98,
+      "first": "2026-03-10",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CBFV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CBIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CBK",
+      "rows": 206,
+      "first": "2025-10-02",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CBLL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CBNK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CBRL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CBUS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCAP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCBG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCCC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCEC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCLD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCNE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCNEP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCOI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CCSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CDNA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CDRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CDXS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CDZI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CDZIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CEPL",
+      "rows": 16,
+      "first": "2026-07-08",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CERS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CERT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CEVA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CFBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CFFI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CFFN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CGBD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CGC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CGEM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CGEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CGNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CGTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHCI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHMG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHSCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHSCM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHSCN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHSCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CHSCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CIGL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CING",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CIRC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CIVB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLAR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLFD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLLS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLMB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLNE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLNN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLPT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLSKW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CLYM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CMCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CMPS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CMPX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CMRC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CMTV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNCK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNDT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNOB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNOBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNTB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNTN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNVS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNXC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CNXU",
+      "rows": 47,
+      "first": "2026-05-21",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CODA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "COFS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "COHU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "COLL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "COYA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CPBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CPHC",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "CPIX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CPSH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CPSS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CPZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRAI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRBU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRCT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRDF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRDL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRESY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRML",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRMLW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRNC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRON",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRSR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRTO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CRVS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSBR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSHR",
+      "rows": 82,
+      "first": "2026-04-01",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSHRW",
+      "rows": 1,
+      "first": "2026-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSIQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSPI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSTE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSTL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CSWC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CTBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CTKB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CTMX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CTNM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CTRN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CTW",
+      "rows": 246,
+      "first": "2025-08-06",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CUB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CUE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CURI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CURR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CUVL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CVGI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CVRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CWBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CWCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CXDO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CYPH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CYRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CZFS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CZNC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "CZWI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DAKT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DBVT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DCBO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DCGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DCTH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DDI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DEFT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DERM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DFDV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DFNS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DGICA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DGICB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DGXX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DIBS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DJCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DJTWW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DLHC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DLTH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DMAC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DMLP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DMRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DMRC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DNUT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DOMH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DOMO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DOYU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DPRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DRIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DRTS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DRTSW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DRUG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DSC",
+      "rows": 24,
+      "first": "2026-06-25",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DSGN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DSGR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DSP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DSWL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DTCX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DTI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DTIL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DUOT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DVLT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DWSN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DWTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "DXR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EBMT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ECBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ECOR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ECX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EDIT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EDRY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EFSCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EFSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EGAN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EGBN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EGHT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EIKN",
+      "rows": 120,
+      "first": "2026-02-05",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELBM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELDN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELMT",
+      "rows": 67,
+      "first": "2026-04-23",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELTK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELVA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELVR",
+      "rows": 228,
+      "first": "2025-09-02",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ELWT",
+      "rows": 182,
+      "first": "2025-11-05",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EMBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EML",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EMPD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ENGN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ENGS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ENRD",
+      "rows": 34,
+      "first": "2026-06-10",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ENRDW",
+      "rows": 1,
+      "first": "2026-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ENTA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ENTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ENVX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EOLS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EOSE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EPRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EPSN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ERII",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ESCA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ESEA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ESOA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ESQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ETON",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ETS",
+      "rows": 235,
+      "first": "2025-08-21",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EUDA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EVER",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EVGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EVLV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EVO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EXFY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EYE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EYPT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "EZPW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FAC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FACWW",
+      "rows": 1,
+      "first": "2026-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FATE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FATN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FBIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FBIOP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FBIZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FBLA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FBRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FBYD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FBYDW",
+      "rows": 1,
+      "first": "2026-07-17",
+      "last": "2026-07-17"
+    },
+    {
+      "ticker": "FCAP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FCBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FCCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FCEL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FCNCN",
+      "rows": 124,
+      "first": "2026-01-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FCNCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FCNCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FDBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FDMT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FDSB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FDUS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FEIM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FENC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FGBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FGBIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FGNXP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FHTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FINW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FISI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FISN",
+      "rows": 28,
+      "first": "2026-06-18",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FLGT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FLL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FLNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FLWS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FLX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FLXS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FLZH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FMAO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FMBH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FMNB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FNKO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FNLC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FNRN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FNWB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FNWD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FOCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FORR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FORTY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FOSL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FOXF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRAF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRBA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRBT",
+      "rows": 33,
+      "first": "2026-06-11",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRMEP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRMM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRNM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRPH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FRST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FSBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FSBW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FSEA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FSTR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FSUN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FTH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FTLF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FTRE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FUFU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FULC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FUNC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FUSB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FVCB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FWDI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FWRD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FWRG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FXHO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "FXNC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GABC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GAIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GAINZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GALT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GANX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GASS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GBFH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GBLI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GCBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GCT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GDEV",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "GDHG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GDRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GDYN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GECC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GEG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GEGGL",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "GEMI",
+      "rows": 220,
+      "first": "2025-09-12",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GENB",
+      "rows": 105,
+      "first": "2026-02-27",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GENK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GENVR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GEOS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GERN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GEVO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GFUZ",
+      "rows": 208,
+      "first": "2025-09-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GFUZW",
+      "rows": 1,
+      "first": "2026-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GHRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GIBO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GIII",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GILT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLAD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLBS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLIBA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLIBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLND",
+      "rows": 89,
+      "first": "2026-03-23",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLOO",
+      "rows": 173,
+      "first": "2025-11-18",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLRE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GLUE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GNLX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GNSS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GNTA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GOAI",
+      "rows": 126,
+      "first": "2026-01-28",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GOGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GOOD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GOODN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GOODO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GOSS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GPRE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GPRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GRABW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GREEL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GRPN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GRRR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GRSD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GRVY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GRWG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GSBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GSIT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GSM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GTM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GUTS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GWRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "GYRE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HAFC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HBCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HBNB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HBNC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HBT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HCAT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HCKT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HCM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HCMA",
+      "rows": 213,
+      "first": "2025-09-22",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "HCMAW",
+      "rows": 1,
+      "first": "2026-07-17",
+      "last": "2026-07-17"
+    },
+    {
+      "ticker": "HCSG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HDL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HDRN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HDSN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HELE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HELP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HEPS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HERE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HFBL",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "HFFG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HFWA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HIFS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HIT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HITI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HIVE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HLIT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HLMN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HLP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HMH",
+      "rows": 82,
+      "first": "2026-04-01",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HMR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HNNA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HNRG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HNST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HNVR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HODO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HOFT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HOPE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HOUR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HOVNP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HOVR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HPK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HQ",
+      "rows": 90,
+      "first": "2026-03-20",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HQI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HQWWW",
+      "rows": 90,
+      "first": "2026-03-20",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HROW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HRTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HRZN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HSAI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HSDT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HSTM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HTLD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HTLM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HTZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HTZWW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HUHU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HUMA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HURA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HURC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HWBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HWCPZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HYFT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HYMC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HYNE",
+      "rows": 162,
+      "first": "2025-12-04",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "HYPR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IART",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IBCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IBEX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IBIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ICCC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ICFI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ICG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IDN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IFRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IGIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IHRT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "III",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IIIV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IKT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ILPT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMCR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMDX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMKTA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMMP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMMR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMMX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMOS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMPP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMPPP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMSR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMSRW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMUX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IMXI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INBKZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INBX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INCR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INDI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INDP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INGN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INKT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INNV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INOD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INSE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INSG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INTG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INVA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INVE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "INVZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IONR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IPHA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IPSC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IPWR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IPX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IQMXW",
+      "rows": 1,
+      "first": "2026-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IRD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IRMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IRWD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ISBA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ISPR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ISSC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ISTR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ITG",
+      "rows": 20,
+      "first": "2026-07-01",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ITIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ITRN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IVA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IVVD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "IZEA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JACK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JAKK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JANX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JBIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JBSS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JCAP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JFB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JFIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JJSF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JLHL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JMSB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JOUT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JRSH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JRVR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JSM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JXG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "JYNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KARD",
+      "rows": 28,
+      "first": "2026-06-18",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KARO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KDK",
+      "rows": 211,
+      "first": "2025-09-25",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KDKRW",
+      "rows": 149,
+      "first": "2025-12-23",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KEEL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KELYA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KELYB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KEQU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KGEI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KIDS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KINS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KLRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KLTR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KMDA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KMTS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KNDI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KOPN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KPTI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KRMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KRNT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KRNY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KROS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KRRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KRT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KRUS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KTWO",
+      "rows": 105,
+      "first": "2026-02-26",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "KURA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KVHI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KXIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KYIVW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KYTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "KZIA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LAB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LAES",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LAKE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LAND",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LANDO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LANDP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LARK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LBRX",
+      "rows": 221,
+      "first": "2025-09-11",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LCNB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LCUT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LEE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LEGH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LENZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LFCR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LFMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LFMDP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LFS",
+      "rows": 201,
+      "first": "2025-10-09",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LFVN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LGCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LGIH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LIEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LIFE",
+      "rows": 125,
+      "first": "2026-01-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LILA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LILAK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LIME",
+      "rows": 20,
+      "first": "2026-07-01",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LINC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LIND",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LINK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LKFN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LKFT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LMB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LMNR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LMRI",
+      "rows": 157,
+      "first": "2025-12-11",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LNSR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LNZA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LOCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LONA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LOT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LOVE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LPRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LPTH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LQDT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LRMR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LSAK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LSBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LSE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LTBR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LTRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LUCD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LUNG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LVO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LWAY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LWLG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LXEO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LXRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LYEL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LYTS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "LZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MAKO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MAMA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MASS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MATW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MAYS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MAZE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MBINL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MBINM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MBINN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MBOT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MBUU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MBWM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MCBS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MCFT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MCHX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MDIA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MDWD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MDXG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MENS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MESO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "METC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "METCB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MFI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MFIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MFIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MGNX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MGPI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MGRT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MGTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MGYR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MIST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MITK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MKTW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MLAB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MLKN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MLTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MMLP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNKD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNOV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNPR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNSB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNSBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNTK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MNTS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MOB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MOBI",
+      "rows": 56,
+      "first": "2026-05-08",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MOLN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MOMO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MOVE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MPAA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MPB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MPLT",
+      "rows": 189,
+      "first": "2025-10-27",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MRAM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MRBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MRDN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MRLN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MRTN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MRVI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MSBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MSBIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MSEX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MSLE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MTC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MTLS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MTRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MVBF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MVIS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MVST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MWC",
+      "rows": 52,
+      "first": "2026-05-14",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MXCT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MYFW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MYGN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "MYPS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NAAS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NAGE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NAKA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NAMM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NATH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NATR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NAUT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NAVI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NBBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NBN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NBTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NCEW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NCMI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NCSM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NCTY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NDLS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NECB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEGG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEOV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NERV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEWT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEWTG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEWTI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEWTP",
+      "rows": 239,
+      "first": "2025-08-15",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEXM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEXN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NEXT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NFE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NGEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NGNE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NHP",
+      "rows": 68,
+      "first": "2026-04-22",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NHPAP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NHPBP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NICM",
+      "rows": 74,
+      "first": "2026-04-14",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NIOBW",
+      "rows": 1,
+      "first": "2026-07-17",
+      "last": "2026-07-17"
+    },
+    {
+      "ticker": "NIPG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NIU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NKLR",
+      "rows": 204,
+      "first": "2025-10-06",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NKSH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NKTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NMAD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NMFC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NMRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NNBR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NNDM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NNE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NNNN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NNOX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NODK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NPCE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NPT",
+      "rows": 192,
+      "first": "2025-10-22",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NRC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NRDS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NRIM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NRXP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NSLR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NSLRL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NSSC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NSTS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NTGR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NTHI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NTIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NTLA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NTWK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NUAI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NUAIW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NUCL",
+      "rows": 107,
+      "first": "2026-02-25",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NUTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NVAX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NVCR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NVCT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NVEC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NVX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NWFL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NWPX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NXTT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "NYXH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OABI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OBIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OBT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCCIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCFC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCGN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCSAW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCSL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OCUL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ODD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ODTX",
+      "rows": 56,
+      "first": "2026-05-08",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ODYS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OFIX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OFLX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OFSSH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OGI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OKUR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OKYO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OLMA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OMCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OMDA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OMER",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OMSE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ONCY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ONEW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPAL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPENL",
+      "rows": 149,
+      "first": "2025-12-23",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPENW",
+      "rows": 149,
+      "first": "2025-12-23",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPENZ",
+      "rows": 149,
+      "first": "2025-12-23",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPI",
+      "rows": 28,
+      "first": "2026-06-18",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPRT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OPXS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ORBS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ORGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ORIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ORMP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ORRF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OSBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OSPN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OSS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OSUR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OTLK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OTLY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OVBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OVID",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OVLY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OWLS",
+      "rows": 196,
+      "first": "2025-10-16",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OXLC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OXSQ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OXSQG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "OZKAP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PAAC",
+      "rows": 80,
+      "first": "2026-04-06",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PACB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PAHC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PAL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PALI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PAMT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PANL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PARK",
+      "rows": 163,
+      "first": "2025-12-03",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PAX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PAYS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PBFS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PBHC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PBYI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PCB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PCRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PCT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PCTTW",
+      "rows": 1,
+      "first": "2026-07-17",
+      "last": "2026-07-17"
+    },
+    {
+      "ticker": "PCYO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PDEX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PDFS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PDLB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PDYN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PEBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PEBO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PEPG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PERI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PESI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PFBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PFIS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PFX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PGC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PGEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PGY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PHAR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PHAT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PHOE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PICS",
+      "rows": 125,
+      "first": "2026-01-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PIII",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PKBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PKOH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLAB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLAY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLBY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLCE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLPC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLTK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PLYX",
+      "rows": 123,
+      "first": "2026-02-02",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PMN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PMTS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PMVP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PNBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PNRG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PNTG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PODC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "POET",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "POWW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PPHC",
+      "rows": 126,
+      "first": "2026-01-28",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PPIH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRAA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRCH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRCT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRGS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRHIZ",
+      "rows": 106,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRLD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRME",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PROF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PROK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PROP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PROV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRQR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRTA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PRTH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PSEC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PSIX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PSNL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PSNY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PSNYW",
+      "rows": 200,
+      "first": "2025-10-10",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PTLE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PTLO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PUBM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PURR",
+      "rows": 163,
+      "first": "2025-12-03",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PUSA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PWP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PYPD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PYXS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "PZZA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QCRH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QDEL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QFIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QMCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QMLS",
+      "rows": 10,
+      "first": "2026-07-16",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QNST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QTRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QTTB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QUBT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QUIK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "QXL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RAIL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RANI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RAPP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RBB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RBBN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RBCAA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RBKB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RCAT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RCEL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RCKT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RCKY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RCMT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RDCM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RDIB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RDNW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RDVT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RDWR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RDZN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "REAL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "REAX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "REFI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "REKR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RELL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RENT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "REPL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RETO",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "RFIL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RGCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RGNX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RGP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RGS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RGTIW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RICK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RIGL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RILY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RILYG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RILYL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RILYN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RILYP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RILYT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RILYZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RJET",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RLMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RLYB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RMBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RMIX",
+      "rows": 81,
+      "first": "2026-04-02",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RMNI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RMR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RNA",
+      "rows": 105,
+      "first": "2026-02-27",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RNAC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RNTX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ROC",
+      "rows": 109,
+      "first": "2026-02-23",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ROCK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ROMA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ROOT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RPAY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RPD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RPID",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RRBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RRGB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RSSS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RSVR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RTB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RUMBW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RVMDW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RVSB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RWAY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RWAYL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RXRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RXST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RXT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RYOJ",
+      "rows": 240,
+      "first": "2025-08-14",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RZLT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RZLV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "RZLVW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SABR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SABS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SAFT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SAFX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SAMG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SANA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SANG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SATL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SATLW",
+      "rows": 1,
+      "first": "2026-07-17",
+      "last": "2026-07-17"
+    },
+    {
+      "ticker": "SBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SBET",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SBFG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SBGI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SCHL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SCLX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SCOR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SCSC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SCTX",
+      "rows": 4,
+      "first": "2026-07-24",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SCZM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SDA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SDGR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SEAT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SEER",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SELF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SENEA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SENEB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SENS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SEPN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SERA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SERV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SEV",
+      "rows": 196,
+      "first": "2025-10-16",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SEVN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SFBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SFIX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SFST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SFWL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SGA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SGC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SGHT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SGML",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SGMT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SGP",
+      "rows": 119,
+      "first": "2026-02-06",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHAZ",
+      "rows": 112,
+      "first": "2026-02-18",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHIM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHLS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHMDW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SHOE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SIBN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SIDU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SIEB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SIFY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SIGA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SIGIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SILC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SKIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SKYA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SKYT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SKYX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLBT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLDB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLDP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLGL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLNG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLNH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLNHP",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "SLP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLRC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SLSN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SMBC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SMID",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SMPL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SMTI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SND",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SNDL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SNDX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SNFCA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SNWV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SOHU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SOPH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SOTK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SOUNW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SOWG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPAI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPCB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPFI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPOK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPRB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPRY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPTX",
+      "rows": 61,
+      "first": "2026-05-01",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SPWR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SRBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SRPT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SRTA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SRZN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SSBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SSII",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SSP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SSTI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SSYS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STAA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STBA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STEX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STHO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STIM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STKS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STOK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STRO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STRT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STRZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "STTK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SUIG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SUJA",
+      "rows": 57,
+      "first": "2026-05-07",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SUNS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SUPX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SVC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SVCO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SVRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SVREW",
+      "rows": 2,
+      "first": "2026-07-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SWBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SWIM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SWKHL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SWMR",
+      "rows": 93,
+      "first": "2026-03-17",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "SY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TACO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TACT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TALK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TARA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TASK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TATT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TAYD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TBCH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TBLA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TBLD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TBPH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TCBIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TCBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TCBS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TCMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TCPC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TCX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TDUP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TEAD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TECX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TELO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TENX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "THCH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "THFF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "THRM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "THRY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TIGR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TILE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TIPT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TITN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TJGC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TKNO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TLPH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TLRY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TLS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TLSA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TLSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TMC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TMCI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TMCR",
+      "rows": 78,
+      "first": "2026-04-08",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TMS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TMSWW",
+      "rows": 1,
+      "first": "2026-07-29",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TNDM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TNXP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TNYA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TOI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TONX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TOP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TORO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TOUR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TOYO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRAX",
+      "rows": 80,
+      "first": "2026-04-06",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRDA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TREE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRIP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRNS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRON",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TROO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRUP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TRVG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TSAT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TSBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TSHA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TSSI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TTEC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TTGT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TTRX",
+      "rows": 202,
+      "first": "2025-10-08",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TUSK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TWFG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TWG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TWIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TYGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TYRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "TZOO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UBCP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UEIC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UFCS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UFPT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ULBI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ULCC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ULH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UMBFO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UNB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UNCY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UNTY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UPB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UPBD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UPWK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UPXI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "URGN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UROY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "USAU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "USCB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "USDE",
+      "rows": 23,
+      "first": "2026-06-26",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "USGO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "USIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UTMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UVSP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "UXIN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VABK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VALN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VALU",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VANI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VBNK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VELO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VERI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VFF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VFSWW",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "VHC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VHUB",
+      "rows": 124,
+      "first": "2026-01-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VINP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VIR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VIRC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VITL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VIVO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VLGEA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VMD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VMET",
+      "rows": 104,
+      "first": "2026-03-02",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VNCE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VNDA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VNET",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VOR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VOXR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VRCA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VREX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VRRM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VRXA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VSECU",
+      "rows": 120,
+      "first": "2026-02-05",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VSTM",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VTVT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VUZI",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VWAV",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "VYGR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WABC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WAFDP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WALD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WASH",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WATT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WAVE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WBTN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WEN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WEST",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WEYS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WFCF",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-28"
+    },
+    {
+      "ticker": "WFF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WGS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WHF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WHFCL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WHWK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WILC",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WINA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WKEY",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WLDN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WLFC",
+      "rows": 250,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WLTH",
+      "rows": 155,
+      "first": "2025-12-15",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WNEB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WOOF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WRAP",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WRD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WRLD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WSBF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WSBK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WSHP",
+      "rows": 175,
+      "first": "2025-11-14",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WSTN",
+      "rows": 144,
+      "first": "2025-12-31",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WTBA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WTF",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WTFCN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WVE",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "WYFI",
+      "rows": 245,
+      "first": "2025-08-07",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XBIT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XERS",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XFOR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XGN",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XHG",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XLO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XMAX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XNCR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XNET",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XPEL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XRX",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "XTIA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YB",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YDDL",
+      "rows": 201,
+      "first": "2025-10-09",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YDES",
+      "rows": 232,
+      "first": "2025-08-26",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YIBO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YMT",
+      "rows": 237,
+      "first": "2025-08-19",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YORW",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YSWY",
+      "rows": 68,
+      "first": "2026-04-22",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "YTRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZBIO",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZD",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZENA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZJK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZNTL",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZSQR",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZTEK",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZUMZ",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZURA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZVRA",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZYBT",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    },
+    {
+      "ticker": "ZYME",
+      "rows": 251,
+      "first": "2025-07-30",
+      "last": "2026-07-29"
+    }
+  ]
+}

@@ -1,0 +1,272 @@
+# Momentum Backtest Portal (US & Global Equities)
+
+**Tradewithsai · Morning Brief**
+
+A desktop web app that tests one specific, well-known trading idea on your own CSV
+price files:
+
+> **Own the stocks that are climbing faster than the market — and only those.**
+
+You point it at a folder of daily stock CSV files plus one index file (SPY, QQQ,
+NIFTY, or any benchmark you like). It replays history, shows you what would have
+happened to your money, and lets you download every trade it made.
+
+**No coding required.** If you can copy and paste two commands, you can run this.
+
+---
+
+## What it actually does
+
+Every so often — you choose how often — the portal does five things:
+
+| Step | What happens |
+|------|--------------|
+| **1. Measure** | Works out how much each stock rose over your lookback window. This is called **ROC** (Rate of Change). |
+| **2. Compare** | Works out the same number for the benchmark index over the same days. |
+| **3. Filter** | Throws away every stock that failed to beat the index. *(This is the "relative strength" rule.)* |
+| **4. Rank & buy** | Sorts the survivors strongest-first and buys the top few. |
+| **5. Hold & repeat** | Changes nothing until the next rebalance date, then starts again. If nothing beats the index, it sits in cash. |
+
+Then it reports back: CAGR, Sharpe, Sortino, max drawdown, win rate, an equity curve
+against the benchmark, an underwater chart, a monthly calendar grid, and a full
+trade log you can export to Excel.
+
+---
+
+## Part 1 — One-time setup
+
+You need **Python 3.10 or newer** and **Node.js 18 or newer** installed. Both are
+free. If you already ran the *US Stock Data Downloader* project, you have both.
+
+Check by opening a terminal (Command Prompt or PowerShell on Windows) and typing:
+
+```bash
+python --version
+node --version
+```
+
+If either says "not recognised", install it first from
+[python.org](https://www.python.org/downloads/) and [nodejs.org](https://nodejs.org/).
+
+### Install the backend (the calculation engine)
+
+```bash
+cd D:\algo_trading\ai_masterclass\day_4\backend
+pip install -r requirements.txt
+```
+
+### Install the frontend (the website)
+
+```bash
+cd D:\algo_trading\ai_masterclass\day_4\frontend
+npm install
+```
+
+This downloads a few hundred small files into a `node_modules` folder. It takes a
+minute or two, and you only ever do it once.
+
+---
+
+## Part 2 — Running the app
+
+The app is two programs that talk to each other, so you need **two terminal
+windows**, both left open while you work.
+
+### Terminal 1 — the backend
+
+```bash
+cd D:\algo_trading\ai_masterclass\day_4\backend
+python app.py
+```
+
+You should see:
+
+```
+==============================================================
+  Momentum Backtest Portal  -  backend server
+==============================================================
+  Listening on http://127.0.0.1:5000
+```
+
+**Leave this window open.** If you close it, the website loses its brain.
+
+> **"Address already in use"?** Another app is already on port 5000 — often a
+> different project from this masterclass. Close that one first, or change
+> `PORT = 5000` near the top of `backend/app.py`.
+
+### Terminal 2 — the website
+
+```bash
+cd D:\algo_trading\ai_masterclass\day_4\frontend
+npm run dev
+```
+
+Your browser opens automatically at **http://localhost:5173**.
+
+The dot in the top-right corner should say **Backend online**. If it says offline,
+Terminal 1 is not running.
+
+### When you are finished
+
+Press `Ctrl + C` in both terminal windows.
+
+---
+
+## Part 3 — Using it
+
+### Step 1 · Load your price data
+
+Two ways, either is fine:
+
+**Scan a folder (fastest — best for hundreds of files)**
+Type the full path of the folder holding your CSVs and press **Scan**. It reads
+every `.csv` in that folder *and its sub-folders*, so a layout like this loads in
+one go:
+
+```
+day_4\data\
+├── stocks\        <- your stock CSV files
+└── index\         <- your benchmark / index CSV file
+```
+
+The box is pre-filled with `D:\algo_trading\ai_masterclass\day_4\data` — change it
+to wherever your files actually live.
+
+**Drag and drop**
+Drop the files onto the dashed box, or click it to browse.
+
+The portal reads all these column layouts automatically, so you almost never have
+to touch your files:
+
+| Source | Columns it uses |
+|--------|-----------------|
+| US Stock Data Downloader | `Date, Open, High, Low, Close, Volume, Ticker` |
+| Legacy / broker exports | `datetime, symbol, security_id, open, high, low, close, volume, oi` |
+| Index files | `time, open, high, low, close` |
+
+It also copes with `YYYY-MM-DD`, `DD/MM/YYYY`, `MM/DD/YYYY` and timestamps like
+`2024-01-02 15:30:00`, works out which is which, and quietly skips rows with
+missing or broken prices. Anything it had to skip is reported in a yellow note so
+nothing is hidden from you.
+
+### Step 2 · Choose your settings
+
+| Setting | What it means | Try changing it to… |
+|---------|---------------|---------------------|
+| **Benchmark / index** | The file every stock must beat. Auto-detected if the filename contains `spy`, `qqq`, `nifty`, `index`, etc. — but you can pick any file. | Compare SPY vs QQQ as the hurdle. |
+| **Lookback window** | How far back momentum is measured, in trading days. | `20` reacts fast and trades often; `252` follows slow, year-long trends. `126` ≈ six months. |
+| **Rebalance every** | How often the portfolio is re-picked. | Monthly is a good starting point. Weekly tracks momentum closer but pays more costs. |
+| **Hold top N** | How many stocks to own. | Fewer = more concentrated and more volatile. |
+| **Weighting** | Equal = same money in each. Momentum = the strongest gets the biggest slice. | Momentum weighting increases both return *and* risk. |
+| **Keep unfilled slots in cash** | **Ticked:** each of your N slots is worth 1/N. Only 3 stocks qualified? You invest 30% and hold 70% cash. **Unticked:** always 100% invested — those 3 stocks get a third each. | Untick it to see how much the cash buffer costs you in a bull market. |
+| **Trading cost (bps)** | Fees + slippage. 1 bp = 0.01%. | `0` for gross returns; `10` is a realistic retail estimate. Watch weekly rebalancing get much worse. |
+| **Starting capital** | Cosmetic — it only scales the chart. Percentages don't change. | |
+| **Start / end date** | Limit the test to a window. Leave blank to use everything. | Test 2020 and 2022 separately — momentum behaves very differently in each. |
+
+Then press **Run backtest**.
+
+### Step 3 · Read the results
+
+- **The eight tiles** — headline numbers, each with the benchmark's equivalent
+  underneath so you always know whether you actually beat buy-and-hold.
+- **Equity curve** — blue is your portfolio, amber is the benchmark. Both start at
+  the same money on the same day. Switch to **Log** scale for long tests; it makes
+  an early 20% gain look the same size as a late one, which is the honest view.
+- **Underwater chart** — how far below its own previous peak the portfolio was, day
+  by day. This is the chart that tells you whether you could have *stuck with it*.
+- **Monthly grid** — one row per year. Every cell prints its real percentage, so
+  the colours are only a quick summary, never the only way to read it.
+- **Rebalance & trade log** — every decision the strategy made, searchable, with
+  four **Download CSV** buttons.
+
+---
+
+## Understanding the numbers
+
+| Metric | Plain English | Rough guide |
+|--------|---------------|-------------|
+| **Total return** | How much it grew, start to finish. | — |
+| **CAGR** | That same growth as a steady yearly rate. | Compare it to the benchmark's, not to a target. |
+| **Sharpe ratio** | Return earned per unit of bumpiness. | Above 1 good, above 2 excellent. |
+| **Sortino ratio** | Like Sharpe, but only counts *downward* moves as risk. | Always higher than Sharpe. |
+| **Max drawdown** | The worst peak-to-trough fall in the whole test. | If this number would have made you quit, the strategy is too aggressive for you. |
+| **Win rate** | Share of rebalance periods that ended in profit. | 50–60% is normal and perfectly healthy. |
+| **vs Benchmark** | Your total return minus the index's. | The only number that says whether the work was worth it. |
+
+---
+
+## What's in each file
+
+```
+day_4/
+├── backend/
+│   ├── app.py            # The web server. Handles uploads, runs backtests, builds CSV exports.
+│   ├── engine.py         # The backtesting brain: the strategy loop and all the performance maths.
+│   ├── data_loader.py    # The CSV translator: column mapping, date parsing, calendar alignment.
+│   └── requirements.txt  # The Python libraries to install.
+│
+├── frontend/
+│   ├── package.json          # The JavaScript libraries to install.
+│   ├── vite.config.js        # Dev server settings (and the /api -> port 5000 forwarding).
+│   ├── tailwind.config.js    # The Morning Brief colour theme.
+│   ├── index.html            # The single page React draws into.
+│   └── src/
+│       ├── App.jsx           # The app's memory and page layout.
+│       ├── api.js            # Every conversation with the Python backend.
+│       └── components/
+│           ├── Header.jsx            # Masthead + backend status dot.
+│           ├── UploadZone.jsx        # Step 1: drag-drop and folder scanning.
+│           ├── BacktestControls.jsx  # Step 2: every strategy setting.
+│           ├── MetricCards.jsx       # The row of headline numbers.
+│           ├── EquityChart.jsx       # Portfolio vs benchmark growth.
+│           ├── DrawdownChart.jsx     # The underwater chart.
+│           ├── MonthlyHeatmap.jsx    # The calendar grid of returns.
+│           └── TradeLogTable.jsx     # Rebalance log, trade log, CSV exports.
+│
+├── data/
+│   ├── stocks/           # Put your stock CSV files here.
+│   └── index/            # Put your benchmark / index CSV file here.
+│
+└── README.md             # This file.
+```
+
+---
+
+## If something goes wrong
+
+| What you see | What it means |
+|--------------|---------------|
+| **"Backend offline"** in the header | Terminal 1 isn't running. Go to `backend` and run `python app.py`. |
+| **"Address already in use"** | Something else has port 5000. Close it, or change `PORT` in `app.py`. |
+| **"The stock files and the benchmark file do not overlap in time"** | Your index file covers different dates than your stocks. The message tells you both date ranges. |
+| **"Only N trading days are available…"** | Your lookback is longer than your price history. Use a shorter lookback or load more history. |
+| **"At least 2 stock files… are needed"** | You loaded only the benchmark, or only one stock. Momentum needs something to rank. |
+| **A yellow note about skipped rows** | Normal. Some rows had a broken date or a missing price and were left out. The note names the file. |
+| **"That dataset is no longer loaded"** | The backend restarted. Load your files again — it takes seconds. |
+| The whole portfolio sits in **cash** for long stretches | Working as designed. In a falling market, few stocks beat the index, so the strategy steps aside. Try a shorter lookback or a larger universe. |
+
+---
+
+## Notes on how it's calculated
+
+A few decisions worth knowing about, so you can trust the numbers:
+
+- **Prices are aligned to the benchmark's calendar.** The benchmark defines what
+  counts as a trading day. Missing stock prices are forward-filled (the last known
+  price still stands) — never invented.
+- **A stock is only eligible if it has a real price at both ends of the lookback
+  window.** A company that listed last month cannot be picked on a 252-day lookback.
+- **Weights drift between rebalances.** Once bought, positions are left alone until
+  the next rebalance, exactly as they would be in reality.
+- **Trading costs are charged on turnover.** Selling 40% of the book and buying 40%
+  of something else is 0.8 turnover; at 10 bps that costs 0.08% of the portfolio.
+- **Win rate counts rebalance periods, not days** — that's the meaningful unit of
+  this strategy.
+- **There is only ever one y-axis on a chart.** Two different scales on one chart is
+  the easiest way to fool yourself, so the app never does it.
+
+---
+
+*For research and education only. A backtest is not a promise. Real trading involves
+costs, taxes, slippage and your own behaviour under pressure — things this tool can
+only estimate.*

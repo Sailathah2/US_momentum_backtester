@@ -1,0 +1,13 @@
+# ==========================================
+# Python libraries needed by the backend
+# ==========================================
+# Install them all at once by running, inside the /backend folder:
+#
+#     pip install -r requirements.txt
+
+flask==3.0.3            # The tiny web server that answers the website's questions
+flask-cors==4.0.1       # Lets the React website (port 5173) talk to this server (port 5000)
+pandas==2.2.3           # Spreadsheet-like tables in Python (rows of prices)
+numpy==1.26.4           # Fast maths on whole columns of numbers at once
+python-dateutil==2.9.0  # Understands dates written in many different formats
+requests==2.32.3        # General-purpose web requests (used by optional add-ons)

@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  The single HTML page that hosts the whole React application.
+  `class="dark"` on <html> is what switches the app into dark mode, which is
+  our default look.
+-->
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Momentum Backtest Portal &middot; Tradewithsai Morning Brief</title>
+    <meta
+      name="description"
+      content="Run relative-strength momentum backtests on US and global equity CSV files against any benchmark index."
+    />
+
+    <!-- Inter is the typeface used across the Morning Brief theme. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- React draws the entire interface inside this empty box. -->
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

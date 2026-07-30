@@ -1,0 +1,535 @@
+"""
+==========================================================
+app.py  --  The Flask web server ("the waiter")
+==========================================================
+
+This program sits quietly in the background and answers questions asked by
+the website (the React app in the /frontend folder). It never draws anything
+itself - it only loads CSV files, runs the backtest, and hands back numbers.
+
+    Website  --- "here are 200 CSV files, load them" --->  app.py
+    Website  --- "now backtest top-10 vs SPY"        --->  app.py
+    Website  <--- equity curve + metrics + trade log ----  app.py
+
+HOW TO START IT
+---------------
+    cd backend
+    pip install -r requirements.txt
+    python app.py
+
+Leave the window open. You should see:
+    * Running on http://127.0.0.1:5001
+
+(Port 5001, not 5000 - the US Stock Data Downloader project already uses 5000,
+and two programs cannot share one port.)
+
+THE ENDPOINTS ("questions" the website can ask)
+-----------------------------------------------
+    GET  /api/health           -> "are you alive?"
+    POST /api/upload           -> receive uploaded CSV files, load them
+    POST /api/scan-folder      -> load every CSV inside a folder on this PC
+    GET  /api/session/<id>     -> what is currently loaded?
+    POST /api/backtest         -> run the momentum strategy, return everything
+    POST /api/export           -> turn the last result into a downloadable CSV
+    POST /api/reset            -> forget everything that was loaded
+"""
+
+import csv
+import io
+import os
+import traceback
+import uuid
+from datetime import datetime
+
+import pandas as pd
+from flask import Flask, jsonify, request, send_file
+from flask_cors import CORS
+
+# Our own helper modules, both in this same folder.
+import data_loader
+import engine
+
+# ----------------------------------------------------------------------
+# SETTINGS YOU MAY WANT TO CHANGE
+# ----------------------------------------------------------------------
+# The "door number" this server listens on.
+#
+# WHY 5001 AND NOT 5000? The US Stock Data Downloader project from earlier in
+# this masterclass already uses port 5000. Two programs cannot share a port,
+# so this one lives next door on 5001 and both can run at the same time.
+# If you change this number, change it in frontend/vite.config.js too.
+PORT = 5001
+HOST = "127.0.0.1"     # 127.0.0.1 = this computer only (a safe default).
+
+MAX_UPLOAD_MEGABYTES = 512   # Biggest total upload allowed in one request.
+MAX_SESSIONS = 8             # How many loaded datasets to keep in memory.
+
+# ----------------------------------------------------------------------
+# CREATE THE APP
+# ----------------------------------------------------------------------
+app = Flask(__name__)
+
+# CORS = "Cross-Origin Resource Sharing". Browsers normally block a page
+# served from port 5173 (React) from calling a server on port 5000. This
+# line tells the browser that our own website is allowed to talk to us.
+CORS(app)
+
+app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MEGABYTES * 1024 * 1024
+
+# ----------------------------------------------------------------------
+# WHERE LOADED DATA LIVES
+# ----------------------------------------------------------------------
+# Loaded price tables are kept in the computer's memory (not on disk) inside
+# this dictionary, one entry per "session". A session is simply one batch of
+# files you loaded. Restarting the server clears everything.
+SESSIONS = {}
+
+
+def _new_session():
+    """Create an empty session and make room by evicting the oldest one."""
+    while len(SESSIONS) >= MAX_SESSIONS:
+        oldest = min(SESSIONS, key=lambda key: SESSIONS[key]["created"])
+        SESSIONS.pop(oldest, None)
+
+    session_id = uuid.uuid4().hex[:12]
+    SESSIONS[session_id] = {
+        "id": session_id,
+        "created": datetime.utcnow().timestamp(),
+        "series": {},       # ticker -> {"frame": DataFrame, "file": filename}
+        "files": [],        # what came from where, for the UI list
+        "warnings": [],
+        "last_result": None,
+        "last_settings": None,
+    }
+    return SESSIONS[session_id]
+
+
+def _get_session(session_id):
+    """Fetch a session or raise a friendly error if it has expired."""
+    session = SESSIONS.get(session_id)
+    if session is None:
+        raise ValueError(
+            "That dataset is no longer loaded (the server may have restarted). "
+            "Please load your CSV files again."
+        )
+    return session
+
+
+def _absorb(session, filename, series_list, path=None):
+    """
+    Put the tidy price tables from one file into the session.
+
+    If the same ticker turns up twice (say a daily file and a longer archive)
+    we keep whichever version has MORE rows of history.
+    """
+    added = []
+    for entry in series_list:
+        ticker = entry["ticker"]
+        existing = session["series"].get(ticker)
+        if existing is not None and len(existing["frame"]) >= len(entry["frame"]):
+            session["warnings"].append(
+                f"{filename}: '{ticker}' already loaded from {existing['file']} "
+                "with more history - kept the longer one."
+            )
+            continue
+        session["series"][ticker] = {"frame": entry["frame"], "file": filename}
+        added.append(data_loader.describe_series(entry, filename))
+
+    session["files"].append({
+        "name": filename,
+        "path": path,
+        "tickers": [item["ticker"] for item in added],
+        "series": added,
+    })
+    return added
+
+
+def _session_payload(session):
+    """Build the JSON summary the website shows after loading files."""
+    symbols = []
+    for ticker, holder in sorted(session["series"].items()):
+        frame = holder["frame"]
+        symbols.append({
+            "ticker": ticker,
+            "file": holder["file"],
+            "rows": int(len(frame)),
+            "start": frame.index.min().strftime("%Y-%m-%d"),
+            "end": frame.index.max().strftime("%Y-%m-%d"),
+            "last_close": round(float(frame["Close"].iloc[-1]), 4),
+            "benchmark_candidate": bool(
+                data_loader.looks_like_benchmark(holder["file"])
+                or data_loader.looks_like_benchmark(ticker)
+            ),
+        })
+
+    # Pre-select a sensible default benchmark: the first file whose name
+    # looks like an index. The user can change it in the dropdown.
+    suggested = next((s["ticker"] for s in symbols if s["benchmark_candidate"]), None)
+
+    return {
+        "session_id": session["id"],
+        "symbols": symbols,
+        "total_symbols": len(symbols),
+        "suggested_benchmark": suggested,
+        "warnings": session["warnings"][-40:],
+        "files_loaded": len(session["files"]),
+    }
+
+
+def _fail(message, status=400):
+    """Send a clean error message the website can display to the user."""
+    return jsonify({"ok": False, "error": str(message)}), status
+
+
+# ======================================================================
+# ENDPOINT 1 - HEALTH CHECK
+# ======================================================================
+
+@app.get("/api/health")
+def health():
+    """
+    The website pings this on start-up to show the green 'connected' dot.
+
+    `service_id` is a fixed code-name the website checks. Without it, if some
+    OTHER project's server happened to be on this port, the website would show
+    a cheerful green light and then fail on every real request. Now it can say
+    exactly what is wrong instead.
+    """
+    return jsonify({
+        "ok": True,
+        "service_id": "momentum-backtest-portal",
+        "service": "Momentum Backtest Portal",
+        "version": "1.0.0",
+        "sessions_loaded": len(SESSIONS),
+        "time": datetime.utcnow().isoformat() + "Z",
+    })
+
+
+# ======================================================================
+# ENDPOINT 2 - UPLOAD CSV FILES FROM THE BROWSER
+# ======================================================================
+
+@app.post("/api/upload")
+def upload():
+    """
+    Receive one or more CSV files that the user dragged onto the website,
+    translate each of them, and remember the result.
+
+    Sending `session_id` in the form adds the files to an EXISTING dataset
+    instead of starting a fresh one - that is how "add more files" works.
+    """
+    try:
+        uploaded = request.files.getlist("files")
+        if not uploaded:
+            return _fail("No files were received. Please choose at least one CSV file.")
+
+        session_id = request.form.get("session_id")
+        if session_id and session_id in SESSIONS:
+            session = SESSIONS[session_id]
+        else:
+            session = _new_session()
+
+        loaded, failed = 0, []
+        for storage in uploaded:
+            name = storage.filename or "unnamed.csv"
+            if not name.lower().endswith(".csv"):
+                failed.append(f"{name}: not a .csv file")
+                continue
+            try:
+                content = storage.read()
+                series_list, warnings = data_loader.load_csv(content, name)
+                session["warnings"].extend(warnings)
+                _absorb(session, name, series_list)
+                loaded += 1
+            except Exception as exc:
+                # One unreadable file must never stop the other 199.
+                failed.append(f"{name}: {exc}")
+
+        if not session["series"]:
+            return _fail(
+                "None of those files could be read. Details: " + " | ".join(failed[:5])
+            )
+
+        session["warnings"].extend(failed)
+        payload = _session_payload(session)
+        payload.update({"ok": True, "files_read": loaded, "files_failed": failed[:20]})
+        return jsonify(payload)
+
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"Upload failed: {exc}", 500)
+
+
+# ======================================================================
+# ENDPOINT 3 - SCAN A FOLDER ALREADY ON THIS COMPUTER
+# ======================================================================
+
+@app.post("/api/scan-folder")
+def scan_folder():
+    """
+    Load every CSV inside a folder path typed by the user - by far the
+    quickest way to load a few hundred files from the US Stock Data
+    Downloader's output folder.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        folder = (body.get("folder") or "").strip().strip('"')
+        if not folder:
+            return _fail("Please type the full path of the folder holding your CSV files.")
+
+        files, warnings = data_loader.scan_folder(folder)
+
+        session = _new_session()
+        session["warnings"].extend(warnings)
+        for item in files:
+            _absorb(session, item["name"], item["series"], path=item["path"])
+
+        payload = _session_payload(session)
+        payload.update({"ok": True, "files_read": len(files), "folder": folder})
+        return jsonify(payload)
+
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(str(exc))
+
+
+# ======================================================================
+# ENDPOINT 4 - WHAT IS CURRENTLY LOADED?
+# ======================================================================
+
+@app.get("/api/session/<session_id>")
+def session_info(session_id):
+    """Used when the page is refreshed, so the UI can rebuild its file list."""
+    try:
+        session = _get_session(session_id)
+        payload = _session_payload(session)
+        payload["ok"] = True
+        return jsonify(payload)
+    except Exception as exc:
+        return _fail(str(exc), 404)
+
+
+# ======================================================================
+# ENDPOINT 5 - RUN THE BACKTEST
+# ======================================================================
+
+@app.post("/api/backtest")
+def backtest():
+    """
+    The main event. Takes the user's settings, lines up the price data, runs
+    the momentum strategy through history, and returns everything the charts
+    and tables need.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        session = _get_session(body.get("session_id"))
+
+        # ---- Which file is the benchmark? -----------------------------
+        benchmark_ticker = body.get("benchmark")
+        if not benchmark_ticker:
+            return _fail("Please choose which file is the benchmark / index.")
+        if benchmark_ticker not in session["series"]:
+            return _fail(f"'{benchmark_ticker}' is not one of the loaded files.")
+
+        # ---- Which stocks form the universe? --------------------------
+        # Default: everything loaded EXCEPT the benchmark itself.
+        requested_universe = body.get("universe") or []
+        if requested_universe:
+            universe = [t for t in requested_universe
+                        if t in session["series"] and t != benchmark_ticker]
+        else:
+            universe = [t for t in session["series"] if t != benchmark_ticker]
+
+        if len(universe) < 2:
+            return _fail(
+                "At least 2 stock files (plus the benchmark) are needed to run a "
+                "momentum ranking. Load more CSV files."
+            )
+
+        # ---- Read and sanity-check the strategy settings --------------
+        settings = {
+            "lookback": int(body.get("lookback", 126)),
+            "top_n": int(body.get("top_n", 10)),
+            "cadence": str(body.get("cadence", "monthly")),
+            "every_n_days": int(body.get("every_n_days", 21)),
+            "weighting": str(body.get("weighting", "equal")),
+            "cash_buffer": bool(body.get("cash_buffer", True)),
+            "cost_bps": float(body.get("cost_bps", 0.0)),
+            "start_capital": float(body.get("start_capital", 100000.0)),
+            "risk_free_rate": float(body.get("risk_free_rate", 0.0)) / 100.0,
+            "min_roc": body.get("min_roc", None),
+        }
+        if settings["min_roc"] not in (None, ""):
+            settings["min_roc"] = float(settings["min_roc"]) / 100.0
+        else:
+            settings["min_roc"] = None
+
+        if settings["cadence"] not in engine.VALID_CADENCES:
+            return _fail(f"Unknown rebalance cadence '{settings['cadence']}'.")
+        if settings["weighting"] not in engine.VALID_WEIGHTINGS:
+            return _fail(f"Unknown weighting scheme '{settings['weighting']}'.")
+        if settings["lookback"] < 2:
+            return _fail("The lookback window must be at least 2 trading days.")
+        if settings["top_n"] < 1:
+            return _fail("Top N must be at least 1.")
+
+        # ---- Build the aligned price tables ---------------------------
+        series_list = [
+            {"ticker": ticker, "frame": session["series"][ticker]["frame"]}
+            for ticker in universe
+        ]
+        price_matrix = data_loader.build_price_matrix(series_list)
+        benchmark_close = session["series"][benchmark_ticker]["frame"]["Close"]
+
+        prices, benchmark = data_loader.align_with_benchmark(price_matrix, benchmark_close)
+
+        # Optional date window chosen by the user on the website.
+        start_date = body.get("start_date")
+        end_date = body.get("end_date")
+        if start_date:
+            prices = prices.loc[prices.index >= pd.to_datetime(start_date)]
+            benchmark = benchmark.loc[benchmark.index >= pd.to_datetime(start_date)]
+        if end_date:
+            prices = prices.loc[prices.index <= pd.to_datetime(end_date)]
+            benchmark = benchmark.loc[benchmark.index <= pd.to_datetime(end_date)]
+
+        if len(prices) <= settings["lookback"] + 2:
+            return _fail(
+                f"Only {len(prices)} trading days are available, which is not enough "
+                f"for a {settings['lookback']}-day lookback. Choose a shorter lookback "
+                "or widen the date range."
+            )
+
+        # ---- Run it ----------------------------------------------------
+        result = engine.analyse(prices, benchmark, settings)
+
+        # Remember the answer so the export buttons can rebuild the CSVs
+        # without running the whole backtest a second time.
+        session["last_result"] = result
+        session["last_settings"] = {
+            **settings,
+            "benchmark": benchmark_ticker,
+            "universe_size": len(universe),
+        }
+
+        result.update({
+            "ok": True,
+            "benchmark": benchmark_ticker,
+            "universe_size": len(universe),
+            "trading_days": int(len(prices)),
+            "settings": session["last_settings"],
+        })
+        return jsonify(result)
+
+    except ValueError as exc:
+        return _fail(str(exc))
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"The backtest failed: {exc}", 500)
+
+
+# ======================================================================
+# ENDPOINT 6 - EXPORT RESULTS AS CSV
+# ======================================================================
+
+@app.post("/api/export")
+def export():
+    """
+    Turn the most recent backtest into a downloadable CSV file.
+
+    `kind` picks which table you get:
+        "trades"      -> every stock bought, its momentum score and its result
+        "rebalances"  -> one row per rebalance period
+        "timeseries"  -> the daily equity curve and drawdowns
+        "monthly"     -> the calendar grid of monthly returns
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        session = _get_session(body.get("session_id"))
+        result = session.get("last_result")
+        if not result:
+            return _fail("Run a backtest first - there is nothing to export yet.")
+
+        kind = (body.get("kind") or "trades").lower()
+        buffer = io.StringIO()
+        writer = csv.writer(buffer, lineterminator="\n")
+
+        if kind == "trades":
+            rows = result["trades"]
+            headers = ["period", "rebalance_date", "exit_date", "ticker", "weight",
+                       "roc_at_entry", "benchmark_roc", "relative_strength",
+                       "entry_price", "exit_price", "trade_return", "contribution"]
+        elif kind == "rebalances":
+            rows = result["rebalances"]
+            headers = ["period", "rebalance_date", "exit_date", "holding_days",
+                       "num_holdings", "tickers", "weights", "cash_weight",
+                       "benchmark_roc", "period_return", "benchmark_period_return",
+                       "excess_return", "turnover", "cost_paid",
+                       "equity_start", "equity_end"]
+        elif kind == "timeseries":
+            rows = result["curve"]
+            headers = ["date", "portfolio", "benchmark", "portfolio_dd", "benchmark_dd"]
+        elif kind == "monthly":
+            # The monthly grid is nested, so we flatten it into plain rows.
+            writer.writerow(["year", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Year"])
+            for row in result["monthly"]:
+                values = [row["months"].get(str(m)) for m in range(1, 13)]
+                writer.writerow(
+                    [row["year"]]
+                    + ["" if v is None else round(v * 100, 4) for v in values]
+                    + ["" if row["year_total"] is None else round(row["year_total"] * 100, 4)]
+                )
+            return _csv_response(buffer, "monthly_returns")
+        else:
+            return _fail(f"Unknown export type '{kind}'.")
+
+        writer.writerow(headers)
+        for row in rows:
+            writer.writerow([row.get(column, "") for column in headers])
+
+        return _csv_response(buffer, kind)
+
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"Export failed: {exc}", 500)
+
+
+def _csv_response(buffer, name):
+    """Wrap the text we just built into a real file download."""
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    data = io.BytesIO(buffer.getvalue().encode("utf-8-sig"))
+    return send_file(
+        data,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name=f"momentum_{name}_{stamp}.csv",
+    )
+
+
+# ======================================================================
+# ENDPOINT 7 - START OVER
+# ======================================================================
+
+@app.post("/api/reset")
+def reset():
+    """Forget a loaded dataset (frees up memory)."""
+    body = request.get_json(silent=True) or {}
+    SESSIONS.pop(body.get("session_id"), None)
+    return jsonify({"ok": True})
+
+
+# ======================================================================
+# START THE SERVER
+# ======================================================================
+
+if __name__ == "__main__":
+    print("=" * 62)
+    print("  Momentum Backtest Portal  -  backend server")
+    print("=" * 62)
+    print(f"  Listening on http://{HOST}:{PORT}")
+    print("  (Port 5001 - the Stock Data Downloader project uses 5000.)")
+    print("  Leave this window open while you use the website.")
+    print("  Press CTRL+C here to stop it.")
+    print("=" * 62)
+    app.run(host=HOST, port=PORT, debug=False, threaded=True)
