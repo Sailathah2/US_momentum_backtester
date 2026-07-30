@@ -504,9 +504,17 @@ def _resolve_regime_inputs(session, body):
             + ", ".join(indicators.VALID_REGIME_TIMEFRAMES)
         )
 
+    # Where the de-risked money sits. Blank (or "CASH") means plain cash
+    # earning nothing; anything else must be a loaded symbol - gold and bond
+    # funds are the usual picks.
+    parked_in = str(body.get("risk_off_asset") or "").strip().upper()
+    if parked_in in ("", "CASH"):
+        parked_in = ""
+
     regime_settings = {
         "regime_mode": mode,
         "regime_timeframe": timeframe,
+        "risk_off_asset": parked_in,
         "regime_index": body.get("regime_index") or body.get("benchmark"),
         "ema_period": int(body.get("ema_period", 200)),
         "atr_period": int(body.get("atr_period", 10)),
@@ -515,6 +523,12 @@ def _resolve_regime_inputs(session, body):
 
     if mode == "disabled":
         return None, regime_settings
+
+    if parked_in and parked_in not in session["series"]:
+        raise ValueError(
+            f"'{parked_in}' is not one of the loaded files, so the Risk-OFF money "
+            "cannot be parked there. Load that symbol's CSV first, or choose Cash."
+        )
 
     # The filter can run off ANY loaded file - usually the benchmark, but a
     # trader might prefer to gate a small-cap universe on the S&P 500, or
@@ -593,7 +607,26 @@ def regime_analysis():
         regime_frame = regime_frame.reindex(prices.index).ffill()
         regime_frame["regime"] = regime_frame["regime"].fillna(True).astype(bool)
 
-        result = engine.compare_with_regime(prices, benchmark, settings, regime_frame)
+        # Pull the closing prices of wherever the de-risked money is parked,
+        # onto that same calendar.
+        defensive = None
+        parked_in = regime_settings["risk_off_asset"]
+        if parked_in:
+            defensive = (
+                session["series"][parked_in]["frame"]["Close"]
+                .astype(float)
+                .reindex(prices.index)
+                .ffill()
+            )
+            if defensive.notna().sum() < 2:
+                raise ValueError(
+                    f"'{parked_in}' has no usable prices inside the backtest window, "
+                    "so the Risk-OFF money cannot be parked there."
+                )
+
+        result = engine.compare_with_regime(
+            prices, benchmark, settings, regime_frame, defensive=defensive
+        )
 
         # Keep the filtered run as "the" result, so the existing export
         # buttons download the filtered trade log rather than the baseline.

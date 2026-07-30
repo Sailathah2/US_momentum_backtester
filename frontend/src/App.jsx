@@ -70,6 +70,9 @@ const DEFAULT_SETTINGS = {
   // How much of the portfolio moves to cash on a Risk-OFF day.
   // 100 = sell everything (the classic, strictest setting).
   risk_off_cash_pct: 100,
+  // Where that de-risked money sits. "" = plain cash earning nothing;
+  // otherwise a loaded symbol such as a gold or bond fund.
+  risk_off_asset: "",
 };
 
 export default function App() {
@@ -363,6 +366,7 @@ export default function App() {
                       startCapital={result.summary.start_capital}
                       benchmarkName={regimeResult.benchmark}
                       riskOffExposure={regimeResult.exposure?.risk_off_exposure ?? 0}
+                      parkedIn={regimeResult.settings?.risk_off_asset || ""}
                     />
 
                     <ComparisonMetricsCard
@@ -370,7 +374,10 @@ export default function App() {
                       maxDrawdownReduction={regimeResult.max_drawdown_reduction}
                     />
 
-                    <ExposureChart exposure={regimeResult.exposure} />
+                    <ExposureChart
+                      exposure={regimeResult.exposure}
+                      parkedIn={regimeResult.settings?.risk_off_asset || ""}
+                    />
 
                     <DrawdownChart
                       data={regimeResult.curve}
@@ -593,7 +600,8 @@ function RunSummary({ result, regimeResult }) {
             </p>
             <p className="font-mono text-[10px] text-brief-muted">
               {s.regime_timeframe === "weekly" ? "weekly" : "daily"} &middot;{" "}
-              {s.regime_index} &middot; {s.risk_off_cash_pct ?? 100}% cash off
+              {s.regime_index} &middot; {s.risk_off_cash_pct ?? 100}% &rarr;{" "}
+              {s.risk_off_asset || "cash"}
             </p>
           </div>
         )}

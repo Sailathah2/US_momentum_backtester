@@ -353,6 +353,46 @@ export default function RegimeControls({
             </p>
           </div>
 
+          {/* ---------------- WHERE TO PARK THE MONEY ----------------- */}
+          {settings.risk_off_cash_pct > 0 && (
+            <div>
+              <label className="field-label">Park that money in</label>
+              <select
+                className="field mt-1.5"
+                value={settings.risk_off_asset || ""}
+                onChange={(e) => set("risk_off_asset", e.target.value)}
+              >
+                <option value="">Cash — earns nothing</option>
+                {symbols.map((symbol) => (
+                  <option key={symbol.ticker} value={symbol.ticker}>
+                    {symbol.ticker}
+                    {symbol.benchmark_candidate ? "  (looks like an index)" : ""}
+                  </option>
+                ))}
+              </select>
+              <p className="field-help">
+                {settings.risk_off_asset ? (
+                  <>
+                    While the filter is off, the de-risked{" "}
+                    {settings.risk_off_cash_pct}% is held in{" "}
+                    <strong className="text-cream-100">{settings.risk_off_asset}</strong>{" "}
+                    instead of sitting idle. Gold is the classic choice, because it
+                    often rises exactly when shares are falling — but check the result,
+                    since parking in something risky can deepen your drawdown rather
+                    than soften it. Each switch now costs{" "}
+                    <strong>two trades</strong> (sell shares, buy {settings.risk_off_asset}),
+                    so the cost is doubled.
+                  </>
+                ) : (
+                  <>
+                    Plain cash: the de-risked money earns 0% and simply waits. Pick a
+                    loaded symbol — gold or a bond fund — to put it to work instead.
+                  </>
+                )}
+              </p>
+            </div>
+          )}
+
           {/* ---------------- WHAT WILL HAPPEN ------------------------ */}
           <div className="rounded-lg border border-brief-line bg-brief-surface p-3">
             <div className="flex items-center gap-2">

@@ -39,8 +39,12 @@ function Stat({ icon: Icon, label, value, sub, tone = "text-cream-50" }) {
   );
 }
 
-export default function ExposureChart({ exposure }) {
+export default function ExposureChart({ exposure, parkedIn }) {
   if (!exposure) return null;
+
+  // Where the de-risked money actually sat. Blank means plain cash.
+  const parkLabel = parkedIn || "cash";
+  const parkedReturn = exposure.parked_return;
 
   const inMarket = exposure.time_in_market ?? 0;
   const inCash = exposure.time_in_cash ?? 0;
@@ -62,9 +66,27 @@ export default function ExposureChart({ exposure }) {
         <div>
           <p className="brief-eyebrow">Exposure breakdown</p>
           <h3 className="mt-0.5 text-base font-bold text-cream-50">
-            Time in market vs time in cash
+            Time in market vs time in {parkLabel}
           </h3>
         </div>
+
+        {/* How the parking spot itself did while we were sitting in it -
+            the number that answers "was gold actually worth it?". */}
+        {parkedIn && parkedReturn !== null && parkedReturn !== undefined && (
+          <div className="ml-auto rounded-lg border border-brief-line bg-brief-surface px-3 py-1.5 text-right">
+            <p className="text-2xs uppercase tracking-wider text-brief-muted">
+              {parkedIn} while parked
+            </p>
+            <p
+              className={`font-mono text-sm font-bold ${
+                parkedReturn >= 0 ? "text-market-up" : "text-market-down"
+              }`}
+            >
+              {parkedReturn >= 0 ? "+" : ""}
+              {(parkedReturn * 100).toFixed(1)}%
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ---- The split bar ------------------------------------------- */}
@@ -110,8 +132,8 @@ export default function ExposureChart({ exposure }) {
         <span className="flex items-center gap-1.5 text-cream-200">
           <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: REGIME_OFF }} />
           {partialCash
-            ? `Risk-OFF, ${pct(1 - riskOffExposure, 0)} cash — ${pct(inCash)}`
-            : `Risk-OFF, 100% cash — ${pct(inCash)}`}
+            ? `Risk-OFF, ${pct(1 - riskOffExposure, 0)} in ${parkLabel} — ${pct(inCash)}`
+            : `Risk-OFF, 100% in ${parkLabel} — ${pct(inCash)}`}
         </span>
       </div>
 
@@ -141,7 +163,9 @@ export default function ExposureChart({ exposure }) {
           label="Days de-risked"
           value={exposure.days_in_cash?.toLocaleString() ?? "—"}
           sub={
-            partialCash
+            parkedIn
+              ? `money parked in ${parkedIn}`
+              : partialCash
               ? `holding ${pct(riskOffExposure, 0)} of the book`
               : "zero market risk on these days"
           }
@@ -159,6 +183,18 @@ export default function ExposureChart({ exposure }) {
           sub="each one costs a round trip"
         />
       </div>
+
+      {/* Parking money somewhere is not automatically an improvement -
+          say so plainly rather than implying it always helps. */}
+      {parkedIn && (
+        <p className="mt-3 rounded-lg border border-brief-line bg-brief-surface px-3 py-2 text-2xs leading-relaxed text-brief-muted">
+          The de-risked money was held in{" "}
+          <strong className="text-cream-100">{parkedIn}</strong> rather than sitting
+          idle. That is only an improvement if {parkedIn} held up while shares were
+          falling — check the drawdown row in the table above, not just the return.
+          Parking somewhere risky can deepen the fall instead of cushioning it.
+        </p>
+      )}
 
       <p className="mt-3 text-2xs leading-relaxed text-brief-muted">
         A high switch count is a warning sign: every flip pays the spread twice. If

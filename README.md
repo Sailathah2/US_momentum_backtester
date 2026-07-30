@@ -211,6 +211,27 @@ switches** where EMA alone gave 31 and Supertrend alone gave 34.
 | **ATR period** | 10 | How many days of movement feed the volatility estimate. |
 | **Multiplier** | 3.0 | How far the trailing stop sits from price, in ATRs. Higher = looser, fewer exits. |
 | **Cash when Risk-OFF** | 100% | How much of the portfolio moves to cash on a Risk-OFF day. **100%** = fully defensive, sell everything. **50%** = halve the position and ride the rest out. **0%** = the filter does nothing. |
+| **Park that money in** | Cash | Where the de-risked money sits. **Cash** earns nothing. Pick any loaded symbol — a gold or bond fund — and it earns whatever that asset did instead. |
+
+**About parking the money in gold.** Sitting in cash during a downtrend protects you
+but earns nothing. Gold is the classic alternative because it often rises exactly
+when shares are falling, so the defensive money can work for you instead of waiting.
+
+To use it, the asset must be **loaded as one of your CSV files** — download `GLD`,
+`IAU`, `TLT` or whatever you prefer with the US Stock Data Downloader and drop it in
+your data folder alongside the stocks.
+
+Two honest caveats:
+
+- **It is not free.** Each regime switch becomes *two* trades instead of one (sell
+  the shares **and** buy the gold, then the reverse on the way back), so the portal
+  charges double the trading cost on every flip.
+- **It is not automatically better.** Parking in something risky can deepen your
+  drawdown rather than cushion it. The exposure panel reports how the parked asset
+  itself did over exactly the days you were sitting in it, so you can judge the swap
+  on evidence. In testing, parking in a gold-royalty stock improved both return and
+  drawdown, while parking in an ordinary tech stock improved return but made the
+  worst drawdown **deeper** — check the drawdown row, not just the return.
 
 **About weekly candles.** When you switch to weekly, the period numbers count
 **weeks**, exactly as they do on any charting website — so an EMA of `40` means 40
@@ -384,7 +405,15 @@ A few decisions worth knowing about, so you can trust the numbers:
 - **Regime switches are charged on how much the exposure moved.** Going 100% to
   cash sells the whole book (turnover 1.0); going to 40% cash sells only 40% of it,
   and costs 40% as much. Rebalances are charged the same way — while fully in cash
-  no shares move, so the rebalance is free.
+  no shares move, so the rebalance is free. Parking the money in an asset doubles
+  the switch cost, because each flip is two trades rather than one.
+- **The de-risked slice is held at a constant weight.** When you split, say, 50/50
+  between shares and gold during a Risk-OFF stretch, the model holds that split
+  rather than letting the two legs drift apart. At the default 100% there is only
+  one asset, so the question does not arise and it is a plain buy-and-hold of the
+  parked asset.
+- **A missing price for the parked asset counts as a flat day**, so a gap in the
+  gold file can never invent or destroy money.
 - **There is only ever one y-axis on a chart.** Two different scales on one chart is
   the easiest way to fool yourself, so the app never does it.
 

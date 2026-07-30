@@ -48,9 +48,10 @@ const ROWS = [
   { key: "win_rate", label: "Win rate", format: (v) => pct(v, 1), higherIsBetter: true },
   { key: "time_in_market", label: "Time in market", format: (v) => pct(v, 1), neutral: true,
     note: "Share of days the filter was fully Risk-ON." },
-  { key: "time_in_cash", label: "Time in cash", format: (v) => pct(v, 1), neutral: true },
+  { key: "time_in_cash", label: "Time de-risked", format: (v) => pct(v, 1), neutral: true,
+    note: "Share of days the filter had pulled money out of shares." },
   { key: "average_exposure", label: "Average exposure", format: (v) => pct(v, 1), neutral: true,
-    note: "The average share of capital actually at risk. Equals time in market when Risk-OFF means 100% cash; higher when you hold part of the book through." },
+    note: "The average share of capital left in shares. Equals time in market when Risk-OFF pulls everything out; higher when you hold part of the book through." },
   { key: "regime_switches", label: "Regime switches", format: count, neutral: true,
     note: "How many times the filter changed its mind. Fewer is usually cheaper." },
 ];

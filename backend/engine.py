@@ -288,7 +288,7 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
 # SECTION 3 - THE MAIN BACKTEST LOOP
 # ======================================================================
 
-def run_backtest(prices, benchmark, settings, regime=None):
+def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
     """
     Walk through history and build the portfolio's equity curve.
 
@@ -299,6 +299,10 @@ def run_backtest(prices, benchmark, settings, regime=None):
                   True means "Risk-ON, stay invested"; False means
                   "Risk-OFF, hold 100% cash today". Pass None to run the
                   strategy with no macro filter at all.
+    `defensive` - OPTIONAL daily closing prices of somewhere to PARK the
+                  money during Risk-OFF instead of leaving it in cash -
+                  gold, for instance, or a bond fund. Pass None to sit in
+                  plain cash, which simply earns 0%.
 
     Returns a big dictionary containing the equity curves, the metrics, the
     rebalance history and the per-trade log.
@@ -398,6 +402,23 @@ def run_backtest(prices, benchmark, settings, regime=None):
         dtype=float,
     )
 
+    # ------------------------------------------------------------------
+    # WHERE THE DEFENSIVE MONEY SITS
+    # ------------------------------------------------------------------
+    # By default, money pulled out of the market just sits in cash earning
+    # nothing. If the user nominated somewhere to park it - gold is the
+    # usual choice, because it often rises exactly when shares are falling -
+    # then that money earns whatever THAT asset did instead.
+    #
+    # A missing price becomes a 0% day, which is the same as cash. So a gap
+    # in the gold data can never invent or destroy money.
+    if defensive is not None:
+        defensive_returns = (
+            defensive.reindex(calendar).ffill().pct_change().fillna(0.0)
+        )
+    else:
+        defensive_returns = pd.Series(0.0, index=calendar)
+
     regime_switch_costs = 0.0
     regime_switch_count = 0
 
@@ -496,18 +517,37 @@ def run_backtest(prices, benchmark, settings, regime=None):
         exposure_today = exposure_exec.reindex(window_dates[1:]).fillna(1.0).to_numpy()
 
         # Scale each day's return by that exposure. Holding half the book
-        # earns half the move; holding none of it earns nothing at all.
-        effective_returns = daily_returns * exposure_today
+        # earns half the move.
+        #
+        # The rest of the money is not idle if a defensive asset was chosen:
+        # it earns whatever gold (or whatever you picked) did that day. With
+        # plain cash those returns are all zero, so this reduces to the old
+        # behaviour exactly.
+        #
+        #   portfolio = exposure x shares + (1 - exposure) x defensive
+        parked_today = defensive_returns.reindex(window_dates[1:]).fillna(0.0).to_numpy()
+        effective_returns = (
+            daily_returns * exposure_today + (1.0 - exposure_today) * parked_today
+        )
 
         # Charge for getting out and back in. The turnover of a switch is
         # how much the exposure MOVED - going 100% to cash sells the whole
         # book (turnover 1.0), going to 40% cash sells only 40% of it.
+        #
+        # Parking the money somewhere costs DOUBLE, because each flip is now
+        # two trades rather than one: sell the shares AND buy the gold on the
+        # way out, sell the gold AND buy the shares on the way back.
+        legs = 2.0 if defensive is not None else 1.0
         if picks and regime is not None:
             previous_exposure = float(exposure_exec.loc[window_dates[0]])
             for day_number, exposure_value in enumerate(exposure_today):
                 if exposure_value != previous_exposure:
                     regime_switch_count += 1
-                    switch_cost = abs(exposure_value - previous_exposure) * (cost_bps / 10000.0)
+                    switch_cost = (
+                        abs(exposure_value - previous_exposure)
+                        * legs
+                        * (cost_bps / 10000.0)
+                    )
                     # Fold the cost straight into that day's return.
                     effective_returns[day_number] = (
                         (1.0 + effective_returns[day_number]) * (1.0 - switch_cost) - 1.0
@@ -781,14 +821,15 @@ def _clean(value):
 # SECTION 5 - THE ONE FUNCTION THE WEB SERVER CALLS
 # ======================================================================
 
-def analyse(prices, benchmark, settings, regime=None):
+def analyse(prices, benchmark, settings, regime=None, defensive=None):
     """
     Run the whole thing and package the answer for the website:
     equity curves, drawdowns, metrics, monthly grid, and both log tables.
 
-    `regime` is the optional daily Risk-ON/Risk-OFF mask from indicators.py.
+    `regime`    is the optional daily Risk-ON/Risk-OFF mask from indicators.py.
+    `defensive` is the optional asset to park Risk-OFF money in.
     """
-    result = run_backtest(prices, benchmark, settings, regime=regime)
+    result = run_backtest(prices, benchmark, settings, regime=regime, defensive=defensive)
 
     equity = result["equity_curve"]
     bench = result["benchmark_curve"]
@@ -860,7 +901,7 @@ def analyse(prices, benchmark, settings, regime=None):
 # SECTION 6 - FILTER ON vs FILTER OFF, SIDE BY SIDE
 # ======================================================================
 
-def compare_with_regime(prices, benchmark, settings, regime_frame):
+def compare_with_regime(prices, benchmark, settings, regime_frame, defensive=None):
     """
     Run the SAME momentum strategy twice - once with the macro filter and
     once without - and lay the two results side by side.
@@ -876,11 +917,14 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
     block with the deltas already worked out.
     """
     # ---- The baseline: no filter at all, always invested ---------------
+    # No filter means no Risk-OFF days, so the defensive asset is never
+    # touched here - which is exactly what makes this a fair comparison.
     unfiltered = analyse(prices, benchmark, settings, regime=None)
 
     # ---- The same strategy, with the macro filter applied --------------
     regime_series = regime_frame["regime"] if regime_frame is not None else None
-    filtered = analyse(prices, benchmark, settings, regime=regime_series)
+    filtered = analyse(prices, benchmark, settings, regime=regime_series,
+                       defensive=defensive)
 
     # ---- Exposure: how much of the time were we actually invested? -----
     # We measure this on the regime as TRADED, over exactly the days the
@@ -896,6 +940,18 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
     # still hold some of the book. So we also report the average exposure,
     # which is the honest single number for "how invested was I overall?".
     average_exposure = float(traded_exposure.mean()) if len(traded_exposure) else None
+
+    # How did the parking spot itself do over the days we were actually
+    # sitting in it? This is the number that answers "was gold worth it?".
+    parked_return = None
+    if defensive is not None and len(traded_exposure):
+        parked_daily = (
+            defensive.reindex(traded_exposure.index).ffill().pct_change().fillna(0.0)
+        )
+        # Only count the days we were genuinely de-risked into it.
+        off_days = traded_exposure < 1.0
+        if off_days.any():
+            parked_return = float((1.0 + parked_daily[off_days]).prod() - 1.0)
 
     # ---- Build the comparison table ------------------------------------
     on_metrics = filtered["metrics"]
@@ -1038,6 +1094,9 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
             # What the user chose to hold on a Risk-OFF day, as a fraction
             # still invested (1.0 - their cash percentage).
             "risk_off_exposure": _clean(risk_off_exposure),
+            # How the de-risked money did while it was parked, so the UI can
+            # say "the gold you held returned X" rather than implying cash.
+            "parked_return": _clean(parked_return),
             "switches": exposure["switches"],
             "days_in_market": exposure["days_in_market"],
             "days_in_cash": exposure["days_in_cash"],

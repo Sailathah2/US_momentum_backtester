@@ -98,7 +98,8 @@ function ChartTooltip({ active, payload, label, startCapital, riskOffExposure = 
  * days it covers, so the strip lines up with the chart above it (Recharts
  * spaces category points evenly, so one day = one equal slice).
  */
-function RegimeStrip({ data, riskOffExposure = 0 }) {
+function RegimeStrip({ data, riskOffExposure = 0, parkedIn = "" }) {
+  const parkLabel = parkedIn || "cash";
   // How much cash the user chose to hold on a Risk-OFF day. At 0 exposure
   // this is the classic "everything to cash"; above that the labels have to
   // say so, or the strip would claim a flat line that is not flat.
@@ -130,7 +131,7 @@ function RegimeStrip({ data, riskOffExposure = 0 }) {
             title={`${
               block.state
                 ? "Risk-ON (fully invested)"
-                : `Risk-OFF (${cashPercent}% cash)`
+                : `Risk-OFF (${cashPercent}% in ${parkLabel})`
             }: ${block.start} to ${block.end} — ${block.days} trading day${
               block.days === 1 ? "" : "s"
             }`}
@@ -152,7 +153,7 @@ function RegimeStrip({ data, riskOffExposure = 0 }) {
             className="h-2.5 w-2.5 rounded-sm"
             style={{ backgroundColor: REGIME_OFF }}
           />
-          Risk-OFF — {cashPercent}% cash
+          Risk-OFF — {cashPercent}% in {parkLabel}
         </span>
         <span className="ml-auto">
           {blocks.length - 1} switch{blocks.length - 1 === 1 ? "" : "es"} across{" "}
@@ -168,6 +169,7 @@ export default function EquityComparisonChart({
   startCapital,
   benchmarkName,
   riskOffExposure = 0,
+  parkedIn = "",
 }) {
   const [logScale, setLogScale] = useState(false);
 
@@ -277,10 +279,22 @@ export default function EquityComparisonChart({
       </div>
 
       {/* ---- The regime timeline, directly under the x-axis ---------- */}
-      <RegimeStrip data={data} riskOffExposure={riskOffExposure} />
+      <RegimeStrip
+        data={data}
+        riskOffExposure={riskOffExposure}
+        parkedIn={parkedIn}
+      />
 
       <p className="mt-3 text-2xs leading-relaxed text-brief-muted">
-        {partialCash ? (
+        {parkedIn ? (
+          <>
+            Where the strip is grey the de-risked money was parked in{" "}
+            <strong className="text-cream-100">{parkedIn}</strong>, so the blue line
+            keeps moving with {parkedIn} rather than running flat. Compare it against
+            the violet line through those stretches to see whether the swap actually
+            helped.
+          </>
+        ) : partialCash ? (
           <>
             Where the strip is grey the filter had you holding only {heldPercent}% of
             the book, so the blue line moves at {heldPercent}% of the violet one&apos;s
