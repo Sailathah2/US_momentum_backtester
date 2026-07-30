@@ -29,7 +29,13 @@ function toneClass(value) {
   return "text-brief-muted";
 }
 
-export default function TradeLogTable({ rebalances, trades, onExport, exporting }) {
+export default function TradeLogTable({
+  rebalances,
+  trades,
+  onExport,
+  exporting,
+  riskMeasure = "stddev",
+}) {
   const [tab, setTab] = useState("rebalances");
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(100);
@@ -216,7 +222,11 @@ export default function TradeLogTable({ rebalances, trades, onExport, exporting 
                   {/* These two only appear when the volatility-adjusted
                       ranking was actually used, so the table stays narrow
                       in the ordinary case. */}
-                  {showsScore && <th className="text-right">Std dev</th>}
+                  {showsScore && (
+                    <th className="text-right">
+                      {riskMeasure === "downside" ? "Downside dev" : "Std dev"}
+                    </th>
+                  )}
                   {showsScore && <th className="text-right">Score</th>}
                   <th className="text-right">Entry</th>
                   <th className="text-right">Exit</th>

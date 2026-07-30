@@ -51,6 +51,12 @@ VALID_CADENCES = ("days", "weekly", "biweekly", "monthly", "quarterly")
 # The two ways of splitting money between the chosen stocks.
 VALID_WEIGHTINGS = ("equal", "roc")
 
+# How to divide momentum by risk when ranking the survivors.
+#   none      - do not divide at all; rank on raw momentum (the original).
+#   stddev    - divide by TOTAL volatility (up moves and down moves alike).
+#   downside  - divide by DOWNSIDE deviation only (the Sortino idea).
+VALID_RISK_MEASURES = ("none", "stddev", "downside")
+
 # Keys that `analyse()` puts in its result for internal use only. They hold
 # pandas objects, which cannot be turned into JSON, so they MUST be removed
 # before a result is sent to the browser. Always strip them with
@@ -146,7 +152,8 @@ def build_rebalance_dates(calendar, cadence, every_n_days, first_valid_position)
 # ======================================================================
 
 def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
-                    cash_buffer, min_roc, stock_ema=None, rolling_sd=None):
+                    cash_buffer, min_roc, stock_ema=None, rolling_sd=None,
+                    risk_measure="stddev", alive=None):
     """
     Do steps 1-4 of the strategy for a SINGLE rebalance day.
 
@@ -209,14 +216,43 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
         # and less likely to hand the gain straight back.
         sd_row = rolling_sd.iloc[position].reindex(survivors.index)
 
-        # A zero standard deviation means the price never moved all week -
-        # usually a halted or delisted stock whose last price we have been
-        # carrying forward. Dividing by it produces INFINITY, which would
-        # nail that dead stock to the top of the ranking for ever. So any
-        # stock without a real, positive volatility is dropped here.
-        usable = sd_row.notna() & (sd_row > 0)
-        survivors = survivors[usable]
-        stddev_values = sd_row[usable]
+        # A ZERO denominator means two completely different things depending
+        # on which risk measure we are using, so it needs handling twice.
+        if risk_measure == "downside":
+            # Downside deviation of zero means one of two very different
+            # things, and they must be told apart:
+            #
+            #   * The stock rose every single day - no losses at all. That is
+            #     the BEST possible result, so binning it would silently
+            #     throw away the strongest names.
+            #   * The stock did not move at all, because it is halted or
+            #     delisted and we are carrying its last price forward. That
+            #     is junk.
+            #
+            # Total volatility separates them: the flawless riser has plenty
+            # of it, the dead stock has none. So we drop anything with zero
+            # TOTAL volatility, then floor the downside figure for whoever
+            # is left. Flawless risers get the best available denominator -
+            # ranking top, still finite, and ordered among themselves by raw
+            # momentum, which is exactly right.
+            alive_row = alive.iloc[position].reindex(survivors.index) if alive is not None else None
+            usable = sd_row.notna()
+            if alive_row is not None:
+                usable = usable & alive_row.notna() & (alive_row > 0)
+            survivors = survivors[usable]
+            stddev_values = sd_row[usable]
+            positive = stddev_values[stddev_values > 0]
+            floor = float(positive.min()) if len(positive) else 1e-6
+            stddev_values = stddev_values.clip(lower=floor)
+        else:
+            # Ordinary volatility of zero means the price did not move AT
+            # ALL - a halted or delisted stock whose last price we have been
+            # carrying forward. Dividing by it produces INFINITY, which would
+            # nail that dead stock to the top of the ranking for ever. So any
+            # stock without a real, positive volatility is dropped here.
+            usable = sd_row.notna() & (sd_row > 0)
+            survivors = survivors[usable]
+            stddev_values = sd_row[usable]
 
         ranking = survivors / stddev_values
     else:
@@ -337,15 +373,49 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
     else:
         stock_ema = None
 
-    # 2. Each stock's recent volatility - the standard deviation of its
-    #    daily returns - for the volatility-adjusted ranking.
+    # 2. Each stock's recent RISK, for the risk-adjusted ranking. Which
+    #    flavour of risk depends on what the user chose:
+    #
+    #    "stddev"   - ordinary standard deviation of daily returns. Counts a
+    #                 violent jump UP as just as risky as a fall.
+    #
+    #    "downside" - downside deviation, the Sortino idea. Only the losing
+    #                 days count towards the risk figure:
+    #
+    #                     DD = sqrt( average of ( the smaller of (r, 0) )^2 )
+    #
+    #                 Every up day contributes a clean zero, so a stock that
+    #                 climbed in fast, smooth steps is NOT punished, while
+    #                 one that got there through a jagged series of drops is.
+    #                 That is usually what a trader actually means by "risk".
     stddev_period = int(settings.get("stddev_period") or 0)
+    risk_measure = str(settings.get("risk_measure") or "stddev").lower()
+    if risk_measure not in VALID_RISK_MEASURES:
+        raise ValueError(f"Unknown risk measure '{risk_measure}'.")
+    if risk_measure == "none":
+        stddev_period = 0
+
+    rolling_sd = None
+    # Total volatility, kept ONLY as a "is this stock actually alive?" test.
+    # A halted or delisted name that we are carrying forward at a flat price
+    # has zero total volatility, and must never be ranked whichever risk
+    # measure is chosen.
+    rolling_alive = None
+
     if stddev_period >= 2:
-        rolling_sd = prices.pct_change().rolling(
-            stddev_period, min_periods=stddev_period
-        ).std()
-    else:
-        rolling_sd = None
+        daily = prices.pct_change()
+        rolling_alive = daily.rolling(stddev_period, min_periods=stddev_period).std()
+        if risk_measure == "downside":
+            # Keep the losses, flatten every gain to zero, then take the
+            # root-mean-square. Note the average is over ALL N days, not just
+            # the losing ones - that is the textbook Sortino denominator, and
+            # it correctly rewards a stock for having had few down days.
+            losses = daily.clip(upper=0.0)
+            rolling_sd = (
+                (losses ** 2).rolling(stddev_period, min_periods=stddev_period).mean()
+            ) ** 0.5
+        else:
+            rolling_sd = rolling_alive
 
     calendar = prices.index
     # We can only measure momentum once we have `lookback` days of history
@@ -446,6 +516,7 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
             prices, benchmark, start_pos, lookback, top_n,
             weighting, cash_buffer, min_roc,
             stock_ema=stock_ema, rolling_sd=rolling_sd,
+            risk_measure=risk_measure, alive=rolling_alive,
         )
         picks = decision["picks"]
         cash_weight = decision["cash_weight"]

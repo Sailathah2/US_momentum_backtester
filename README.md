@@ -158,7 +158,27 @@ nothing is hidden from you.
 | **Rebalance every** | How often the portfolio is re-picked. | Monthly is a good starting point. Weekly tracks momentum closer but pays more costs. |
 | **Hold top N** | How many stocks to own. | Fewer = more concentrated and more volatile. |
 | **Stock must be above its own EMA** | An extra health check on each candidate. Beating the index is not much of an achievement if the index is falling and the stock is falling too — this insists the stock is in **its own** uptrend as well. | `Off` for the original behaviour; `100d` or `200d` to demand a genuine uptrend. |
-| **Volatility adjustment (std dev)** | `Nil` ranks on raw momentum — the biggest gainer wins, however wild the ride. Set a window and stocks are ranked by **ROC ÷ StdDev** instead: momentum earned *per unit of wobble*, so a steady 30% climber outranks a violent 40% one. | `60d` is a good starting point. |
+| **Risk adjustment** | `Nil` ranks on raw momentum — the biggest gainer wins, however wild the ride. Set a window and stocks are ranked by **ROC ÷ risk** instead: momentum earned *per unit of risk*. | `60d` is a good starting point. |
+| **Std dev / Downside dev** | Which risk figure goes in the denominator — see below. | Try both; they pick different stocks. |
+
+**Two flavours of risk.** Once you set a window, you choose what "risk" means:
+
+| Measure | Formula | What it penalises |
+|---|---|---|
+| **Std dev** | `ROC ÷ StdDev` | *Total* volatility. A violent jump **up** counts as just as risky as a fall, so a stock that rockets higher is penalised alongside one that lurches down. |
+| **Downside dev** | `ROC ÷ DownsideDev` | Only *losing* days. Every up day contributes a clean zero, so a stock that climbed in fast, smooth steps is not punished — while one that got there through a jagged series of drops is. |
+
+Downside deviation is the Sortino idea, and it is usually closer to what a trader
+actually means by risk. It is the textbook definition — the root-mean-square of the
+losing days, averaged over **all** N days in the window, not just the losing ones,
+which correctly rewards a stock for having had few down days at all.
+
+> **A subtlety worth knowing.** A downside deviation of zero means the stock had *no
+> losing days* — the best possible outcome, not bad data. The portal keeps those
+> stocks and ranks them top (ordered among themselves by raw momentum) rather than
+> discarding them. It tells them apart from genuinely dead stocks by checking total
+> volatility: a flawless riser has plenty of it, a halted stock being carried forward
+> at a flat price has none, and only the latter is dropped.
 | **Weighting** | Equal = same money in each. Momentum = the strongest gets the biggest slice. | Momentum weighting increases both return *and* risk. |
 | **Keep unfilled slots in cash** | **Ticked:** each of your N slots is worth 1/N. Only 3 stocks qualified? You invest 30% and hold 70% cash. **Unticked:** always 100% invested — those 3 stocks get a third each. | Untick it to see how much the cash buffer costs you in a bull market. |
 | **Trading cost (bps)** | Fees + slippage. 1 bp = 0.01%. | `0` for gross returns; `10` is a realistic retail estimate. Watch weekly rebalancing get much worse. |
@@ -385,7 +405,7 @@ A few decisions worth knowing about, so you can trust the numbers:
 - **ATR uses Wilder's smoothing** (alpha = 1/period), not a simple `span` average.
   Using the wrong one produces a Supertrend that quietly disagrees with every
   charting platform.
-- **The volatility adjustment changes the ranking, not the entry rule.** A stock
+- **The risk adjustment changes the ranking, not the entry rule.** A stock
   still has to beat the index on **raw** momentum to qualify — that is the
   strategy's defining filter. The std-dev setting only decides the running order
   among the stocks that already qualified.

@@ -54,7 +54,8 @@ const DEFAULT_SETTINGS = {
   // Optional extra screens on the stock picking. Both off by default, so the
   // portal behaves exactly as before until you switch them on.
   stock_ema_period: 0, // 0 = off; else stock must close above its own EMA
-  stddev_period: 0, // 0 = nil; else rank by ROC / StdDev
+  stddev_period: 0, // 0 = nil; else rank by ROC / risk
+  risk_measure: "stddev", // stddev = total volatility; downside = Sortino style
   cost_bps: 0,
   start_capital: 100000,
   start_date: "",
@@ -410,6 +411,7 @@ export default function App() {
                   trades={result.trades}
                   onExport={handleExport}
                   exporting={exporting}
+                  riskMeasure={result.settings?.risk_measure || "stddev"}
                 />
               </div>
             )}
@@ -542,7 +544,7 @@ function RunSummary({ result, regimeResult }) {
           {
             icon: Percent,
             label: "Ranked by",
-            value: `ROC/SD(${s.stddev_period})`,
+            value: `ROC/${s.risk_measure === "downside" ? "DD" : "SD"}(${s.stddev_period})`,
           },
         ]
       : []),

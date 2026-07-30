@@ -26,8 +26,26 @@ const LOOKBACKS = [20, 60, 126, 252];
 const STOCK_EMA_PRESETS = [0, 50, 100, 200];
 
 // Windows for measuring how jumpy a stock has been, used by the
-// volatility-adjusted ranking. 0 means "rank on raw momentum", as before.
+// risk-adjusted ranking. 0 means "rank on raw momentum", as before.
 const STDDEV_PRESETS = [0, 20, 60, 126];
+
+// Which risk figure goes underneath the momentum when ranking.
+const RISK_MEASURES = [
+  {
+    id: "stddev",
+    label: "Std dev",
+    formula: "ROC ÷ StdDev",
+    blurb:
+      "Total volatility. Counts a violent jump UP as just as risky as a fall, so a stock that rockets higher is penalised alongside one that lurches down.",
+  },
+  {
+    id: "downside",
+    label: "Downside dev",
+    formula: "ROC ÷ DownsideDev",
+    blurb:
+      "The Sortino idea: only losing days count towards risk. Every up day contributes a clean zero, so a stock that climbed in fast, smooth steps is not punished — while one that got there through a jagged series of drops is. This is usually what a trader actually means by risk.",
+  },
+];
 
 export default function BacktestControls({ settings, onChange, onRun, busy, symbols }) {
   /** Update one setting without disturbing the others. */
@@ -165,9 +183,9 @@ export default function BacktestControls({ settings, onChange, onRun, busy, symb
         </p>
       </div>
 
-      {/* ---------------- VOLATILITY-ADJUSTED RANKING ---------------- */}
+      {/* ---------------- RISK-ADJUSTED RANKING ---------------------- */}
       <div className="mb-4">
-        <label className="field-label">Volatility adjustment (std dev)</label>
+        <label className="field-label">Risk adjustment</label>
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {STDDEV_PRESETS.map((days) => (
             <button
@@ -188,6 +206,24 @@ export default function BacktestControls({ settings, onChange, onRun, busy, symb
             />
           )}
         </div>
+        {/* Which risk figure sits in the denominator. Only meaningful once
+            a window has been chosen. */}
+        {settings.stddev_period > 0 && (
+          <div className="mt-2 flex gap-1.5">
+            {RISK_MEASURES.map((measure) => (
+              <button
+                key={measure.id}
+                className={`chip flex-1 ${
+                  (settings.risk_measure || "stddev") === measure.id ? "chip-active" : ""
+                }`}
+                onClick={() => set("risk_measure", measure.id)}
+              >
+                {measure.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         <p className="field-help">
           {settings.stddev_period === 0 ? (
             <>
@@ -198,12 +234,20 @@ export default function BacktestControls({ settings, onChange, onRun, busy, symb
             <>
               Ranks by{" "}
               <span className="font-mono text-cream-100">
-                ROC({settings.lookback}) ÷ StdDev({settings.stddev_period})
+                ROC({settings.lookback}) ÷{" "}
+                {(settings.risk_measure || "stddev") === "downside"
+                  ? "DownsideDev"
+                  : "StdDev"}
+                ({settings.stddev_period})
               </span>{" "}
-              — momentum earned <em>per unit of wobble</em>. A steady 30% climber now
-              outranks a violent 40% one. The entry rule is unchanged: a stock still
-              has to beat the index first; this only decides the running order among
-              those that did.
+              — momentum earned <em>per unit of risk</em>.{" "}
+              {
+                RISK_MEASURES.find(
+                  (m) => m.id === (settings.risk_measure || "stddev")
+                )?.blurb
+              }{" "}
+              The entry rule is unchanged: a stock still has to beat the index first;
+              this only decides the running order among those that did.
             </>
           )}
         </p>

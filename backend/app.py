@@ -367,6 +367,10 @@ def _prepare_backtest(session, body):
         # leaving these alone reproduces the original strategy exactly.
         "stock_ema_period": int(body.get("stock_ema_period") or 0),
         "stddev_period": int(body.get("stddev_period") or 0),
+        # Which risk figure goes in the denominator of the ranking:
+        # "stddev" (total volatility) or "downside" (the Sortino idea).
+        # Defaults to stddev so older saved settings keep working.
+        "risk_measure": str(body.get("risk_measure") or "stddev").lower(),
     }
     if settings["min_roc"] not in (None, ""):
         settings["min_roc"] = float(settings["min_roc"]) / 100.0
@@ -387,6 +391,11 @@ def _prepare_backtest(session, body):
         raise ValueError("The stock EMA period must be at least 2 days (or 0 to switch it off).")
     if settings["stddev_period"] and settings["stddev_period"] < 2:
         raise ValueError("The volatility window must be at least 2 days (or 0 to switch it off).")
+    if settings["risk_measure"] not in engine.VALID_RISK_MEASURES:
+        raise ValueError(
+            f"Unknown risk measure '{settings['risk_measure']}'. Use one of: "
+            + ", ".join(engine.VALID_RISK_MEASURES)
+        )
 
     # Every screen needs its own run-up before the first trade, so the total
     # history required is however long the slowest of them is.
