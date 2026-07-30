@@ -51,6 +51,27 @@ VALID_CADENCES = ("days", "weekly", "biweekly", "monthly", "quarterly")
 # The two ways of splitting money between the chosen stocks.
 VALID_WEIGHTINGS = ("equal", "roc")
 
+# Keys that `analyse()` puts in its result for internal use only. They hold
+# pandas objects, which cannot be turned into JSON, so they MUST be removed
+# before a result is sent to the browser. Always strip them with
+# strip_private() rather than listing them by hand at each call site - doing
+# it by hand is how one of them gets forgotten and the API starts failing
+# with "Object of type Series is not JSON serializable".
+PRIVATE_RESULT_KEYS = (
+    "_equity",
+    "_benchmark",
+    "_regime_exec",
+    "_exposure_exec",
+    "_risk_off_exposure",
+)
+
+
+def strip_private(payload):
+    """Remove the internal pandas objects so a result can be JSON-encoded."""
+    for key in PRIVATE_RESULT_KEYS:
+        payload.pop(key, None)
+    return payload
+
 
 # ======================================================================
 # SECTION 1 - WHEN DO WE REBALANCE?
@@ -898,10 +919,8 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
         })
 
     # Strip the private pandas objects before this goes anywhere near JSON.
-    for payload in (filtered, unfiltered):
-        for private_key in ("_equity", "_benchmark", "_regime_exec",
-                            "_exposure_exec", "_risk_off_exposure"):
-            payload.pop(private_key, None)
+    strip_private(filtered)
+    strip_private(unfiltered)
 
     return {
         "filtered": filtered,

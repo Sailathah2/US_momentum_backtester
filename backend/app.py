@@ -429,10 +429,10 @@ def backtest():
 
         # ---- Run it ----------------------------------------------------
         result = engine.analyse(prices, benchmark, settings)
-        # These are pandas objects kept for the regime comparison; they must
-        # never reach the browser.
-        for private_key in ("_equity", "_benchmark", "_regime_exec"):
-            result.pop(private_key, None)
+        # analyse() carries some pandas objects along for the regime
+        # comparison to use. They cannot be turned into JSON, so they have to
+        # come out before this is sent to the browser.
+        engine.strip_private(result)
 
         # Remember the answer so the export buttons can rebuild the CSVs
         # without running the whole backtest a second time.
