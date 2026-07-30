@@ -207,6 +207,19 @@ switches** where EMA alone gave 31 and Supertrend alone gave 34.
 | **EMA period** | 200 | The classic long-term trend line. Shorter reacts sooner but changes its mind far more often. |
 | **ATR period** | 10 | How many days of movement feed the volatility estimate. |
 | **Multiplier** | 3.0 | How far the trailing stop sits from price, in ATRs. Higher = looser, fewer exits. |
+| **Cash when Risk-OFF** | 100% | How much of the portfolio moves to cash on a Risk-OFF day. **100%** = fully defensive, sell everything. **50%** = halve the position and ride the rest out. **0%** = the filter does nothing. |
+
+**About partial cash.** Going 100% to cash is the strictest setting, but it is not
+always the best one — you miss the recovery bounce as well as the fall. Holding
+part of the book through a downtrend is a middle path: less upside given up, but
+some downside kept. On five years of test data, the *shallowest* drawdown came at
+**75% cash (−48.9%)**, not at 100% (−52.2%) — going fully flat meant re-entering
+after the bounce had already happened.
+
+> When you use partial cash, judge the run on **average exposure**, not "time in
+> market". Time in market counts *days* the filter was fully Risk-ON; average
+> exposure is the share of *capital* actually at risk, which is the honest number
+> once you are holding part of the book through Risk-OFF days.
 
 Press **Compare filter ON vs OFF**. The same strategy runs **twice** — with the
 filter and without — so you can see exactly what it cost and what it saved:
@@ -335,10 +348,10 @@ A few decisions worth knowing about, so you can trust the numbers:
 - **ATR uses Wilder's smoothing** (alpha = 1/period), not a simple `span` average.
   Using the wrong one produces a Supertrend that quietly disagrees with every
   charting platform.
-- **Regime switches are charged as full round trips** — going to cash sells the
-  whole book, coming back rebuys it, so each flip costs turnover of 1.0 at your bps
-  setting. Rebalances that happen while in cash cost nothing, because no shares
-  actually move.
+- **Regime switches are charged on how much the exposure moved.** Going 100% to
+  cash sells the whole book (turnover 1.0); going to 40% cash sells only 40% of it,
+  and costs 40% as much. Rebalances are charged the same way — while fully in cash
+  no shares move, so the rebalance is free.
 - **There is only ever one y-axis on a chart.** Two different scales on one chart is
   the easiest way to fool yourself, so the app never does it.
 

@@ -45,6 +45,11 @@ const MODES = [
 // Common EMA lengths. 200 is the classic long-term trend line.
 const EMA_PRESETS = [20, 50, 100, 200];
 
+// How much to move to cash on a Risk-OFF day. 100% is the classic
+// "get out of the market entirely"; the lower values let you de-risk
+// part of the book instead of all of it.
+const CASH_PRESETS = [25, 50, 75, 100];
+
 export default function RegimeControls({
   settings,
   onChange,
@@ -188,6 +193,82 @@ export default function RegimeControls({
             </div>
           )}
 
+          {/* ---------------- HOW MUCH CASH ON RISK-OFF --------------- */}
+          <div>
+            <label className="field-label">Cash to hold when Risk-OFF</label>
+
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {CASH_PRESETS.map((percent) => (
+                <button
+                  key={percent}
+                  className={`chip ${
+                    settings.risk_off_cash_pct === percent ? "chip-active" : ""
+                  }`}
+                  onClick={() => set("risk_off_cash_pct", percent)}
+                >
+                  {percent}%
+                </button>
+              ))}
+            </div>
+
+            {/* A slider as well as the presets, because this is a feel
+                setting people like to nudge rather than type. */}
+            <div className="mt-2.5 flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={5}
+                value={settings.risk_off_cash_pct}
+                onChange={(e) => set("risk_off_cash_pct", Number(e.target.value))}
+                className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-brief-line accent-precision-500"
+              />
+              <input
+                type="number"
+                min={0}
+                max={100}
+                className="field !w-20 !py-1.5 !text-xs"
+                value={settings.risk_off_cash_pct}
+                onChange={(e) => {
+                  const raw = Number(e.target.value);
+                  // Keep it inside 0-100 whatever the user types.
+                  const clamped = Math.min(100, Math.max(0, Number.isNaN(raw) ? 0 : raw));
+                  set("risk_off_cash_pct", clamped);
+                }}
+              />
+            </div>
+
+            {/* Spell out in plain words what the current number will do. */}
+            <p className="field-help">
+              On a Risk-OFF day the portfolio moves{" "}
+              <strong className="text-cream-100">{settings.risk_off_cash_pct}%</strong> to
+              cash and keeps{" "}
+              <strong className="text-cream-100">
+                {100 - settings.risk_off_cash_pct}%
+              </strong>{" "}
+              invested in the momentum picks.
+              {settings.risk_off_cash_pct === 100 && (
+                <> Fully defensive — no market exposure at all while the filter is off.</>
+              )}
+              {settings.risk_off_cash_pct > 0 && settings.risk_off_cash_pct < 100 && (
+                <>
+                  {" "}
+                  A middle path: you give up less upside than going fully to cash, but
+                  you also keep some of the downside.
+                </>
+              )}
+              {settings.risk_off_cash_pct === 0 && (
+                <>
+                  {" "}
+                  <span className="text-amber-400">
+                    At 0% the filter never actually does anything — both runs will be
+                    identical.
+                  </span>
+                </>
+              )}
+            </p>
+          </div>
+
           {/* ---------------- WHAT WILL HAPPEN ------------------------ */}
           <div className="rounded-lg border border-brief-line bg-brief-surface p-3">
             <div className="flex items-center gap-2">
@@ -200,6 +281,14 @@ export default function RegimeControls({
               The same strategy is run <strong>twice</strong> — once with this filter
               and once without — so you can see exactly what the filter cost you in
               return and what it saved you in drawdown.
+              {settings.risk_off_cash_pct < 100 && settings.risk_off_cash_pct > 0 && (
+                <>
+                  {" "}
+                  Because you are holding {100 - settings.risk_off_cash_pct}% through
+                  Risk-OFF days, watch the <strong>average exposure</strong> figure
+                  rather than &quot;time in market&quot;.
+                </>
+              )}
             </p>
           </div>
 

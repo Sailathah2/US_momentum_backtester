@@ -44,12 +44,13 @@ function money(value) {
   return Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
-function ChartTooltip({ active, payload, label, startCapital }) {
+function ChartTooltip({ active, payload, label, startCapital, riskOffExposure = 0 }) {
   if (!active || !payload?.length) return null;
 
   // Every point carries its own regime flag, so the tooltip can say whether
-  // you were invested or in cash on that exact day.
+  // you were invested or de-risked on that exact day.
   const riskOn = payload[0]?.payload?.risk_on === 1;
+  const cashPercent = Math.round((1 - riskOffExposure) * 100);
 
   return (
     <div className="rounded-lg border border-brief-line bg-brief-panel/95 px-3 py-2 shadow-panel backdrop-blur">
@@ -62,7 +63,7 @@ function ChartTooltip({ active, payload, label, startCapital }) {
             color: riskOn ? REGIME_ON : "#CBD5E1",
           }}
         >
-          {riskOn ? "Risk-ON" : "In cash"}
+          {riskOn ? "Risk-ON" : `Risk-OFF · ${cashPercent}% cash`}
         </span>
       </div>
 
@@ -97,7 +98,11 @@ function ChartTooltip({ active, payload, label, startCapital }) {
  * days it covers, so the strip lines up with the chart above it (Recharts
  * spaces category points evenly, so one day = one equal slice).
  */
-function RegimeStrip({ data }) {
+function RegimeStrip({ data, riskOffExposure = 0 }) {
+  // How much cash the user chose to hold on a Risk-OFF day. At 0 exposure
+  // this is the classic "everything to cash"; above that the labels have to
+  // say so, or the strip would claim a flat line that is not flat.
+  const cashPercent = Math.round((1 - riskOffExposure) * 100);
   const blocks = [];
   let current = null;
 
@@ -122,9 +127,13 @@ function RegimeStrip({ data }) {
               flexGrow: block.days,
               backgroundColor: block.state ? REGIME_ON : REGIME_OFF,
             }}
-            title={`${block.state ? "Risk-ON (invested)" : "Risk-OFF (cash)"}: ${
-              block.start
-            } to ${block.end} — ${block.days} trading day${block.days === 1 ? "" : "s"}`}
+            title={`${
+              block.state
+                ? "Risk-ON (fully invested)"
+                : `Risk-OFF (${cashPercent}% cash)`
+            }: ${block.start} to ${block.end} — ${block.days} trading day${
+              block.days === 1 ? "" : "s"
+            }`}
           />
         ))}
       </div>
@@ -143,7 +152,7 @@ function RegimeStrip({ data }) {
             className="h-2.5 w-2.5 rounded-sm"
             style={{ backgroundColor: REGIME_OFF }}
           />
-          Risk-OFF — 100% cash
+          Risk-OFF — {cashPercent}% cash
         </span>
         <span className="ml-auto">
           {blocks.length - 1} switch{blocks.length - 1 === 1 ? "" : "es"} across{" "}
@@ -154,10 +163,20 @@ function RegimeStrip({ data }) {
   );
 }
 
-export default function EquityComparisonChart({ data, startCapital, benchmarkName }) {
+export default function EquityComparisonChart({
+  data,
+  startCapital,
+  benchmarkName,
+  riskOffExposure = 0,
+}) {
   const [logScale, setLogScale] = useState(false);
 
   if (!data?.length) return null;
+
+  // True when the user keeps part of the book through Risk-OFF days, which
+  // changes what the caption below can honestly claim.
+  const partialCash = riskOffExposure > 0;
+  const heldPercent = Math.round(riskOffExposure * 100);
 
   return (
     <section className="brief-card p-5">
@@ -208,7 +227,12 @@ export default function EquityComparisonChart({ data, startCapital, benchmarkNam
             />
 
             <Tooltip
-              content={<ChartTooltip startCapital={startCapital} />}
+              content={
+                <ChartTooltip
+                  startCapital={startCapital}
+                  riskOffExposure={riskOffExposure}
+                />
+              }
               cursor={{ stroke: "#64748B", strokeWidth: 1, strokeDasharray: "3 3" }}
             />
             <Legend
@@ -253,13 +277,25 @@ export default function EquityComparisonChart({ data, startCapital, benchmarkNam
       </div>
 
       {/* ---- The regime timeline, directly under the x-axis ---------- */}
-      <RegimeStrip data={data} />
+      <RegimeStrip data={data} riskOffExposure={riskOffExposure} />
 
       <p className="mt-3 text-2xs leading-relaxed text-brief-muted">
-        Where the strip is grey the filter was holding cash, so the blue line runs
-        flat while the violet one keeps moving. Flat stretches during a violet
-        <em> fall</em> are the filter working; flat stretches during a violet{" "}
-        <em>rally</em> are what it cost you.
+        {partialCash ? (
+          <>
+            Where the strip is grey the filter had you holding only {heldPercent}% of
+            the book, so the blue line moves at {heldPercent}% of the violet one&apos;s
+            pace. Muted stretches during a violet <em>fall</em> are the filter
+            working; muted stretches during a violet <em>rally</em> are what it cost
+            you.
+          </>
+        ) : (
+          <>
+            Where the strip is grey the filter was holding cash, so the blue line runs
+            flat while the violet one keeps moving. Flat stretches during a violet{" "}
+            <em>fall</em> are the filter working; flat stretches during a violet{" "}
+            <em>rally</em> are what it cost you.
+          </>
+        )}
       </p>
     </section>
   );

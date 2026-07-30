@@ -257,6 +257,28 @@ def run_backtest(prices, benchmark, settings, regime=None):
         # No filter: we are invested every single day.
         regime_exec = pd.Series(True, index=calendar)
 
+    # ------------------------------------------------------------------
+    # HOW MUCH CASH TO HOLD WHEN THE FILTER SAYS "RISK-OFF"
+    # ------------------------------------------------------------------
+    # 100 means "sell everything and sit in cash" - the strictest setting.
+    # 50 means "halve the position and ride the rest out". 0 means "ignore
+    # the filter entirely", which is the same as not using one.
+    #
+    # We turn that percentage into an EXPOSURE: the share of the book we
+    # still hold. Exposure 1.0 = fully invested, 0.0 = entirely in cash.
+    risk_off_cash = float(settings.get("risk_off_cash_pct", 100.0)) / 100.0
+    risk_off_cash = min(1.0, max(0.0, risk_off_cash))  # clamp to 0-100%
+    risk_off_exposure = 1.0 - risk_off_cash
+
+    # One exposure number per day: full on Risk-ON days, reduced on
+    # Risk-OFF days. Everything downstream just multiplies by this, so the
+    # old all-or-nothing behaviour is simply the case where it hits 0.0.
+    exposure_exec = pd.Series(
+        np.where(regime_exec.to_numpy(), 1.0, risk_off_exposure),
+        index=calendar,
+        dtype=float,
+    )
+
     regime_switch_costs = 0.0
     regime_switch_count = 0
 
@@ -304,13 +326,13 @@ def run_backtest(prices, benchmark, settings, regime=None):
              - drifted_weights.reindex(all_tickers).fillna(0.0)).abs().sum()
         )
 
-        # If the regime filter has us sitting in cash on this rebalance day,
-        # no shares actually change hands, so there is nothing to pay for.
-        # We still work out the target weights above, because we need to
+        # We only trade the part of the book we are actually holding. At
+        # 100% cash nothing changes hands and the rebalance is free; at 40%
+        # cash we shuffle the remaining 60%, so we pay 60% of the cost. The
+        # target weights are still worked out in full, because we need to
         # know what to buy the moment the filter lets us back in.
-        invested_at_rebalance = bool(regime_exec.loc[rebalance_date])
-        if not invested_at_rebalance:
-            turnover = 0.0
+        exposure_at_rebalance = float(exposure_exec.loc[rebalance_date])
+        turnover = turnover * exposure_at_rebalance
 
         cost_fraction = turnover * (cost_bps / 10000.0)
         cost_amount = equity * cost_fraction
@@ -350,27 +372,28 @@ def run_backtest(prices, benchmark, settings, regime=None):
         # the return earned ON window_dates[k + 1].
         daily_returns = (portfolio_growth[1:] / portfolio_growth[:-1]) - 1.0
 
-        # Was the filter letting us hold shares on each of those days?
-        invested_today = regime_exec.reindex(window_dates[1:]).fillna(True).to_numpy()
+        # How much of the book were we holding on each of those days?
+        exposure_today = exposure_exec.reindex(window_dates[1:]).fillna(1.0).to_numpy()
 
-        # In cash the portfolio simply does not move: the return becomes 0.
-        effective_returns = np.where(invested_today, daily_returns, 0.0)
+        # Scale each day's return by that exposure. Holding half the book
+        # earns half the move; holding none of it earns nothing at all.
+        effective_returns = daily_returns * exposure_today
 
-        # Charge for getting out and back in. Every flip means selling the
-        # whole book or rebuying it, so turnover is a full 1.0 each time.
-        # Only periods that actually hold something can incur this.
+        # Charge for getting out and back in. The turnover of a switch is
+        # how much the exposure MOVED - going 100% to cash sells the whole
+        # book (turnover 1.0), going to 40% cash sells only 40% of it.
         if picks and regime is not None:
-            previous_state = bool(regime_exec.loc[window_dates[0]])
-            for day_number, state in enumerate(invested_today):
-                if bool(state) != previous_state:
+            previous_exposure = float(exposure_exec.loc[window_dates[0]])
+            for day_number, exposure_value in enumerate(exposure_today):
+                if exposure_value != previous_exposure:
                     regime_switch_count += 1
-                    switch_cost = cost_bps / 10000.0
+                    switch_cost = abs(exposure_value - previous_exposure) * (cost_bps / 10000.0)
                     # Fold the cost straight into that day's return.
                     effective_returns[day_number] = (
                         (1.0 + effective_returns[day_number]) * (1.0 - switch_cost) - 1.0
                     )
                     regime_switch_costs += switch_cost
-                    previous_state = bool(state)
+                    previous_exposure = exposure_value
 
         # Re-compound the muted returns back into a growth path that starts
         # at 1.0 on the rebalance date.
@@ -388,12 +411,14 @@ def run_backtest(prices, benchmark, settings, regime=None):
         period_return = (equity / period_start_equity) - 1.0 if period_start_equity else 0.0
 
         # ---- What are we left holding? (weights drift with prices) ----
-        # If the filter had us in cash on the final day of the period, we
-        # are holding nothing at all - so the next rebalance has to buy the
-        # whole book from scratch and pay full turnover for it.
-        ended_in_cash = not bool(regime_exec.loc[window_dates[-1]])
+        # If the filter had us FULLY in cash on the final day, we hold
+        # nothing at all - so the next rebalance buys the whole book from
+        # scratch and pays full turnover. At partial cash we still own the
+        # remaining positions, so those weights carry over and drift as
+        # normal.
+        ended_flat = float(exposure_exec.loc[window_dates[-1]]) <= 0.0
 
-        if picks and not ended_in_cash:
+        if picks and not ended_flat:
             final_growth = growth.iloc[-1]
             grown_weights = target_weights.reindex(held) * final_growth
             total_grown = float(grown_weights.sum()) + cash_weight
@@ -467,6 +492,9 @@ def run_backtest(prices, benchmark, settings, regime=None):
         # The regime as it was actually TRADED (already shifted by a day),
         # trimmed to the days the strategy was really running.
         "regime_exec": regime_exec.loc[equity_curve.index],
+        # The matching equity exposure, 0.0 - 1.0, for each of those days.
+        "exposure_exec": exposure_exec.loc[equity_curve.index],
+        "risk_off_exposure": risk_off_exposure,
         "regime_switch_count": regime_switch_count,
         "regime_switch_costs": regime_switch_costs,
     }
@@ -697,6 +725,8 @@ def analyse(prices, benchmark, settings, regime=None):
         "_equity": equity,
         "_benchmark": bench,
         "_regime_exec": result["regime_exec"],
+        "_exposure_exec": result["exposure_exec"],
+        "_risk_off_exposure": result["risk_off_exposure"],
     }
 
 
@@ -731,7 +761,15 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
     # strategy was live - not over the whole file - so the percentage
     # answers "while I was running this, how often did I hold shares?".
     traded_regime = filtered["_regime_exec"]
+    traded_exposure = filtered["_exposure_exec"]
+    risk_off_exposure = filtered["_risk_off_exposure"]
     exposure = summarise_regime(traded_regime)
+
+    # "Time in market" counts DAYS at full exposure. When the user chooses
+    # partial cash, that alone understates things - on a Risk-OFF day they
+    # still hold some of the book. So we also report the average exposure,
+    # which is the honest single number for "how invested was I overall?".
+    average_exposure = float(traded_exposure.mean()) if len(traded_exposure) else None
 
     # ---- Build the comparison table ------------------------------------
     on_metrics = filtered["metrics"]
@@ -799,6 +837,14 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
             "on": _clean(exposure["time_in_cash"]),
             "delta": _clean(exposure["time_in_cash"]),
         },
+        # The average share of capital actually at risk. With the default
+        # 100% cash setting this equals time_in_market; with partial cash
+        # it sits higher, because Risk-OFF days are no longer fully flat.
+        "average_exposure": {
+            "off": 1.0,
+            "on": _clean(average_exposure),
+            "delta": _clean((average_exposure or 0) - 1.0),
+        },
         "regime_switches": {
             "off": 0,
             "on": exposure["switches"],
@@ -853,9 +899,9 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
 
     # Strip the private pandas objects before this goes anywhere near JSON.
     for payload in (filtered, unfiltered):
-        payload.pop("_equity", None)
-        payload.pop("_benchmark", None)
-        payload.pop("_regime_exec", None)
+        for private_key in ("_equity", "_benchmark", "_regime_exec",
+                            "_exposure_exec", "_risk_off_exposure"):
+            payload.pop(private_key, None)
 
     return {
         "filtered": filtered,
@@ -864,6 +910,10 @@ def compare_with_regime(prices, benchmark, settings, regime_frame):
         "exposure": {
             "time_in_market": _clean(exposure["time_in_market"]),
             "time_in_cash": _clean(exposure["time_in_cash"]),
+            "average_exposure": _clean(average_exposure),
+            # What the user chose to hold on a Risk-OFF day, as a fraction
+            # still invested (1.0 - their cash percentage).
+            "risk_off_exposure": _clean(risk_off_exposure),
             "switches": exposure["switches"],
             "days_in_market": exposure["days_in_market"],
             "days_in_cash": exposure["days_in_cash"],

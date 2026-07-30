@@ -62,6 +62,9 @@ const DEFAULT_SETTINGS = {
   ema_period: 200, // the classic long-term trend line
   atr_period: 10, // Supertrend's volatility lookback
   st_multiplier: 3.0, // how many ATRs away the trailing stop sits
+  // How much of the portfolio moves to cash on a Risk-OFF day.
+  // 100 = sell everything (the classic, strictest setting).
+  risk_off_cash_pct: 100,
 };
 
 export default function App() {
@@ -354,6 +357,7 @@ export default function App() {
                       data={regimeResult.curve}
                       startCapital={result.summary.start_capital}
                       benchmarkName={regimeResult.benchmark}
+                      riskOffExposure={regimeResult.exposure?.risk_off_exposure ?? 0}
                     />
 
                     <ComparisonMetricsCard
@@ -567,7 +571,7 @@ function RunSummary({ result, regimeResult }) {
               {regimeLabel}
             </p>
             <p className="font-mono text-[10px] text-brief-muted">
-              watching {s.regime_index}
+              watching {s.regime_index} &middot; {s.risk_off_cash_pct ?? 100}% cash off
             </p>
           </div>
         )}

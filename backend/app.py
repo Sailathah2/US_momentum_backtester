@@ -360,6 +360,9 @@ def _prepare_backtest(session, body):
         "start_capital": float(body.get("start_capital", 100000.0)),
         "risk_free_rate": float(body.get("risk_free_rate", 0.0)) / 100.0,
         "min_roc": body.get("min_roc", None),
+        # How much of the portfolio moves to cash on a Risk-OFF day.
+        # 100 = sell everything (the strictest, and the default).
+        "risk_off_cash_pct": float(body.get("risk_off_cash_pct", 100.0)),
     }
     if settings["min_roc"] not in (None, ""):
         settings["min_roc"] = float(settings["min_roc"]) / 100.0
@@ -374,6 +377,8 @@ def _prepare_backtest(session, body):
         raise ValueError("The lookback window must be at least 2 trading days.")
     if settings["top_n"] < 1:
         raise ValueError("Top N must be at least 1.")
+    if not 0.0 <= settings["risk_off_cash_pct"] <= 100.0:
+        raise ValueError("The Risk-OFF cash percentage must be between 0 and 100.")
 
     # ---- Build the aligned price tables -------------------------------
     series_list = [

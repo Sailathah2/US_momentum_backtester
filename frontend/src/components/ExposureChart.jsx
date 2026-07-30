@@ -15,7 +15,7 @@
  * catastrophically wrong.
  */
 import React from "react";
-import { PieChart as PieIcon, Repeat, Wallet } from "lucide-react";
+import { Gauge, PieChart as PieIcon, Repeat, Wallet } from "lucide-react";
 
 const REGIME_ON = "#22C55E"; // green - invested
 const REGIME_OFF = "#475569"; // slate - cash
@@ -44,6 +44,12 @@ export default function ExposureChart({ exposure }) {
 
   const inMarket = exposure.time_in_market ?? 0;
   const inCash = exposure.time_in_cash ?? 0;
+
+  // How much of the book is still held on a Risk-OFF day. 0 means the
+  // classic "everything to cash"; anything above that is partial de-risking,
+  // which changes what the labels below should honestly say.
+  const riskOffExposure = exposure.risk_off_exposure ?? 0;
+  const partialCash = riskOffExposure > 0;
 
   // Guard against a zero-length run so the bar never collapses to NaN width.
   const marketPercent = Math.max(0, Math.min(100, inMarket * 100));
@@ -99,16 +105,31 @@ export default function ExposureChart({ exposure }) {
       <div className="mt-2 flex flex-wrap items-center gap-4 text-2xs">
         <span className="flex items-center gap-1.5 text-cream-200">
           <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: REGIME_ON }} />
-          In market — {pct(inMarket)}
+          Risk-ON, fully invested — {pct(inMarket)}
         </span>
         <span className="flex items-center gap-1.5 text-cream-200">
           <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: REGIME_OFF }} />
-          In cash — {pct(inCash)}
+          {partialCash
+            ? `Risk-OFF, ${pct(1 - riskOffExposure, 0)} cash — ${pct(inCash)}`
+            : `Risk-OFF, 100% cash — ${pct(inCash)}`}
         </span>
       </div>
 
+      {/* When the user keeps part of the book through Risk-OFF days, the
+          bar above no longer tells the whole story - it counts DAYS, not
+          money at risk. Say so explicitly rather than let it mislead. */}
+      {partialCash && (
+        <p className="mt-2 rounded-lg border border-brief-line bg-brief-surface px-3 py-2 text-2xs leading-relaxed text-brief-muted">
+          The bar counts <strong>days</strong>, not money. Because you hold{" "}
+          {pct(riskOffExposure, 0)} of the book through Risk-OFF days, your capital was
+          never fully out of the market — the{" "}
+          <strong className="text-cream-100">average exposure</strong> figure below is
+          the number to judge this run on.
+        </p>
+      )}
+
       {/* ---- The same information as hard numbers -------------------- */}
-      <div className="mt-4 grid grid-cols-3 gap-3">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat
           icon={Wallet}
           label="Days invested"
@@ -117,9 +138,19 @@ export default function ExposureChart({ exposure }) {
         />
         <Stat
           icon={Wallet}
-          label="Days in cash"
+          label="Days de-risked"
           value={exposure.days_in_cash?.toLocaleString() ?? "—"}
-          sub="zero market risk on these days"
+          sub={
+            partialCash
+              ? `holding ${pct(riskOffExposure, 0)} of the book`
+              : "zero market risk on these days"
+          }
+        />
+        <Stat
+          icon={Gauge}
+          label="Avg. exposure"
+          value={pct(exposure.average_exposure)}
+          sub="capital actually at risk"
         />
         <Stat
           icon={Repeat}
