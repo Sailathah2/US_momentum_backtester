@@ -131,6 +131,62 @@ export async function runRegimeAnalysis(payload) {
 }
 
 /**
+ * Download the WHOLE run as one file with a sheet per table.
+ *
+ * `format` is "xlsx" for a real Excel workbook (one tab per sheet), or
+ * "csv" for a ZIP holding one .csv per sheet - a single CSV file cannot
+ * hold multiple sheets, so a folder of them is the honest equivalent.
+ */
+export async function downloadReport(sessionId, format = "xlsx") {
+  try {
+    const response = await http.post(
+      "/export-report",
+      { session_id: sessionId, format },
+      { responseType: "blob" }
+    );
+    saveBlob(response, `momentum_report.${format === "csv" ? "zip" : "xlsx"}`);
+    return true;
+  } catch (error) {
+    throw new Error(await blobError(error));
+  }
+}
+
+/**
+ * Turn a downloaded blob into a file on the user's computer, using the
+ * filename the server suggested when it sent one.
+ */
+function saveBlob(response, fallbackName) {
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+
+  const disposition = response.headers["content-disposition"] || "";
+  const match = disposition.match(/filename="?([^"]+)"?/);
+  link.download = match ? match[1] : fallbackName;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+/**
+ * A failed file download hides its error message INSIDE the blob, so we
+ * have to read the blob back out to find out what actually went wrong.
+ */
+async function blobError(error) {
+  if (error.response?.data instanceof Blob) {
+    try {
+      const parsed = JSON.parse(await error.response.data.text());
+      if (parsed.error) return parsed.error;
+    } catch {
+      /* the blob was not JSON after all - fall through */
+    }
+  }
+  return readableError(error);
+}
+
+/**
  * Download one of the result tables as a CSV file.
  * `kind` is "trades", "rebalances", "timeseries" or "monthly".
  */
@@ -144,36 +200,9 @@ export async function exportCsv(sessionId, kind) {
 
     // Turn the received file into a download by creating a temporary link
     // and clicking it on the user's behalf.
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-
-    // Use the filename the server suggested, if it sent one.
-    const disposition = response.headers["content-disposition"] || "";
-    const match = disposition.match(/filename="?([^"]+)"?/);
-    link.download = match ? match[1] : `momentum_${kind}.csv`;
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    saveBlob(response, `momentum_${kind}.csv`);
     return true;
   } catch (error) {
-    // A failed blob download hides its error message inside the blob itself,
-    // so we have to read the blob back out to find out what went wrong.
-    //
-    // Note the parse happens INSIDE the try but the throw happens OUTSIDE it.
-    // Throwing from inside would be caught by our own catch and replaced with
-    // the useless generic message, hiding the real reason every single time.
-    if (error.response?.data instanceof Blob) {
-      let serverMessage = null;
-      try {
-        serverMessage = JSON.parse(await error.response.data.text()).error;
-      } catch {
-        serverMessage = null; // the blob was not JSON after all
-      }
-      throw new Error(serverMessage || "The export failed.");
-    }
-    throw new Error(readableError(error));
+    throw new Error(await blobError(error));
   }
 }

@@ -20,6 +20,7 @@ import {
   checkHealth,
   exportCsv,
   runBacktest,
+  downloadReport,
   runRegimeAnalysis,
   scanFolder,
   uploadFiles,
@@ -249,6 +250,19 @@ export default function App() {
     }
   }
 
+  /** The whole run as one file - settings, metrics and every table. */
+  async function handleReport(format) {
+    setError(null);
+    setExporting(true);
+    try {
+      await downloadReport(sessionId, format);
+    } catch (exception) {
+      setError(exception.message);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-brief-bg">
       <Header online={online} universeSize={symbols.length} />
@@ -410,6 +424,7 @@ export default function App() {
                   rebalances={result.rebalances}
                   trades={result.trades}
                   onExport={handleExport}
+                  onReport={handleReport}
                   exporting={exporting}
                   riskMeasure={result.settings?.risk_measure || "stddev"}
                 />

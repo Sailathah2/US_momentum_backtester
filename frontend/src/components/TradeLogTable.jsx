@@ -12,7 +12,14 @@
  * Both can be downloaded as CSV so the numbers can be checked in Excel.
  */
 import React, { useMemo, useState } from "react";
-import { Download, Loader2, Search, Table2 } from "lucide-react";
+import {
+  Download,
+  FileArchive,
+  FileSpreadsheet,
+  Loader2,
+  Search,
+  Table2,
+} from "lucide-react";
 
 /** Format a fraction as a signed percentage: 0.0432 -> "+4.32%". */
 function pct(value, digits = 2) {
@@ -33,6 +40,7 @@ export default function TradeLogTable({
   rebalances,
   trades,
   onExport,
+  onReport,
   exporting,
   riskMeasure = "stddev",
 }) {
@@ -77,7 +85,33 @@ export default function TradeLogTable({
         </div>
 
         {/* -- Export buttons ------------------------------------------ */}
-        <div className="ml-auto flex flex-wrap gap-2">
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          {/* The full report comes first: it contains everything the four
+              single-table buttons do, plus the settings and the metrics. */}
+          <button
+            className="btn-primary !px-3 !py-1.5 !text-xs"
+            onClick={() => onReport("xlsx")}
+            disabled={exporting}
+          >
+            {exporting ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <FileSpreadsheet className="h-3.5 w-3.5" />
+            )}
+            Full report (Excel)
+          </button>
+          <button
+            className="btn-ghost !px-3 !py-1.5 !text-xs"
+            onClick={() => onReport("csv")}
+            disabled={exporting}
+            title="One CSV per sheet, bundled in a ZIP"
+          >
+            <FileArchive className="h-3.5 w-3.5" />
+            Full report (CSVs)
+          </button>
+
+          <span className="mx-1 hidden h-5 w-px bg-brief-line sm:block" />
+
           <button
             className="btn-ghost !px-3 !py-1.5 !text-xs"
             onClick={() => onExport("rebalances")}

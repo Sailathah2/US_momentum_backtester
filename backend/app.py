@@ -39,6 +39,7 @@ import io
 import os
 import traceback
 import uuid
+import zipfile
 from datetime import datetime
 
 import pandas as pd
@@ -740,6 +741,286 @@ def _csv_response(buffer, name):
         as_attachment=True,
         download_name=f"momentum_{name}_{stamp}.csv",
     )
+
+
+# ======================================================================
+# ENDPOINT 6b - THE FULL REPORT (every table in one file)
+# ======================================================================
+
+# The sheets that go into the report, in order. Sheet names are capped at 31
+# characters because that is Excel's hard limit.
+REPORT_SHEETS = (
+    ("1. Inputs", "the settings that produced this run"),
+    ("2. Metrics", "headline performance, portfolio vs benchmark"),
+    ("3. Regime Comparison", "filter ON vs OFF (only when a regime run)"),
+    ("4. Equity Curve", "daily portfolio, benchmark and drawdowns"),
+    ("5. Rebalance Log", "one row per rebalance period"),
+    ("6. Trade Log", "one row per stock per period"),
+    ("7. Monthly Returns", "the calendar grid"),
+)
+
+# How each setting should be labelled and explained on the Inputs sheet, so
+# the workbook makes sense months later without the app open beside it.
+SETTING_LABELS = {
+    "benchmark": ("Benchmark / index", "Every stock must beat this to be bought"),
+    "universe_size": ("Stocks in universe", "How many symbols were ranked"),
+    "lookback": ("Lookback (trading days)", "Window used to measure momentum"),
+    "cadence": ("Rebalance cadence", "How often the portfolio is re-picked"),
+    "every_n_days": ("Every N days", "Only used when cadence is 'days'"),
+    "top_n": ("Hold top N", "How many stocks to own"),
+    "weighting": ("Weighting", "equal = same money each; roc = by momentum"),
+    "cash_buffer": ("Keep unfilled slots in cash", "Each slot is 1/N when ticked"),
+    "cost_bps": ("Trading cost (bps)", "Fees + slippage; 1 bp = 0.01%"),
+    "start_capital": ("Starting capital", "Cosmetic - only scales the chart"),
+    "risk_free_rate": ("Risk-free rate", "Used by Sharpe and Sortino"),
+    "min_roc": ("Minimum ROC hurdle", "Extra absolute momentum requirement"),
+    "stock_ema_period": ("Stock EMA gate", "Stock must close above its own EMA; 0 = off"),
+    "stddev_period": ("Risk window", "Window for the risk-adjusted ranking; 0 = off"),
+    "risk_measure": ("Risk measure", "stddev = total volatility; downside = Sortino style"),
+    "regime_mode": ("Regime filter mode", "disabled / ema / supertrend / both"),
+    "regime_timeframe": ("Regime candles", "daily or weekly bars"),
+    "regime_index": ("Regime index watched", "Which file the macro filter reads"),
+    "ema_period": ("Regime EMA period", "Counts WEEKS when candles are weekly"),
+    "atr_period": ("Supertrend ATR period", "Volatility lookback for Supertrend"),
+    "st_multiplier": ("Supertrend multiplier", "How far the stop sits, in ATRs"),
+    "risk_off_cash_pct": ("Risk-OFF cash (%)", "How much is pulled out on a Risk-OFF day"),
+    "risk_off_asset": ("Risk-OFF parked in", "Where that money sits; blank = plain cash"),
+}
+
+
+def _report_tables(session):
+    """
+    Turn the last run into an ordered dict of {sheet name: list-of-rows}.
+
+    Every sheet is a plain list of dictionaries, so the same tables can be
+    written either as one Excel workbook or as a folder of CSV files.
+    """
+    result = session.get("last_result")
+    if not result:
+        raise ValueError("Run a backtest first - there is nothing to report on yet.")
+
+    settings = session.get("last_settings") or {}
+    regime = session.get("last_regime")
+
+    # ---- Sheet 1: every input, labelled and explained -----------------
+    inputs = []
+    for key, (label, note) in SETTING_LABELS.items():
+        if key not in settings:
+            continue
+        value = settings[key]
+        if key == "risk_free_rate" and isinstance(value, (int, float)):
+            value = f"{value * 100:g}%"      # stored as a fraction internally
+        if key == "min_roc" and isinstance(value, (int, float)):
+            value = f"{value * 100:g}%"
+        if value is None or value == "":
+            value = "off" if key in ("risk_off_asset", "min_roc") else "-"
+        if isinstance(value, bool):
+            value = "yes" if value else "no"
+        inputs.append({"Setting": label, "Value": value, "What it does": note})
+
+    inputs.append({"Setting": "Report generated",
+                   "Value": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                   "What it does": "Local time this workbook was built"})
+    inputs.append({"Setting": "Backtest window",
+                   "Value": f"{result['metrics'].get('start_date')} to {result['metrics'].get('end_date')}",
+                   "What it does": "First and last day the strategy was live"})
+
+    # ---- Sheet 2: metrics side by side with the benchmark -------------
+    labels = [
+        ("total_return", "Total return", "pct"), ("cagr", "CAGR", "pct"),
+        ("annual_volatility", "Volatility (annual)", "pct"),
+        ("sharpe", "Sharpe ratio", "num"), ("sortino", "Sortino ratio", "num"),
+        ("max_drawdown", "Max drawdown", "pct"), ("calmar", "Calmar ratio", "num"),
+        ("win_rate", "Win rate", "pct"), ("best_period", "Best period", "pct"),
+        ("worst_period", "Worst period", "pct"), ("start_value", "Starting value", "raw"),
+        ("end_value", "Final value", "raw"), ("years", "Years tested", "num"),
+    ]
+    mine, theirs = result["metrics"], result.get("benchmark_metrics") or {}
+
+    def fmt(value, kind):
+        if value is None:
+            return ""
+        if kind == "pct":
+            return round(value * 100, 4)
+        if kind == "num":
+            return round(value, 4)
+        return round(value, 2)
+
+    metrics = []
+    for key, label, kind in labels:
+        metrics.append({
+            "Metric": label + (" (%)" if kind == "pct" else ""),
+            "Portfolio": fmt(mine.get(key), kind),
+            "Benchmark": fmt(theirs.get(key), kind),
+        })
+    summary = result.get("summary", {})
+    for key, label in (("total_rebalances", "Rebalance periods"),
+                       ("total_trades", "Trades placed"),
+                       ("cash_periods", "Periods fully in cash"),
+                       ("average_holdings", "Average holdings"),
+                       ("total_costs", "Total costs paid"),
+                       ("regime_switches", "Regime switches")):
+        if key in summary:
+            metrics.append({"Metric": label, "Portfolio": summary[key], "Benchmark": ""})
+
+    tables = {
+        "1. Inputs": inputs,
+        "2. Metrics": metrics,
+        "3. Regime Comparison": [],
+        "4. Equity Curve": result.get("curve", []),
+        "5. Rebalance Log": result.get("rebalances", []),
+        "6. Trade Log": result.get("trades", []),
+        "7. Monthly Returns": [],
+    }
+
+    # ---- Sheet 3: the filter ON vs OFF table, when there was one ------
+    if regime and regime.get("comparison"):
+        pretty = {
+            "total_return": ("Total return", "pct"), "cagr": ("CAGR", "pct"),
+            "max_drawdown": ("Max drawdown", "pct"), "sharpe": ("Sharpe ratio", "num"),
+            "sortino": ("Sortino ratio", "num"),
+            "annual_volatility": ("Volatility (annual)", "pct"),
+            "win_rate": ("Win rate", "pct"), "time_in_market": ("Time in market", "pct"),
+            "time_in_cash": ("Time de-risked", "pct"),
+            "average_exposure": ("Average exposure", "pct"),
+            "regime_switches": ("Regime switches", "num"),
+        }
+        rows = []
+        for key, (label, kind) in pretty.items():
+            cell = regime["comparison"].get(key)
+            if not cell:
+                continue
+            rows.append({
+                "Metric": label + (" (%)" if kind == "pct" else ""),
+                "Filter OFF": fmt(cell.get("off"), kind),
+                "Filter ON": fmt(cell.get("on"), kind),
+                "Difference": fmt(cell.get("delta"), kind),
+            })
+        exposure = regime.get("exposure") or {}
+        for key, label in (("days_in_market", "Days invested"),
+                           ("days_in_cash", "Days de-risked"),
+                           ("total_days", "Trading days total")):
+            if exposure.get(key) is not None:
+                rows.append({"Metric": label, "Filter OFF": "", "Filter ON": exposure[key],
+                             "Difference": ""})
+        if exposure.get("parked_return") is not None:
+            rows.append({"Metric": "Parked asset return while parked (%)", "Filter OFF": "",
+                         "Filter ON": fmt(exposure["parked_return"], "pct"), "Difference": ""})
+        tables["3. Regime Comparison"] = rows
+
+        # The regime run has its own richer curve, with both arms on it.
+        if regime.get("curve"):
+            tables["4. Equity Curve"] = regime["curve"]
+
+    # ---- Sheet 7: flatten the monthly grid ----------------------------
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    monthly = []
+    for row in result.get("monthly", []):
+        flat = {"Year": row["year"]}
+        for index, name in enumerate(months, start=1):
+            value = row["months"].get(str(index))
+            flat[name] = "" if value is None else round(value * 100, 4)
+        flat["Year total"] = ("" if row["year_total"] is None
+                              else round(row["year_total"] * 100, 4))
+        monthly.append(flat)
+    tables["7. Monthly Returns"] = monthly
+
+    return tables
+
+
+@app.post("/api/export-report")
+def export_report():
+    """
+    Download the WHOLE run as one file, with a sheet per table.
+
+    `format` picks the flavour:
+        "xlsx" -> a real Excel workbook, one tab per sheet (the default)
+        "csv"  -> a ZIP holding one .csv per sheet, for tools that only
+                  read plain CSV. A single .csv file cannot hold multiple
+                  sheets, so a folder of them is the honest equivalent.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        session = _get_session(body.get("session_id"))
+        wanted = str(body.get("format") or "xlsx").lower()
+        if wanted not in ("xlsx", "csv"):
+            return _fail("Unknown report format - use 'xlsx' or 'csv'.")
+
+        tables = _report_tables(session)
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        buffer = io.BytesIO()
+
+        if wanted == "xlsx":
+            try:
+                import openpyxl  # noqa: F401  (checked here so we can explain it)
+            except ImportError:
+                return _fail(
+                    "Excel export needs the 'openpyxl' library. Install it with "
+                    "'pip install openpyxl', or choose the CSV (ZIP) format instead."
+                )
+
+            with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+                for sheet, _note in REPORT_SHEETS:
+                    rows = tables.get(sheet) or []
+                    frame = pd.DataFrame(rows)
+                    if frame.empty:
+                        # Never leave a blank tab with no explanation on it.
+                        frame = pd.DataFrame({"Note": ["No data for this section in this run."]})
+                    frame.to_excel(writer, sheet_name=sheet[:31], index=False)
+
+                    # Widen each column to fit its contents, capped so one long
+                    # ticker list cannot make a column a mile wide.
+                    worksheet = writer.sheets[sheet[:31]]
+                    for position, column in enumerate(frame.columns, start=1):
+                        longest = max(
+                            [len(str(column))] +
+                            [len(str(v)) for v in frame[column].head(200).tolist()]
+                        )
+                        worksheet.column_dimensions[
+                            openpyxl.utils.get_column_letter(position)
+                        ].width = min(max(longest + 2, 10), 46)
+                    worksheet.freeze_panes = "A2"
+
+            buffer.seek(0)
+            return send_file(
+                buffer,
+                mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                as_attachment=True,
+                download_name=f"momentum_report_{stamp}.xlsx",
+            )
+
+        # ---- CSV flavour: a ZIP with one file per sheet -----------------
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as bundle:
+            readme = ["Momentum Backtest Portal - full report",
+                      f"Generated {datetime.now():%Y-%m-%d %H:%M:%S}", "",
+                      "A single CSV file cannot hold multiple sheets, so each",
+                      "sheet is its own file inside this ZIP:", ""]
+            for sheet, note in REPORT_SHEETS:
+                rows = tables.get(sheet) or []
+                safe = sheet.replace(". ", "_").replace(" ", "_")
+                readme.append(f"  {safe}.csv  -  {note}  ({len(rows)} rows)")
+                text = io.StringIO()
+                if rows:
+                    pd.DataFrame(rows).to_csv(text, index=False, lineterminator="\n")
+                else:
+                    text.write("Note\nNo data for this section in this run.\n")
+                bundle.writestr(f"{safe}.csv", text.getvalue())
+            bundle.writestr("README.txt", "\n".join(readme) + "\n")
+
+        buffer.seek(0)
+        return send_file(
+            buffer,
+            mimetype="application/zip",
+            as_attachment=True,
+            download_name=f"momentum_report_{stamp}.zip",
+        )
+
+    except ValueError as exc:
+        return _fail(str(exc))
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"Building the report failed: {exc}", 500)
 
 
 # ======================================================================

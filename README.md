@@ -442,3 +442,36 @@ A few decisions worth knowing about, so you can trust the numbers:
 *For research and education only. A backtest is not a promise. Real trading involves
 costs, taxes, slippage and your own behaviour under pressure — things this tool can
 only estimate.*
+
+---
+
+## Downloading the full report
+
+The **Rebalance & trade history** panel has two buttons that export the *entire*
+run in one file — settings, metrics and every table together:
+
+| Button | You get | Use it when |
+|--------|---------|-------------|
+| **Full report (Excel)** | One `.xlsx` workbook, one tab per sheet | You want to read or chart it in Excel / Google Sheets |
+| **Full report (CSVs)** | A `.zip` holding one `.csv` per sheet, plus a README | Your tool only reads plain CSV |
+
+A single CSV file cannot contain multiple sheets, so the CSV option bundles one
+file per sheet instead — same content, same order.
+
+Both contain seven sheets:
+
+| Sheet | Contents |
+|-------|----------|
+| **1. Inputs** | Every setting that produced the run, each with a plain-English note explaining what it does |
+| **2. Metrics** | Total return, CAGR, Sharpe, Sortino, max drawdown, Calmar, win rate — portfolio beside benchmark |
+| **3. Regime Comparison** | Filter ON vs OFF with the difference, plus exposure and switch counts *(only when you ran the regime comparison)* |
+| **4. Equity Curve** | The daily series behind the charts, including both drawdown lines |
+| **5. Rebalance Log** | One row per rebalance period |
+| **6. Trade Log** | One row per stock per period, including the risk figure and rank score |
+| **7. Monthly Returns** | The calendar grid, one row per year |
+
+The four smaller buttons beside them still export a single table each, if that is
+all you need.
+
+> The Excel option needs the `openpyxl` library, which is in `requirements.txt`.
+> If it is missing, the portal says so and the CSV/ZIP option still works.
