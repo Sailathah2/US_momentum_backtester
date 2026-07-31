@@ -403,7 +403,10 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
     rolling_alive = None
 
     if stddev_period >= 2:
-        daily = prices.pct_change()
+        # `fill_method=None` stops pandas carrying a price across a gap
+        # before differencing, which would invent a fake 0% day. A gap
+        # stays blank and is excluded by min_periods instead.
+        daily = prices.pct_change(fill_method=None)
         rolling_alive = daily.rolling(stddev_period, min_periods=stddev_period).std()
         if risk_measure == "downside":
             # Keep the losses, flatten every gain to zero, then take the
@@ -484,7 +487,7 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
     # in the gold data can never invent or destroy money.
     if defensive is not None:
         defensive_returns = (
-            defensive.reindex(calendar).ffill().pct_change().fillna(0.0)
+            defensive.reindex(calendar).ffill().pct_change(fill_method=None).fillna(0.0)
         )
     else:
         defensive_returns = pd.Series(0.0, index=calendar)
@@ -1017,7 +1020,7 @@ def compare_with_regime(prices, benchmark, settings, regime_frame, defensive=Non
     parked_return = None
     if defensive is not None and len(traded_exposure):
         parked_daily = (
-            defensive.reindex(traded_exposure.index).ffill().pct_change().fillna(0.0)
+            defensive.reindex(traded_exposure.index).ffill().pct_change(fill_method=None).fillna(0.0)
         )
         # Only count the days we were genuinely de-risked into it.
         off_days = traded_exposure < 1.0

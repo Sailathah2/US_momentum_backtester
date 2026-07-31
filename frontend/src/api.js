@@ -159,14 +159,20 @@ export async function exportCsv(sessionId, kind) {
     window.URL.revokeObjectURL(url);
     return true;
   } catch (error) {
-    // A failed blob download hides its error message inside the blob itself.
+    // A failed blob download hides its error message inside the blob itself,
+    // so we have to read the blob back out to find out what went wrong.
+    //
+    // Note the parse happens INSIDE the try but the throw happens OUTSIDE it.
+    // Throwing from inside would be caught by our own catch and replaced with
+    // the useless generic message, hiding the real reason every single time.
     if (error.response?.data instanceof Blob) {
-      const text = await error.response.data.text();
+      let serverMessage = null;
       try {
-        throw new Error(JSON.parse(text).error);
+        serverMessage = JSON.parse(await error.response.data.text()).error;
       } catch {
-        throw new Error("The export failed.");
+        serverMessage = null; // the blob was not JSON after all
       }
+      throw new Error(serverMessage || "The export failed.");
     }
     throw new Error(readableError(error));
   }
