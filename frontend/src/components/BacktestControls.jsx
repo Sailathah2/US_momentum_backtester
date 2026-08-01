@@ -150,6 +150,90 @@ export default function BacktestControls({ settings, onChange, onRun, busy, symb
         </p>
       </div>
 
+      {/* ---------------- RANK CUSHION (hold / exit buffer) ---------- */}
+      <div className="mb-4">
+        <label className="field-label">Exit rank cushion</label>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {[0, settings.top_n + 2, settings.top_n + 5, settings.top_n + 10].map((rank, index) => (
+            <button
+              key={index}
+              className={`chip ${settings.exit_rank === rank ? "chip-active" : ""}`}
+              onClick={() => set("exit_rank", rank)}
+            >
+              {rank === 0 ? "Off" : `Rank ${rank}`}
+            </button>
+          ))}
+          {settings.exit_rank > 0 && (
+            <input
+              type="number"
+              min={settings.top_n + 1}
+              className="field !w-24 !py-1.5 !text-xs"
+              value={settings.exit_rank}
+              onChange={(e) =>
+                set("exit_rank", Math.max(settings.top_n + 1, Number(e.target.value) || 0))
+              }
+            />
+          )}
+        </div>
+        <p className="field-help">
+          {settings.exit_rank === 0 ? (
+            <>
+              <strong>Off:</strong> the whole portfolio is sold and rebuilt at every
+              rebalance, so a stock that merely slipped from 10th to 11th is churned
+              out and often bought straight back.
+            </>
+          ) : (
+            <>
+              A stock you already own is <strong>kept</strong> until it falls past rank{" "}
+              <strong className="text-cream-100">{settings.exit_rank}</strong> or stops
+              beating the index — but a new stock still has to reach the top{" "}
+              <strong className="text-cream-100">{settings.top_n}</strong> to get in.
+              That gap of {settings.exit_rank - settings.top_n} places is the cushion,
+              and it is what stops the in-out-in churn.
+            </>
+          )}
+        </p>
+      </div>
+
+      {/* ---------------- WHAT TO DO WITH THE FREED CASH ------------- */}
+      {settings.exit_rank > 0 && (
+        <div className="mb-4">
+          <label className="field-label">When some positions are kept</label>
+          <div className="mt-1.5 flex gap-1.5">
+            <button
+              className={`chip flex-1 ${
+                settings.reweight_mode === "rebalance" ? "chip-active" : ""
+              }`}
+              onClick={() => set("reweight_mode", "rebalance")}
+            >
+              Re-balance all
+            </button>
+            <button
+              className={`chip flex-1 ${
+                settings.reweight_mode === "recycle" ? "chip-active" : ""
+              }`}
+              onClick={() => set("reweight_mode", "recycle")}
+            >
+              Recycle cash only
+            </button>
+          </div>
+          <p className="field-help">
+            {settings.reweight_mode === "recycle" ? (
+              <>
+                Kept positions are left completely alone; only the cash released by the
+                stocks you sold is spent on the new ones. Cheapest in trading costs, but
+                winners are allowed to grow into outsized positions.
+              </>
+            ) : (
+              <>
+                Every holding — kept and new alike — is reset to its target weight. Tidier
+                and better balanced, but trimming a kept winner back to size costs money.
+              </>
+            )}
+          </p>
+        </div>
+      )}
+
       {/* ---------------- STOCK MUST BE ABOVE ITS OWN EMA ------------ */}
       <div className="mb-4">
         <label className="field-label">Stock must be above its own EMA</label>

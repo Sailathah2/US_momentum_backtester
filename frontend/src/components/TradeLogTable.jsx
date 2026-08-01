@@ -39,6 +39,7 @@ function toneClass(value) {
 export default function TradeLogTable({
   rebalances,
   trades,
+  actions,
   onExport,
   onReport,
   exporting,
@@ -49,7 +50,11 @@ export default function TradeLogTable({
   const [limit, setLimit] = useState(100);
 
   const isRebalanceTab = tab === "rebalances";
-  const source = isRebalanceTab ? rebalances : trades;
+  const isActionTab = tab === "actions";
+  const source = isRebalanceTab ? rebalances : isActionTab ? actions : trades;
+
+  // The keep/exit/enter log only exists when the rank cushion was on.
+  const hasActions = Boolean(actions?.length) && actions.some((a) => a.action === "KEEP");
 
   // The volatility columns are only meaningful when that ranking was on -
   // the backend leaves `stddev` blank otherwise.
@@ -63,7 +68,9 @@ export default function TradeLogTable({
     const needle = query.trim().toLowerCase();
     if (!needle) return source;
     return source.filter((row) =>
-      `${row.rebalance_date} ${row.exit_date} ${row.tickers || row.ticker || ""}`
+      `${row.rebalance_date} ${row.exit_date || ""} ${row.tickers || row.ticker || ""} ${
+        row.action || ""
+      }`
         .toLowerCase()
         .includes(needle)
     );
@@ -159,7 +166,7 @@ export default function TradeLogTable({
           Rebalance log ({rebalances.length})
         </button>
         <button
-          className={`chip ${!isRebalanceTab ? "chip-active" : ""}`}
+          className={`chip ${tab === "trades" ? "chip-active" : ""}`}
           onClick={() => {
             setTab("trades");
             setLimit(100);
@@ -167,6 +174,17 @@ export default function TradeLogTable({
         >
           Trade log ({trades?.length || 0})
         </button>
+        {hasActions && (
+          <button
+            className={`chip ${isActionTab ? "chip-active" : ""}`}
+            onClick={() => {
+              setTab("actions");
+              setLimit(100);
+            }}
+          >
+            Keep / exit / enter ({actions.length})
+          </button>
+        )}
 
         <div className="relative ml-auto">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-brief-muted" />
@@ -185,7 +203,54 @@ export default function TradeLogTable({
       {/* -- The table ------------------------------------------------- */}
       <div className="max-h-[460px] overflow-auto rounded-lg border border-brief-line">
         <table className="data-table">
-          {isRebalanceTab ? (
+          {isActionTab ? (
+            <>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Rebalance</th>
+                  <th>Ticker</th>
+                  <th>Action</th>
+                  <th className="text-right">Rank</th>
+                  <th className="text-right">Weight after</th>
+                  <th>Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((row, index) => (
+                  <tr key={`${row.period}-${row.ticker}-${index}`}>
+                    <td className="num text-brief-muted">{row.period}</td>
+                    <td className="font-mono text-cream-50">{row.rebalance_date}</td>
+                    <td className="font-semibold text-cream-50">{row.ticker}</td>
+                    <td>
+                      {/* The action is a state, so it gets a shape as well as a
+                          colour - never colour alone. */}
+                      <span
+                        className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                          row.action === "KEEP"
+                            ? "bg-precision-600/20 text-precision-300"
+                            : row.action === "ENTER"
+                            ? "bg-market-up/15 text-market-up"
+                            : "bg-market-down/15 text-market-down"
+                        }`}
+                      >
+                        {row.action}
+                      </span>
+                    </td>
+                    <td className="num">
+                      {row.rank === null || row.rank === undefined ? "—" : row.rank}
+                    </td>
+                    <td className="num">
+                      {row.weight_after ? `${(row.weight_after * 100).toFixed(1)}%` : "—"}
+                    </td>
+                    <td className="max-w-[300px] !whitespace-normal text-brief-muted">
+                      {row.reason}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </>
+          ) : isRebalanceTab ? (
             <>
               <thead>
                 <tr>
@@ -194,6 +259,10 @@ export default function TradeLogTable({
                   <th>Exit</th>
                   <th className="text-right">Days</th>
                   <th className="text-right">Held</th>
+                  {/* Only meaningful once the rank cushion is keeping things. */}
+                  {hasActions && <th className="text-right">Kept</th>}
+                  {hasActions && <th className="text-right">In</th>}
+                  {hasActions && <th className="text-right">Out</th>}
                   <th>Tickers &amp; weights</th>
                   <th className="text-right">Cash</th>
                   <th className="text-right">Index ROC</th>
@@ -210,6 +279,15 @@ export default function TradeLogTable({
                     <td className="font-mono text-brief-muted">{row.exit_date}</td>
                     <td className="num">{row.holding_days}</td>
                     <td className="num">{row.num_holdings}</td>
+                    {hasActions && (
+                      <td className="num text-precision-300">{row.kept ?? "—"}</td>
+                    )}
+                    {hasActions && (
+                      <td className="num text-market-up">{row.entered ?? "—"}</td>
+                    )}
+                    {hasActions && (
+                      <td className="num text-market-down">{row.exited ?? "—"}</td>
+                    )}
                     <td className="max-w-[320px] !whitespace-normal">
                       {row.num_holdings === 0 ? (
                         <span className="rounded bg-brief-surface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brief-muted">

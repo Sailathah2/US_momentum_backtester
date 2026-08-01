@@ -57,6 +57,10 @@ const DEFAULT_SETTINGS = {
   stock_ema_period: 0, // 0 = off; else stock must close above its own EMA
   stddev_period: 0, // 0 = nil; else rank by ROC / risk
   risk_measure: "stddev", // stddev = total volatility; downside = Sortino style
+  // Rank cushion: a held stock survives until it falls past this rank.
+  // 0 = off, which sells and rebuilds the whole book every rebalance.
+  exit_rank: 0,
+  reweight_mode: "rebalance", // rebalance = reset all; recycle = spend freed cash only
   cost_bps: 0,
   start_capital: 100000,
   start_date: "",
@@ -423,6 +427,7 @@ export default function App() {
                 <TradeLogTable
                   rebalances={result.rebalances}
                   trades={result.trades}
+                  actions={result.actions}
                   onExport={handleExport}
                   onReport={handleReport}
                   exporting={exporting}

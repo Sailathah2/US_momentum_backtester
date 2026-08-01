@@ -157,6 +157,8 @@ nothing is hidden from you.
 | **Lookback window** | How far back momentum is measured, in trading days. | `20` reacts fast and trades often; `252` follows slow, year-long trends. `126` ≈ six months. |
 | **Rebalance every** | How often the portfolio is re-picked. | Monthly is a good starting point. Weekly tracks momentum closer but pays more costs. |
 | **Hold top N** | How many stocks to own. | Fewer = more concentrated and more volatile. |
+| **Exit rank cushion** | `Off` sells and rebuilds the whole book every rebalance. Set a rank above your Top N and a stock you already own is **kept** until it falls past that rank or stops beating the index — while a new stock still has to reach the Top N to get in. | With Top 10, try `Rank 15`. |
+| **When positions are kept** | **Re-balance all** resets every holding to its target weight. **Recycle cash only** leaves kept positions untouched and spends just the cash freed by the sales. | Recycle for the lowest costs. |
 | **Stock must be above its own EMA** | An extra health check on each candidate. Beating the index is not much of an achievement if the index is falling and the stock is falling too — this insists the stock is in **its own** uptrend as well. | `Off` for the original behaviour; `100d` or `200d` to demand a genuine uptrend. |
 | **Risk adjustment** | `Nil` ranks on raw momentum — the biggest gainer wins, however wild the ride. Set a window and stocks are ranked by **ROC ÷ risk** instead: momentum earned *per unit of risk*. | `60d` is a good starting point. |
 | **Std dev / Downside dev** | Which risk figure goes in the denominator — see below. | Try both; they pick different stocks. |
@@ -186,6 +188,37 @@ which correctly rewards a stock for having had few down days at all.
 | **Start / end date** | Limit the test to a window. Leave blank to use everything. | Test 2020 and 2022 separately — momentum behaves very differently in each. |
 
 Then press **Run backtest**.
+
+### The rank cushion (hold / exit buffer)
+
+Without a cushion the portfolio is liquidated and rebuilt at every rebalance, so a
+stock that merely slipped from 10th to 11th place is sold and often bought straight
+back a month later. The cushion introduces a gap between the rank you need to **get
+in** and the rank at which you are **thrown out**.
+
+At each rebalance the portal now makes three separate decisions:
+
+| Currently | Rank | Beats index? | Action |
+|---|---|---|---|
+| Held | ≤ exit rank | Yes | **KEEP** |
+| Held | > exit rank | either | **EXIT** |
+| Held | ≤ exit rank | No | **EXIT** |
+| Not held | ≤ Top N | Yes | **ENTER** (fills a vacant slot) |
+
+Vacant slots are then filled with the highest-ranked stocks that are not already
+held. The cushion widens the *exit* door only — the entry bar never moves.
+
+Every decision is recorded. A new **Keep / exit / enter** tab shows each ticker with
+its action, its rank, the weight it ended up with, and the reason in plain English
+("rank 12 still inside the cushion (15)", "no longer beats the index"). The rebalance
+log gains Kept / In / Out columns, and both exports carry the full audit trail.
+
+> **What to expect.** On the five-year test set, widening the cushion from off to
+> rank 20 lifted kept positions from 0 to 123 and cut average turnover from 1.64 to
+> 1.51 — a real but modest saving, because holding only 10 names monthly is
+> inherently high-churn. Switching to **Recycle cash only** cut it further to 1.43
+> and saved about 20% of all trading costs, at the price of a deeper drawdown as
+> winners are left to grow unchecked.
 
 ### Step 3 · (Optional) Add the index regime filter
 

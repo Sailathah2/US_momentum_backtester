@@ -372,6 +372,9 @@ def _prepare_backtest(session, body):
         # "stddev" (total volatility) or "downside" (the Sortino idea).
         # Defaults to stddev so older saved settings keep working.
         "risk_measure": str(body.get("risk_measure") or "stddev").lower(),
+        # The rank cushion. 0 = off (sell everything and rebuild each time).
+        "exit_rank": int(body.get("exit_rank") or 0),
+        "reweight_mode": str(body.get("reweight_mode") or "rebalance").lower(),
     }
     if settings["min_roc"] not in (None, ""):
         settings["min_roc"] = float(settings["min_roc"]) / 100.0
@@ -392,6 +395,17 @@ def _prepare_backtest(session, body):
         raise ValueError("The stock EMA period must be at least 2 days (or 0 to switch it off).")
     if settings["stddev_period"] and settings["stddev_period"] < 2:
         raise ValueError("The volatility window must be at least 2 days (or 0 to switch it off).")
+    if settings["exit_rank"] and settings["exit_rank"] <= settings["top_n"]:
+        raise ValueError(
+            f"The exit rank ({settings['exit_rank']}) must be LARGER than the number of "
+            f"stocks you hold ({settings['top_n']}) - that gap is the cushion. "
+            "Set it to 0 to switch the cushion off."
+        )
+    if settings["reweight_mode"] not in engine.VALID_REWEIGHT_MODES:
+        raise ValueError(
+            f"Unknown re-weighting mode '{settings['reweight_mode']}'. Use one of: "
+            + ", ".join(engine.VALID_REWEIGHT_MODES)
+        )
     if settings["risk_measure"] not in engine.VALID_RISK_MEASURES:
         raise ValueError(
             f"Unknown risk measure '{settings['risk_measure']}'. Use one of: "
@@ -698,10 +712,16 @@ def export():
         elif kind == "rebalances":
             rows = result["rebalances"]
             headers = ["period", "rebalance_date", "exit_date", "holding_days",
-                       "num_holdings", "tickers", "weights", "cash_weight",
+                       "num_holdings", "kept", "entered", "exited",
+                       "kept_tickers", "entered_tickers", "exited_tickers",
+                       "tickers", "weights", "cash_weight",
                        "benchmark_roc", "period_return", "benchmark_period_return",
                        "excess_return", "turnover", "cost_paid",
                        "equity_start", "equity_end"]
+        elif kind == "actions":
+            rows = result.get("actions", [])
+            headers = ["period", "rebalance_date", "ticker", "action", "rank",
+                       "weight_after", "reason"]
         elif kind == "timeseries":
             rows = result["curve"]
             headers = ["date", "portfolio", "benchmark", "portfolio_dd", "benchmark_dd"]
@@ -756,7 +776,8 @@ REPORT_SHEETS = (
     ("4. Equity Curve", "daily portfolio, benchmark and drawdowns"),
     ("5. Rebalance Log", "one row per rebalance period"),
     ("6. Trade Log", "one row per stock per period"),
-    ("7. Monthly Returns", "the calendar grid"),
+    ("7. Keep Exit Enter", "every hold/sell/buy decision and why (rank cushion)"),
+    ("8. Monthly Returns", "the calendar grid"),
 )
 
 # How each setting should be labelled and explained on the Inputs sheet, so
@@ -776,6 +797,8 @@ SETTING_LABELS = {
     "min_roc": ("Minimum ROC hurdle", "Extra absolute momentum requirement"),
     "stock_ema_period": ("Stock EMA gate", "Stock must close above its own EMA; 0 = off"),
     "stddev_period": ("Risk window", "Window for the risk-adjusted ranking; 0 = off"),
+    "exit_rank": ("Exit rank cushion", "A held stock survives until it falls past this rank; 0 = off"),
+    "reweight_mode": ("When positions are kept", "rebalance = reset all weights; recycle = spend freed cash only"),
     "risk_measure": ("Risk measure", "stddev = total volatility; downside = Sortino style"),
     "regime_mode": ("Regime filter mode", "disabled / ema / supertrend / both"),
     "regime_timeframe": ("Regime candles", "daily or weekly bars"),
@@ -870,7 +893,8 @@ def _report_tables(session):
         "4. Equity Curve": result.get("curve", []),
         "5. Rebalance Log": result.get("rebalances", []),
         "6. Trade Log": result.get("trades", []),
-        "7. Monthly Returns": [],
+        "7. Keep Exit Enter": result.get("actions", []),
+        "8. Monthly Returns": [],
     }
 
     # ---- Sheet 3: the filter ON vs OFF table, when there was one ------
@@ -924,7 +948,7 @@ def _report_tables(session):
         flat["Year total"] = ("" if row["year_total"] is None
                               else round(row["year_total"] * 100, 4))
         monthly.append(flat)
-    tables["7. Monthly Returns"] = monthly
+    tables["8. Monthly Returns"] = monthly
 
     return tables
 

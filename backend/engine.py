@@ -57,6 +57,11 @@ VALID_WEIGHTINGS = ("equal", "roc")
 #   downside  - divide by DOWNSIDE deviation only (the Sortino idea).
 VALID_RISK_MEASURES = ("none", "stddev", "downside")
 
+# What to do with the money when the rank cushion keeps some positions.
+#   rebalance - reset EVERY holding to its target weight (Option A)
+#   recycle   - leave kept positions alone; only the freed cash is spent (Option B)
+VALID_REWEIGHT_MODES = ("rebalance", "recycle")
+
 # Keys that `analyse()` puts in its result for internal use only. They hold
 # pandas objects, which cannot be turned into JSON, so they MUST be removed
 # before a result is sent to the browser. Always strip them with
@@ -153,7 +158,8 @@ def build_rebalance_dates(calendar, cadence, every_n_days, first_valid_position)
 
 def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
                     cash_buffer, min_roc, stock_ema=None, rolling_sd=None,
-                    risk_measure="stddev", alive=None):
+                    risk_measure="stddev", alive=None, exit_rank=0,
+                    held=None, reweight_mode="rebalance"):
     """
     Do steps 1-4 of the strategy for a SINGLE rebalance day.
 
@@ -259,7 +265,68 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
         ranking = survivors
 
     ranking = ranking.sort_values(ascending=False)
-    chosen_index = ranking.head(int(top_n)).index
+
+    # Rank 1 is the strongest survivor. Anything that failed the index test
+    # above is not in here at all, and therefore has no rank - which the
+    # Keep/Exit rules below read as "it stopped beating the index".
+    rank_of = {ticker: place for place, ticker in enumerate(ranking.index, start=1)}
+
+    # ------------------------------------------------------------------
+    # THE RANK CUSHION: keep, exit, enter
+    # ------------------------------------------------------------------
+    # Without a cushion the portfolio is sold down and rebuilt from scratch
+    # every single rebalance, which churns through stocks that only slipped
+    # from 9th to 11th place. The cushion says: a stock has to fall a long
+    # way - past `exit_rank` - before we let it go.
+    #
+    #     Held, rank <= exit_rank, still beating the index  -> KEEP
+    #     Held, rank >  exit_rank                           -> EXIT
+    #     Held, no longer beating the index                 -> EXIT
+    #     Not held, rank <= top_n, beating the index        -> ENTER (if a slot is free)
+    held_tickers = [str(t) for t in held.index] if held is not None and len(held) else []
+    cushion_on = bool(exit_rank) and int(exit_rank) > int(top_n)
+
+    actions = []
+    if cushion_on and held_tickers:
+        kept, exited = [], []
+        for ticker in held_tickers:
+            place = rank_of.get(ticker)
+            if place is None:
+                exited.append(ticker)
+                actions.append({"ticker": ticker, "action": "EXIT", "rank": None,
+                                "reason": "no longer beats the index"})
+            elif place > int(exit_rank):
+                exited.append(ticker)
+                actions.append({"ticker": ticker, "action": "EXIT", "rank": place,
+                                "reason": f"rank {place} slipped past the exit cushion ({exit_rank})"})
+            else:
+                kept.append(ticker)
+                actions.append({"ticker": ticker, "action": "KEEP", "rank": place,
+                                "reason": f"rank {place} still inside the cushion ({exit_rank})"})
+
+        # Only the top `top_n` are eligible to come IN - the cushion widens
+        # the exit door, never the entry door.
+        vacancies = max(0, int(top_n) - len(kept))
+        newcomers = [t for t in ranking.index[:int(top_n)] if t not in kept][:vacancies]
+        for ticker in newcomers:
+            actions.append({"ticker": str(ticker), "action": "ENTER",
+                            "rank": rank_of.get(ticker),
+                            "reason": f"rank {rank_of.get(ticker)} filled a vacant slot"})
+
+        chosen_index = pd.Index(kept + list(newcomers))
+    else:
+        # No cushion (or nothing held yet): straight top-N, as before.
+        chosen_index = ranking.head(int(top_n)).index
+        kept, newcomers = [], list(chosen_index)
+        for ticker in chosen_index:
+            actions.append({"ticker": str(ticker), "action": "ENTER",
+                            "rank": rank_of.get(ticker),
+                            "reason": f"rank {rank_of.get(ticker)} in the top {top_n}"})
+        for ticker in held_tickers:
+            if ticker not in set(str(t) for t in chosen_index):
+                actions.append({"ticker": ticker, "action": "EXIT",
+                                "rank": rank_of.get(ticker),
+                                "reason": "dropped out of the top " + str(top_n)})
 
     # `chosen` always holds the RAW momentum, so the logs and the ROC
     # weighting keep meaning the same thing whichever ranking was used.
@@ -269,7 +336,9 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     n_chosen = len(chosen)
     if n_chosen == 0:
         # Nothing beat the index today - the strategy sits 100% in cash.
-        return {"picks": [], "cash_weight": 1.0, "benchmark_roc": float(benchmark_roc)}
+        return {"picks": [], "cash_weight": 1.0, "benchmark_roc": float(benchmark_roc),
+                "actions": actions, "kept": [], "entered": [],
+                "exited": [a["ticker"] for a in actions if a["action"] == "EXIT"]}
 
     # ---- STEP 4: WEIGHT the chosen stocks ------------------------------
     if weighting == "roc":
@@ -298,6 +367,43 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
         # Scale the momentum weights down so unfilled slots still hold cash.
         raw_weights = raw_weights * (n_chosen / float(top_n))
 
+    # ------------------------------------------------------------------
+    # OPTION B: CAPITAL RECYCLE ONLY
+    # ------------------------------------------------------------------
+    # Option A (above) resets every position to its target weight, which
+    # means even a stock we decided to KEEP gets trimmed or topped up - and
+    # that costs money. Option B leaves kept positions exactly where they
+    # are and spends only the cash released by the stocks we sold. Far less
+    # turnover, at the cost of letting winners run to an uneven size.
+    if reweight_mode == "recycle" and kept and held is not None:
+        held_weights = held.astype(float)
+        keep_weights = held_weights.reindex(kept).fillna(0.0)
+
+        # Everything not still held is now cash: the sold positions plus
+        # whatever cash we were already carrying.
+        freed = max(0.0, 1.0 - float(keep_weights.sum()))
+
+        if len(newcomers) and freed > 0:
+            if weighting == "roc":
+                strength = chosen_scores.reindex(newcomers).clip(lower=0.0)
+                share = (strength / strength.sum() if strength.sum() > 0
+                         else pd.Series(1.0 / len(newcomers), index=newcomers))
+            else:
+                share = pd.Series(1.0 / len(newcomers), index=newcomers)
+
+            if cash_buffer:
+                # Each vacancy is worth one slot of the book, so unfilled
+                # ones stay in cash rather than over-loading the newcomers.
+                per_slot = min(freed, len(newcomers) / float(top_n))
+                new_weights = share * per_slot
+            else:
+                new_weights = share * freed
+        else:
+            new_weights = pd.Series(dtype=float)
+
+        raw_weights = pd.concat([keep_weights, new_weights])
+        raw_weights = raw_weights.reindex(chosen_index).fillna(0.0)
+
     invested = float(raw_weights.sum())
     cash_weight = max(0.0, 1.0 - invested)
 
@@ -317,7 +423,21 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
         }
         picks.append(pick)
 
-    return {"picks": picks, "cash_weight": cash_weight, "benchmark_roc": float(benchmark_roc)}
+    # Stamp the final weight onto each action so the log shows what the
+    # decision actually cost or bought.
+    weight_of = {p["ticker"]: p["weight"] for p in picks}
+    for entry in actions:
+        entry["weight"] = weight_of.get(entry["ticker"], 0.0)
+
+    return {
+        "picks": picks,
+        "cash_weight": cash_weight,
+        "benchmark_roc": float(benchmark_roc),
+        "actions": actions,
+        "kept": [str(t) for t in kept],
+        "entered": [str(t) for t in newcomers],
+        "exited": [a["ticker"] for a in actions if a["action"] == "EXIT"],
+    }
 
 
 # ======================================================================
@@ -388,6 +508,13 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
     #                 climbed in fast, smooth steps is NOT punished, while
     #                 one that got there through a jagged series of drops is.
     #                 That is usually what a trader actually means by "risk".
+    # The rank cushion. 0 (or anything not bigger than top_n) switches it
+    # off, giving the original "sell everything and rebuild" behaviour.
+    exit_rank = int(settings.get("exit_rank") or 0)
+    reweight_mode = str(settings.get("reweight_mode") or "rebalance").lower()
+    if reweight_mode not in VALID_REWEIGHT_MODES:
+        raise ValueError(f"Unknown re-weighting mode '{reweight_mode}'.")
+
     stddev_period = int(settings.get("stddev_period") or 0)
     risk_measure = str(settings.get("risk_measure") or "stddev").lower()
     if risk_measure not in VALID_RISK_MEASURES:
@@ -504,6 +631,7 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
 
     rebalance_rows = []   # one row per rebalance period
     trade_rows = []       # one row per stock per period
+    action_rows = []      # one row per keep/exit/enter decision
     drifted_weights = pd.Series(dtype=float)  # what we held coming into today
 
     # `zip` pairs each rebalance day with the NEXT one, which is when we sell.
@@ -520,6 +648,7 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
             weighting, cash_buffer, min_roc,
             stock_ema=stock_ema, rolling_sd=rolling_sd,
             risk_measure=risk_measure, alive=rolling_alive,
+            exit_rank=exit_rank, held=drifted_weights, reweight_mode=reweight_mode,
         )
         picks = decision["picks"]
         cash_weight = decision["cash_weight"]
@@ -679,11 +808,30 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
             "period_return": round(period_return, 6),
             "benchmark_period_return": round(benchmark_period_return, 6),
             "excess_return": round(period_return - benchmark_period_return, 6),
+            # How the cushion split the portfolio this time.
+            "kept": len(decision.get("kept", [])),
+            "entered": len(decision.get("entered", [])),
+            "exited": len(decision.get("exited", [])),
+            "kept_tickers": ", ".join(decision.get("kept", [])) or "-",
+            "entered_tickers": ", ".join(decision.get("entered", [])) or "-",
+            "exited_tickers": ", ".join(decision.get("exited", [])) or "-",
             "turnover": round(turnover, 6),
             "cost_paid": round(cost_amount, 2),
             "equity_start": round(period_start_equity, 2),
             "equity_end": round(equity, 2),
         })
+
+        # ---- The keep / exit / enter audit trail ----------------------
+        for entry in decision.get("actions", []):
+            action_rows.append({
+                "period": period_number,
+                "rebalance_date": rebalance_date.strftime("%Y-%m-%d"),
+                "ticker": entry["ticker"],
+                "action": entry["action"],
+                "rank": entry.get("rank"),
+                "weight_after": round(float(entry.get("weight") or 0.0), 6),
+                "reason": entry["reason"],
+            })
 
         for pick in picks:
             ticker = pick["ticker"]
@@ -727,6 +875,7 @@ def run_backtest(prices, benchmark, settings, regime=None, defensive=None):
         "benchmark_curve": benchmark_curve,
         "rebalance_rows": rebalance_rows,
         "trade_rows": trade_rows,
+        "action_rows": action_rows,
         "risk_free": risk_free,
         "start_capital": start_capital,
         # The regime as it was actually TRADED (already shifted by a day),
@@ -952,6 +1101,7 @@ def analyse(prices, benchmark, settings, regime=None, defensive=None):
         "monthly": monthly_return_table(equity),
         "rebalances": result["rebalance_rows"],
         "trades": result["trade_rows"],
+        "actions": result["action_rows"],
         "summary": {
             "total_rebalances": len(result["rebalance_rows"]),
             "total_trades": len(result["trade_rows"]),
@@ -960,6 +1110,13 @@ def analyse(prices, benchmark, settings, regime=None, defensive=None):
             "total_costs": round(sum(row["cost_paid"] for row in result["rebalance_rows"]), 2),
             "start_capital": result["start_capital"],
             "regime_switches": result["regime_switch_count"],
+            # Turnover is the number the rank cushion exists to reduce.
+            "total_kept": sum(row.get("kept", 0) for row in result["rebalance_rows"]),
+            "total_entered": sum(row.get("entered", 0) for row in result["rebalance_rows"]),
+            "total_exited": sum(row.get("exited", 0) for row in result["rebalance_rows"]),
+            "average_turnover": round(
+                sum(row["turnover"] for row in result["rebalance_rows"])
+                / max(1, len(result["rebalance_rows"])), 4),
         },
         # Kept in pandas form for compare_with_regime() below; the API layer
         # never sends these raw objects to the browser.
