@@ -6,9 +6,9 @@
  * tells you whether the Python backend is running.
  */
 import React from "react";
-import { Activity, TrendingUp } from "lucide-react";
+import { Activity, LogOut, TrendingUp, User } from "lucide-react";
 
-export default function Header({ online, universeSize }) {
+export default function Header({ online, universeSize, signedInAs, onSignOut }) {
   return (
     <header className="sticky top-0 z-30 border-b border-brief-line bg-brief-bg/90 backdrop-blur">
       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-4 px-6 py-4">
@@ -56,6 +56,24 @@ export default function Header({ online, universeSize }) {
             {online ? "Backend online" : "Backend offline"}
           </span>
         </div>
+
+        {/* -- Who is signed in, and the way out ----------------------- */}
+        {signedInAs && (
+          <div className="flex items-center gap-2 rounded-lg border border-brief-line bg-brief-surface px-3 py-2">
+            <User className="h-3.5 w-3.5 text-precision-400" />
+            <span className="font-mono text-2xs font-semibold text-cream-100">
+              {signedInAs}
+            </span>
+            <button
+              onClick={onSignOut}
+              className="ml-1 text-brief-muted transition hover:text-cream-50 focus:outline-none focus:ring-2 focus:ring-precision-400 rounded"
+              title="Sign out"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

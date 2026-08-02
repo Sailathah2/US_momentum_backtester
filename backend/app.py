@@ -47,9 +47,11 @@ from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 
 # Our own helper modules, both in this same folder.
+import auth
 import data_loader
 import engine
 import indicators
+from auth import login_required
 
 # ----------------------------------------------------------------------
 # SETTINGS YOU MAY WANT TO CHANGE
@@ -201,6 +203,10 @@ def health():
         "ok": True,
         "service_id": "momentum-backtest-portal",
         "service": "Momentum Backtest Portal",
+        # The website reads these to decide whether to show a login screen.
+        "auth_required": auth.REQUIRE_LOGIN and auth.any_users_exist(),
+        "auth_configured": auth.any_users_exist(),
+        "signed_in_as": auth.current_user(),
         "version": "1.0.0",
         "sessions_loaded": len(SESSIONS),
         "time": datetime.utcnow().isoformat() + "Z",
@@ -208,10 +214,55 @@ def health():
 
 
 # ======================================================================
+# ENDPOINT 1b - SIGNING IN AND OUT
+# ======================================================================
+
+@app.post("/api/login")
+def login():
+    """
+    Exchange a username and password for a signed token.
+
+    The token goes back to the browser, which sends it on every later
+    request. The password itself is never stored and never travels again.
+    """
+    body = request.get_json(silent=True) or {}
+    token, error = auth.attempt_login(body.get("username"), body.get("password"))
+    if error:
+        # 401 rather than 400: this is "who are you", not "malformed request".
+        return jsonify({"ok": False, "error": error}), 401
+    return jsonify({"ok": True, "token": token,
+                    "username": str(body.get("username", "")).strip().lower(),
+                    "expires_hours": auth.TOKEN_HOURS})
+
+
+@app.post("/api/logout")
+def logout():
+    """
+    Sign out.
+
+    Nothing to do server-side: the token is self-contained and simply stops
+    being sent. This route exists so the website has something honest to
+    call, and so the behaviour is obvious to anyone reading the code.
+    """
+    return jsonify({"ok": True})
+
+
+@app.get("/api/me")
+def me():
+    """Who is signed in right now? Used to restore a session on refresh."""
+    who = auth.current_user()
+    if who is None and auth.REQUIRE_LOGIN and auth.any_users_exist():
+        return jsonify({"ok": False, "error": "Not signed in.", "auth_required": True}), 401
+    return jsonify({"ok": True, "username": who,
+                    "auth_required": auth.REQUIRE_LOGIN and auth.any_users_exist()})
+
+
+# ======================================================================
 # ENDPOINT 2 - UPLOAD CSV FILES FROM THE BROWSER
 # ======================================================================
 
 @app.post("/api/upload")
+@login_required
 def upload():
     """
     Receive one or more CSV files that the user dragged onto the website,
@@ -267,6 +318,7 @@ def upload():
 # ======================================================================
 
 @app.post("/api/scan-folder")
+@login_required
 def scan_folder():
     """
     Load every CSV inside a folder path typed by the user - by far the
@@ -300,6 +352,7 @@ def scan_folder():
 # ======================================================================
 
 @app.get("/api/session/<session_id>")
+@login_required
 def session_info(session_id):
     """Used when the page is refreshed, so the UI can rebuild its file list."""
     try:
@@ -458,6 +511,7 @@ def _prepare_backtest(session, body):
 # ======================================================================
 
 @app.post("/api/backtest")
+@login_required
 def backtest():
     """
     The main event. Takes the user's settings, lines up the price data, runs
@@ -600,6 +654,7 @@ def _resolve_regime_inputs(session, body):
 
 
 @app.post("/api/regime-analysis")
+@login_required
 def regime_analysis():
     """
     Run the momentum strategy TWICE - with the macro filter and without -
@@ -682,6 +737,7 @@ def regime_analysis():
 # ======================================================================
 
 @app.post("/api/export")
+@login_required
 def export():
     """
     Turn the most recent backtest into a downloadable CSV file.
@@ -954,6 +1010,7 @@ def _report_tables(session):
 
 
 @app.post("/api/export-report")
+@login_required
 def export_report():
     """
     Download the WHOLE run as one file, with a sheet per table.
@@ -1052,6 +1109,7 @@ def export_report():
 # ======================================================================
 
 @app.post("/api/reset")
+@login_required
 def reset():
     """Forget a loaded dataset (frees up memory)."""
     body = request.get_json(silent=True) or {}

@@ -21,10 +21,15 @@ import {
   exportCsv,
   runBacktest,
   downloadReport,
+  getToken,
   runRegimeAnalysis,
   scanFolder,
+  setSessionExpiredHandler,
+  signIn,
+  signOut,
   uploadFiles,
 } from "./api";
+import LoginScreen from "./components/LoginScreen";
 import BacktestControls from "./components/BacktestControls";
 import ComparisonMetricsCard from "./components/ComparisonMetricsCard";
 import DrawdownChart from "./components/DrawdownChart";
@@ -86,6 +91,14 @@ export default function App() {
   const [online, setOnline] = useState(false);
   // Set when something IS answering our port, but it is a different app.
   const [wrongService, setWrongService] = useState(null);
+
+  // --- Who is signed in -------------------------------------------------
+  // `authRequired` comes from the server: it is false when the login is
+  // switched off, or when no accounts exist yet (a fresh install must not
+  // lock its owner out).
+  const [authRequired, setAuthRequired] = useState(false);
+  const [authConfigured, setAuthConfigured] = useState(false);
+  const [signedInAs, setSignedInAs] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [symbols, setSymbols] = useState([]);
   const [warnings, setWarnings] = useState([]);
@@ -113,6 +126,12 @@ export default function App() {
       if (cancelled) return;
       setOnline(status.online);
       setWrongService(status.wrongService ? status.message : null);
+      setAuthRequired(status.authRequired);
+      setAuthConfigured(status.authConfigured);
+      // The health check carries the token, so the server tells us who we
+      // are - that is how a signed-in session survives a page refresh.
+      if (status.signedInAs) setSignedInAs(status.signedInAs);
+      else if (!getToken()) setSignedInAs(null);
     };
     ping();
     const timer = setInterval(ping, 20000);
@@ -121,6 +140,34 @@ export default function App() {
       clearInterval(timer);
     };
   }, []);
+
+  // If any request comes back "your token is stale", clear the screen and
+  // send the user back to the login page rather than showing dead data.
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      setSignedInAs(null);
+      setSessionId(null);
+      setSymbols([]);
+      setResult(null);
+      setRegimeResult(null);
+      setError("Your session expired. Please sign in again.");
+    });
+  }, []);
+
+  async function handleSignIn(username, password) {
+    const data = await signIn(username, password);
+    setSignedInAs(data.username);
+    setError(null);
+  }
+
+  async function handleSignOut() {
+    await signOut();
+    setSignedInAs(null);
+    setSessionId(null);
+    setSymbols([]);
+    setResult(null);
+    setRegimeResult(null);
+  }
 
   /**
    * Both loading routes (drag-drop and folder scan) end up here. It stores
@@ -267,9 +314,26 @@ export default function App() {
     }
   }
 
+  // Gate the whole portal behind the login screen when the server asks for
+  // one and nobody is signed in yet.
+  if (authRequired && !signedInAs) {
+    return (
+      <LoginScreen
+        onSignIn={handleSignIn}
+        backendOnline={online}
+        notConfigured={!authConfigured}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-brief-bg">
-      <Header online={online} universeSize={symbols.length} />
+      <Header
+        online={online}
+        universeSize={symbols.length}
+        signedInAs={signedInAs}
+        onSignOut={handleSignOut}
+      />
 
       <main className="mx-auto max-w-[1600px] px-6 py-6">
         {/* ---------- A DIFFERENT app is sitting on our port ------------ */}

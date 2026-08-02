@@ -15,10 +15,97 @@ import axios from "axios";
 
 // A pre-configured messenger. 10 minutes is generous, but scanning a folder
 // of several hundred CSV files genuinely can take a couple of minutes.
+// WHERE THE BACKEND LIVES
+// -----------------------
+// Locally this is just "/api", and Vite quietly forwards those calls to the
+// Python server on port 5001 (see vite.config.js).
+//
+// When the website is hosted somewhere the Python server is NOT - on Vercel,
+// say - there is no proxy to do that forwarding, so the full address of the
+// backend has to be baked in at build time via VITE_API_BASE. See
+// DEPLOYMENT.md.
+const API_BASE = import.meta.env.VITE_API_BASE
+  ? `${String(import.meta.env.VITE_API_BASE).replace(/\/+$/, "")}/api`
+  : "/api";
+
 const http = axios.create({
-  baseURL: "/api",
+  baseURL: API_BASE,
   timeout: 600000,
 });
+
+// ----------------------------------------------------------------------
+// STAYING SIGNED IN
+// ----------------------------------------------------------------------
+// The server gives us a signed token after a correct password. We keep it
+// in localStorage so a page refresh does not sign you out, and attach it to
+// every request. The PASSWORD is never stored - only this token, which
+// expires on its own and can be revoked by changing the server's secret.
+const TOKEN_KEY = "momentum_portal_token";
+
+export function getToken() {
+  try {
+    return window.localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null; // private browsing modes can forbid localStorage
+  }
+}
+
+export function setToken(token) {
+  try {
+    if (token) window.localStorage.setItem(TOKEN_KEY, token);
+    else window.localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    /* nothing we can do; the session just will not survive a refresh */
+  }
+}
+
+// Attach the token to every outgoing request.
+http.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// When the server says "your token is stale", drop it and tell the app to
+// show the login screen again. Registered by App.jsx on start-up.
+let onSessionExpired = () => {};
+export function setSessionExpiredHandler(handler) {
+  onSessionExpired = handler;
+}
+
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      setToken(null);
+      onSessionExpired();
+    }
+    return Promise.reject(error);
+  }
+);
+
+/** Exchange a username and password for a token. */
+export async function signIn(username, password) {
+  try {
+    const { data } = await http.post("/login", { username, password });
+    setToken(data.token);
+    return data;
+  } catch (error) {
+    // A 401 here is a wrong password, not an expired session - show the
+    // server's message rather than bouncing the user around.
+    throw new Error(error.response?.data?.error || readableError(error));
+  }
+}
+
+/** Sign out and forget the token. */
+export async function signOut() {
+  try {
+    await http.post("/logout", {});
+  } catch {
+    /* signing out locally matters more than telling the server */
+  }
+  setToken(null);
+}
 
 /**
  * Turn any failure into a short sentence a non-technical user can act on.
@@ -69,9 +156,21 @@ export async function checkHealth() {
       };
     }
 
-    return { online: true, wrongService: false, info: data, message: null };
+    return {
+      online: true,
+      wrongService: false,
+      info: data,
+      message: null,
+      // Does this server want a login, and has anyone been set up yet?
+      authRequired: Boolean(data.auth_required),
+      authConfigured: Boolean(data.auth_configured),
+      signedInAs: data.signed_in_as || null,
+    };
   } catch {
-    return { online: false, wrongService: false, info: null, message: null };
+    return {
+      online: false, wrongService: false, info: null, message: null,
+      authRequired: false, authConfigured: false, signedInAs: null,
+    };
   }
 }
 

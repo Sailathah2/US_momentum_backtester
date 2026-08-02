@@ -16,6 +16,30 @@ happened to your money, and lets you download every trade it made.
 > **Running it day to day, or changing the code?** See **[SOP.md](SOP.md)** — the
 > operating checklist, the traps (a backend edit needs a server restart), how to
 > judge whether a result is trustworthy, and the regression suite.
+>
+> **Putting it online?** See **[DEPLOYMENT.md](DEPLOYMENT.md)** — the website
+> deploys to Vercel in minutes, but the Python backend needs a different kind of
+> host, and that file explains why and what to use.
+
+## Signing in
+
+By default the portal is open, so a fresh install cannot lock you out. The moment
+you create an account it requires a login:
+
+```bash
+cd backend
+python manage_users.py add yourname     # prints a strong password once
+python manage_users.py list
+python manage_users.py reset yourname   # forgot it
+```
+
+Passwords are stored only as PBKDF2 hashes with a per-user salt — never in
+readable form. After a correct password the server issues a signed token that
+expires in 12 hours; the password itself never travels again. Five wrong attempts
+locks that account for five minutes.
+
+Set `REQUIRE_LOGIN=0` in the environment to switch the login off entirely for
+solo local use.
 
 ---
 
@@ -380,6 +404,8 @@ day_4/
 │   ├── engine.py         # The backtesting brain: the strategy loop, the regime overlay, and all the performance maths.
 │   ├── indicators.py     # EMA, ATR, Supertrend and the Risk-ON/Risk-OFF state machine.
 │   ├── data_loader.py    # The CSV translator: column mapping, date parsing, calendar alignment.
+│   ├── auth.py           # Password hashing, signed tokens, route protection.
+│   ├── manage_users.py   # Create / list / remove logins.
 │   ├── requirements.txt  # The Python libraries to install.
 │   └── verify_all.py     # Regression suite - run after any backend change.
 │
@@ -410,6 +436,7 @@ day_4/
 │   └── index/            # Put your benchmark / index CSV file here.
 │
 ├── SOP.md                # Operating checklist, house rules, troubleshooting.
+├── DEPLOYMENT.md         # Hosting it: what works on Vercel and what does not.
 └── README.md             # This file.
 ```
 
