@@ -13,6 +13,10 @@ happened to your money, and lets you download every trade it made.
 
 **No coding required.** If you can copy and paste two commands, you can run this.
 
+> **Running it day to day, or changing the code?** See **[SOP.md](SOP.md)** — the
+> operating checklist, the traps (a backend edit needs a server restart), how to
+> judge whether a result is trustworthy, and the regression suite.
+
 ---
 
 ## What it actually does
@@ -85,14 +89,17 @@ You should see:
 ==============================================================
   Momentum Backtest Portal  -  backend server
 ==============================================================
-  Listening on http://127.0.0.1:5000
+  Listening on http://127.0.0.1:5001
 ```
 
 **Leave this window open.** If you close it, the website loses its brain.
 
-> **"Address already in use"?** Another app is already on port 5000 — often a
-> different project from this masterclass. Close that one first, or change
-> `PORT = 5000` near the top of `backend/app.py`.
+> **"Address already in use"?** Another app is already on port 5001. Close it, or
+> change `PORT = 5001` near the top of `backend/app.py` **and** the matching proxy
+> target in `frontend/vite.config.js` — the two must agree.
+>
+> Note this project deliberately uses **5001**, not 5000, so it can run alongside
+> the day_3 US Stock Data Downloader.
 
 ### Terminal 2 — the website
 
@@ -101,10 +108,17 @@ cd D:\algo_trading\ai_masterclass\day_4\frontend
 npm run dev
 ```
 
-Your browser opens automatically at **http://localhost:5173**.
+Your browser opens automatically at **http://localhost:5173** (Vite picks the next
+free port, e.g. 5174, if 5173 is already taken — read the terminal for the real one).
 
 The dot in the top-right corner should say **Backend online**. If it says offline,
 Terminal 1 is not running.
+
+> **Changed the Python code?** Restart Terminal 1. Python loads modules once at
+> startup, so an edit to `engine.py` or `app.py` has no effect until you stop the
+> server with `Ctrl + C` and run `python app.py` again — the symptom is a new
+> setting appearing to do nothing at all. The website hot-reloads on its own and
+> needs no restart.
 
 ### When you are finished
 
@@ -366,11 +380,12 @@ day_4/
 │   ├── engine.py         # The backtesting brain: the strategy loop, the regime overlay, and all the performance maths.
 │   ├── indicators.py     # EMA, ATR, Supertrend and the Risk-ON/Risk-OFF state machine.
 │   ├── data_loader.py    # The CSV translator: column mapping, date parsing, calendar alignment.
-│   └── requirements.txt  # The Python libraries to install.
+│   ├── requirements.txt  # The Python libraries to install.
+│   └── verify_all.py     # Regression suite - run after any backend change.
 │
 ├── frontend/
 │   ├── package.json          # The JavaScript libraries to install.
-│   ├── vite.config.js        # Dev server settings (and the /api -> port 5000 forwarding).
+│   ├── vite.config.js        # Dev server settings (and the /api -> port 5001 forwarding).
 │   ├── tailwind.config.js    # The Morning Brief colour theme.
 │   ├── index.html            # The single page React draws into.
 │   └── src/
@@ -394,6 +409,7 @@ day_4/
 │   ├── stocks/           # Put your stock CSV files here.
 │   └── index/            # Put your benchmark / index CSV file here.
 │
+├── SOP.md                # Operating checklist, house rules, troubleshooting.
 └── README.md             # This file.
 ```
 
@@ -404,7 +420,7 @@ day_4/
 | What you see | What it means |
 |--------------|---------------|
 | **"Backend offline"** in the header | Terminal 1 isn't running. Go to `backend` and run `python app.py`. |
-| **"Address already in use"** | Something else has port 5000. Close it, or change `PORT` in `app.py`. |
+| **"Address already in use"** | Something else has port 5001. Close it, or change `PORT` in `app.py` *and* the proxy in `vite.config.js`. |
 | **"The stock files and the benchmark file do not overlap in time"** | Your index file covers different dates than your stocks. The message tells you both date ranges. |
 | **"Only N trading days are available…"** | Your lookback is longer than your price history. Use a shorter lookback or load more history. |
 | **"At least 2 stock files… are needed"** | You loaded only the benchmark, or only one stock. Momentum needs something to rank. |
