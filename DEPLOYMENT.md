@@ -48,7 +48,12 @@ server somewhere that supports long-running processes. **Render**, **Railway** a
 
 ### Step 1 — deploy the backend
 
-Point your host at the `backend/` folder with:
+**Render, the quick way:** this repo now includes `render.yaml`. On
+[render.com](https://render.com) choose **New + → Blueprint**, point it at this
+repository, and it configures everything below automatically — including
+generating `PORTAL_SECRET` for you. Skip to Step 2.
+
+**Any other host,** point it at the `backend/` folder with:
 
 - **Build:** `pip install -r requirements.txt`
 - **Start:** `gunicorn app:app --bind 0.0.0.0:$PORT --timeout 300 --workers 1`
@@ -61,8 +66,7 @@ Three things matter here:
 | `--timeout 300` | A large backtest takes far longer than the 30-second default. |
 | `PORT` from the environment | Every host assigns its own port. |
 
-`gunicorn` is not in `requirements.txt` because it is not needed locally — add it
-if your host does not provide one.
+`gunicorn` is already in `requirements.txt`.
 
 Set these environment variables:
 

@@ -12,3 +12,4 @@ numpy==1.26.4           # Fast maths on whole columns of numbers at once
 python-dateutil==2.9.0  # Understands dates written in many different formats
 openpyxl==3.1.5         # Writes the multi-sheet Excel report (the ZIP/CSV report works without it)
 requests==2.32.3        # General-purpose web requests (used by optional add-ons)
+gunicorn==23.0.0        # Production web server, used when hosting (not needed locally)

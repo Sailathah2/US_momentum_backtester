@@ -1,0 +1,33 @@
+# ==========================================================
+# render.yaml -- one-click backend hosting
+# ==========================================================
+# Render reads this file and sets the backend up for you. Push it, then on
+# render.com choose "New +" -> "Blueprint" and point it at this repository.
+#
+# Why Render (or Railway / Fly) and not Vercel? See DEPLOYMENT.md - this
+# backend keeps loaded price data in memory, which serverless functions
+# throw away between requests.
+services:
+  - type: web
+    name: momentum-backtest-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # --workers 1 is NOT a performance oversight. Loaded datasets live in
+    # this process's memory, so a second worker would have its own separate
+    # memory and half the requests would land on the wrong one.
+    # --timeout 300 because a large backtest takes far longer than the
+    # 30-second default.
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 300
+    healthCheckPath: /api/health
+    envVars:
+      # Signs login tokens. Render generates a strong value and keeps it
+      # secret; without it every restart would sign everyone out.
+      - key: PORTAL_SECRET
+        generateValue: true
+      # Never expose this without a login.
+      - key: REQUIRE_LOGIN
+        value: "1"
+      - key: PYTHON_VERSION
+        value: "3.11.9"
