@@ -20,6 +20,11 @@ happened to your money, and lets you download every trade it made.
 > **Putting it online?** See **[DEPLOYMENT.md](DEPLOYMENT.md)** — the website
 > deploys to Vercel in minutes, but the Python backend needs a different kind of
 > host, and that file explains why and what to use.
+>
+> **Thinking about trading it for real?** See **[LIVE_TRADING.md](LIVE_TRADING.md)**
+> — when to compute signals versus when to send orders, how to run the regime
+> filter on its separate daily clock, what the backtest quietly assumes that
+> reality does not, and what to add before any money is at risk.
 
 ## Signing in
 
@@ -437,6 +442,7 @@ day_4/
 │
 ├── SOP.md                # Operating checklist, house rules, troubleshooting.
 ├── DEPLOYMENT.md         # Hosting it: what works on Vercel and what does not.
+├── LIVE_TRADING.md       # Running it for real: timing, execution, capacity, circuit breakers.
 └── README.md             # This file.
 ```
 
