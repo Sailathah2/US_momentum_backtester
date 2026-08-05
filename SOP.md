@@ -40,11 +40,20 @@ npm run dev                        # opens http://localhost:5173 (or 5174 if tak
 
 ## 2. The rule that catches everyone
 
-> **Edited any file in `backend/`? Restart Terminal 1.**
+> **Edited any file in `backend/`? The server now restarts itself.**
 
-Python loads a module once at start-up. An edit to `engine.py` or `app.py` has
-**no effect** until you stop the server (`Ctrl + C`) and run `python app.py`
-again.
+Auto-reload is on by default: the server watches the `backend/` folder and
+restarts whenever a `.py` file changes. Set `AUTO_RELOAD=0` to turn it off.
+
+This exists because Python loads a module once at start-up, so before auto-reload
+an edit to `engine.py` or `app.py` had **no effect** until you restarted by hand —
+and the symptom was not an error but two different settings returning identical
+results, or a brand-new feature 404-ing. It cost real time in this project three
+separate times.
+
+Auto-reload does not survive everything: a change that breaks import will leave the
+server down, and a running backfill job is killed by a reload. If in doubt, check
+the terminal — it prints `Detected change ... Restarting`.
 
 The symptom is nasty because nothing errors: a new setting simply appears to do
 nothing, and two different configurations return byte-identical results. If a
@@ -65,10 +74,13 @@ that should differ come back identical, the server is stale.
 ### Only one server at a time
 
 Windows lets two Python processes bind the same port, and the older one can win
-the request. Check before starting:
+the request — so your changes appear to do nothing. The server now refuses to
+start if the port is already taken and tells you how to clear it, but you can
+always check by hand:
 
 ```bash
 netstat -ano | grep ":5001" | grep LISTEN     # expect exactly ONE line
+taskkill //F //PID <pid>                       # if there is more than one
 ```
 
 ---

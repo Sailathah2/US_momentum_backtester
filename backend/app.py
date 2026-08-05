@@ -1349,13 +1349,56 @@ def reset():
 # START THE SERVER
 # ======================================================================
 
+def _port_already_taken(host, port):
+    """
+    Is something already listening here?
+
+    Windows will happily let a SECOND process bind a port that is already in
+    use, and then the OLD process answers some of the requests. That produces
+    the most baffling bug in this project: you add a feature, restart, and
+    the website still 404s because a stale server is replying. Better to
+    refuse to start and say so.
+    """
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.settimeout(0.4)
+        return probe.connect_ex((host, port)) == 0
+
+
 if __name__ == "__main__":
-    print("=" * 62)
-    print("  Momentum Backtest Portal  -  backend server")
-    print("=" * 62)
-    print(f"  Listening on http://{HOST}:{PORT}")
-    print("  (Port 5001 - the Stock Data Downloader project uses 5000.)")
-    print("  Leave this window open while you use the website.")
-    print("  Press CTRL+C here to stop it.")
-    print("=" * 62)
-    app.run(host=HOST, port=PORT, debug=False, threaded=True)
+    # The auto-reloader restarts the server whenever a .py file here changes.
+    # Without it, editing engine.py appears to do nothing until you remember
+    # to restart by hand - which has caught us out repeatedly. Set
+    # AUTO_RELOAD=0 to turn it off. Hosted deployments run under gunicorn and
+    # never reach this block at all.
+    auto_reload = os.environ.get("AUTO_RELOAD", "1") not in ("0", "false", "False", "no")
+
+    # Only the watcher process should run the pre-flight check; the reloader's
+    # child is *expected* to find the port busy.
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):
+        if _port_already_taken(HOST, PORT):
+            print("=" * 62)
+            print("  CANNOT START - something is already using port", PORT)
+            print("=" * 62)
+            print("  Another copy of this server is probably still running.")
+            print("  Windows lets two processes share a port, and then the OLD")
+            print("  one answers some requests - which looks like your changes")
+            print("  did nothing at all.")
+            print("")
+            print("  Find and stop it:")
+            print(f'    netstat -ano | findstr :{PORT}')
+            print("    taskkill /F /PID <the number in the last column>")
+            print("=" * 62)
+            raise SystemExit(1)
+
+        print("=" * 62)
+        print("  Momentum Backtest Portal  -  backend server")
+        print("=" * 62)
+        print(f"  Listening on http://{HOST}:{PORT}")
+        print("  (Port 5001 - the Stock Data Downloader project uses 5000.)")
+        print(f"  Auto-reload: {'ON - code edits restart it for you' if auto_reload else 'OFF'}")
+        print("  Leave this window open while you use the website.")
+        print("  Press CTRL+C here to stop it.")
+        print("=" * 62)
+
+    app.run(host=HOST, port=PORT, debug=False, threaded=True, use_reloader=auto_reload)
