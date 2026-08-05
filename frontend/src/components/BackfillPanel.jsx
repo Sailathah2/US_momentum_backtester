@@ -34,6 +34,9 @@ export default function BackfillPanel({ defaultFolder }) {
   const [folder, setFolder] = useState(defaultFolder || "");
   const [column, setColumn] = useState("");
   const [historyYears, setHistoryYears] = useState(5);
+  // Folder auto-detect is the default: most of the time you already
+  // have the files and simply want them all brought up to date.
+  const [useFolder, setUseFolder] = useState(true);
 
   const [preview, setPreview] = useState(null);
   const [job, setJob] = useState(null);
@@ -61,7 +64,8 @@ export default function BackfillPanel({ defaultFolder }) {
     setError(null);
     setBusy(true);
     try {
-      setPreview(await previewSymbols(excelPath.trim(), folder.trim(), column.trim()));
+      setPreview(await previewSymbols(
+        useFolder ? "" : excelPath.trim(), folder.trim(), useFolder ? "" : column.trim()));
     } catch (exception) {
       setError(exception.message);
       setPreview(null);
@@ -74,10 +78,11 @@ export default function BackfillPanel({ defaultFolder }) {
     setError(null);
     setBusy(true);
     try {
-      const started = await startBackfill(excelPath.trim(), folder.trim(), {
-        column: column.trim(),
-        historyYears,
-      });
+      const started = await startBackfill(
+        useFolder ? "" : excelPath.trim(),
+        folder.trim(),
+        { column: useFolder ? "" : column.trim(), historyYears }
+      );
       setJob({ ...started.status, id: started.job_id });
     } catch (exception) {
       setError(exception.message);
@@ -103,29 +108,69 @@ export default function BackfillPanel({ defaultFolder }) {
         </div>
 
         <p className="mb-4 text-2xs leading-relaxed text-brief-muted">
-          Reads a list of symbols from an Excel file and tops up each one&apos;s CSV
-          with only the days it is missing. Re-running tomorrow fetches one more bar
-          per symbol, not the whole history again.{" "}
+          Adds the days each file is missing, up to yesterday&apos;s close. Nothing
+          already in a file is changed or re-downloaded —{" "}
+          <strong className="text-cream-100">new rows are appended</strong> to the
+          end. Re-running tomorrow fetches one more bar per symbol.{" "}
           <strong className="text-cream-100">Today&apos;s bar is never written</strong>{" "}
           — while the market is open it is still moving, and a partial bar would
           corrupt every calculation that reads it.
         </p>
 
         <div className="space-y-3">
+          {/* -- Where the symbol list comes from ---------------------- */}
           <div>
-            <label className="field-label">Excel file of symbols</label>
-            <input
-              className="field mt-1.5 font-mono !text-xs"
-              value={excelPath}
-              onChange={(e) => setExcelPath(e.target.value)}
-              placeholder="D:\algo_trading\symbols.xlsx"
-              spellCheck={false}
-            />
+            <label className="field-label">Which symbols to update</label>
+            <div className="mt-1.5 flex gap-1.5">
+              <button
+                className={`chip flex-1 !py-2 ${useFolder ? "chip-active" : ""}`}
+                onClick={() => setUseFolder(true)}
+              >
+                Every CSV in the folder
+              </button>
+              <button
+                className={`chip flex-1 !py-2 ${!useFolder ? "chip-active" : ""}`}
+                onClick={() => setUseFolder(false)}
+              >
+                From an Excel list
+              </button>
+            </div>
             <p className="field-help">
-              The symbol column is found automatically if it is headed Symbol,
-              Ticker, Scrip or similar. Otherwise column A is used.
+              {useFolder ? (
+                <>
+                  Every price CSV in the folder is found automatically and updated{" "}
+                  <strong className="text-cream-100">in place</strong>, keeping its
+                  existing filename. The symbol is read from inside each file, so a
+                  file named <span className="font-mono">INDEX_DJI.csv</span> correctly
+                  updates <span className="font-mono">^DJI</span> rather than creating
+                  a second file.
+                </>
+              ) : (
+                <>
+                  Use a spreadsheet when you want to <strong>add</strong> symbols you
+                  do not have files for yet. Existing files are still appended to.
+                </>
+              )}
             </p>
           </div>
+
+          {!useFolder && (
+            <div>
+              <label className="field-label">Excel file of symbols</label>
+              <input
+                className="field mt-1.5 font-mono !text-xs"
+                value={excelPath}
+                onChange={(e) => setExcelPath(e.target.value)}
+                placeholder="D:\algo_trading\symbols.xlsx"
+                spellCheck={false}
+              />
+              <p className="field-help">
+                Must be the <strong>.xlsx or .csv file itself</strong>, not a folder.
+                The symbol column is found automatically if it is headed Symbol,
+                Ticker, Scrip or similar; otherwise column A is used.
+              </p>
+            </div>
+          )}
 
           <div>
             <label className="field-label">Folder holding the CSV files</label>
@@ -133,28 +178,32 @@ export default function BackfillPanel({ defaultFolder }) {
               className="field mt-1.5 font-mono !text-xs"
               value={folder}
               onChange={(e) => setFolder(e.target.value)}
-              placeholder="D:\algo_trading\ai_masterclass\day_4\data_5y\stocks"
+              placeholder="D:\algo_trading\ai_masterclass\day_4\data_5y"
               spellCheck={false}
             />
             <p className="field-help">
-              Existing files are appended to. A symbol with no file yet gets a fresh
-              download of the history length below.
+              Sub-folders are included, so pointing at{" "}
+              <span className="font-mono">data_5y</span> covers both{" "}
+              <span className="font-mono">stocks\</span> and{" "}
+              <span className="font-mono">index\</span> in one go.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
+            {!useFolder && (
+              <div>
+                <label className="field-label">Column name (optional)</label>
+                <input
+                  className="field mt-1.5 !text-xs"
+                  value={column}
+                  onChange={(e) => setColumn(e.target.value)}
+                  placeholder="auto-detect"
+                  spellCheck={false}
+                />
+              </div>
+            )}
             <div>
-              <label className="field-label">Column name (optional)</label>
-              <input
-                className="field mt-1.5 !text-xs"
-                value={column}
-                onChange={(e) => setColumn(e.target.value)}
-                placeholder="auto-detect"
-                spellCheck={false}
-              />
-            </div>
-            <div>
-              <label className="field-label">History for new symbols</label>
+              <label className="field-label">History for brand-new symbols</label>
               <select
                 className="field mt-1.5"
                 value={historyYears}
@@ -166,6 +215,9 @@ export default function BackfillPanel({ defaultFolder }) {
                   </option>
                 ))}
               </select>
+              <p className="field-help">
+                Only used for symbols with no file yet.
+              </p>
             </div>
           </div>
         </div>
@@ -174,7 +226,7 @@ export default function BackfillPanel({ defaultFolder }) {
           <button
             className="btn-ghost !py-2 !text-xs"
             onClick={handlePreview}
-            disabled={busy || running || !excelPath.trim()}
+            disabled={busy || running || !folder.trim() || (!useFolder && !excelPath.trim())}
           >
             {busy && !running ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -186,7 +238,7 @@ export default function BackfillPanel({ defaultFolder }) {
           <button
             className="btn-primary !py-2 !text-xs"
             onClick={handleStart}
-            disabled={busy || running || !excelPath.trim() || !folder.trim()}
+            disabled={busy || running || !folder.trim() || (!useFolder && !excelPath.trim())}
           >
             {running ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -219,8 +271,9 @@ export default function BackfillPanel({ defaultFolder }) {
           <div className="mb-3 flex items-center gap-2">
             <FileSpreadsheet className="h-4 w-4 text-precision-400" />
             <h3 className="text-sm font-bold text-cream-50">
-              Found {preview.count} symbol{preview.count === 1 ? "" : "s"} in column
-              &ldquo;{preview.column}&rdquo;
+              {preview.source === "folder"
+                ? `Found ${preview.count} price file${preview.count === 1 ? "" : "s"} in that folder`
+                : `Found ${preview.count} symbol${preview.count === 1 ? "" : "s"} in column "${preview.column}"`}
             </h3>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-1 text-2xs text-brief-muted">
@@ -232,6 +285,18 @@ export default function BackfillPanel({ defaultFolder }) {
               <strong className="text-cream-100">{preview.new_files}</strong> are new
               (full download)
             </span>
+            {preview.oldest_file && (
+              <span>
+                oldest file ends{" "}
+                <strong className="text-cream-100">{preview.oldest_file}</strong>,
+                newest {preview.newest_file} · target {preview.cutoff}
+              </span>
+            )}
+            {preview.skipped_count > 0 && (
+              <span className="text-amber-400">
+                {preview.skipped_count} file(s) skipped — not price data
+              </span>
+            )}
           </div>
           <p className="mt-3 font-mono text-2xs leading-relaxed text-cream-200">
             {preview.sample.join(", ")}

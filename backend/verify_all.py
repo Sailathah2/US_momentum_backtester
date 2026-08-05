@@ -290,6 +290,49 @@ for label, body in (("no excel path", {"folder": _data}),
           r_.get("error", "")[:46])
 check("unknown job id -> 404", c.get("/api/backfill/status/zzzz").status_code == 404)
 
+# --- folder auto-detect: the default way to use the updater ---
+import shutil as _sh
+_real = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data_5y", "index")
+_copy = os.path.join(_tf.mkdtemp(), "index"); _sh.copytree(_real, _copy)
+_targets, _skipped = _bf.discover_targets(_copy)
+check("folder mode finds the price files", len(_targets) > 0, f"{len(_targets)} files")
+check("symbol read from INSIDE the file, not the name",
+      any(os.path.splitext(os.path.basename(t["path"]))[0] != t["symbol"] for t in _targets),
+      "e.g. INDEX_DJI.csv holds ^DJI")
+check("each target keeps its ORIGINAL path",
+      all(os.path.exists(t["path"]) for t in _targets))
+_pv = c.post("/api/backfill/preview", json={"folder": _copy}).get_json()
+check("preview works with no Excel file", _pv.get("ok") and _pv.get("source") == "folder",
+      f"{_pv.get('count')} files")
+_before = set(os.listdir(_copy))
+_rows_before = {f: len(pd.read_csv(os.path.join(_copy, f))) for f in _before if f.endswith(".csv")}
+_st = c.post("/api/backfill/start", json={"folder": _copy}).get_json()
+import time as _t
+for _ in range(120):
+    _s = c.get(f"/api/backfill/status/{_st['job_id']}").get_json()["status"]
+    if _s["status"] != "running": break
+    _t.sleep(1)
+check("folder-mode run completes", _s["status"] == "done",
+      f"updated {_s['updated']}, current {_s['current']}, failed {_s['failed']}")
+check("NO new files created (nothing duplicated)", set(os.listdir(_copy)) == _before)
+_bad = []
+for f in _before:
+    if not f.endswith(".csv"): continue
+    _df = pd.read_csv(os.path.join(_copy, f)); _d = pd.to_datetime(_df.Date)
+    if len(_df) < _rows_before[f] or _d.duplicated().any() or not _d.is_monotonic_increasing:
+        _bad.append(f)
+    if "Ticker" in _df.columns and _df["Ticker"].dropna().nunique() > 1:
+        _bad.append(f + " (mixed ticker)")
+check("appended in place: grew, sorted, no dupes, one ticker each", not _bad, str(_bad[:3]))
+_st2 = c.post("/api/backfill/start", json={"folder": _copy}).get_json()
+for _ in range(120):
+    _s2 = c.get(f"/api/backfill/status/{_st2['job_id']}").get_json()["status"]
+    if _s2["status"] != "running": break
+    _t.sleep(1)
+check("re-run appends nothing (incremental)", _s2["rows_added"] == 0)
+check("folder mode with no folder -> friendly error",
+      not c.post("/api/backfill/start", json={}).get_json().get("ok"))
+
 print("\n" + "=" * 72)
 print(f"RESULT: {PASS} passed, {FAIL} failed")
 print("=" * 72)

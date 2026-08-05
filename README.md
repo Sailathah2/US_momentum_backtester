@@ -267,9 +267,16 @@ log gains Kept / In / Out columns, and both exports carry the full audit trail.
 
 ### Data — keep your price files current
 
-Point it at an Excel file of symbols and a folder of CSVs, then press **Update
-now**. It downloads only the days each file is missing, up to and including
-**yesterday's close**.
+Point it at a folder and press **Update now**. Every price CSV in there — and in
+its sub-folders — is found automatically and brought up to **yesterday's close**.
+New rows are **appended**; nothing already in a file is changed or re-downloaded.
+
+The symbol is read from *inside* each file rather than from its name, so
+`INDEX_DJI.csv` correctly updates `^DJI` and keeps its original filename instead
+of leaving a duplicate `^DJI.csv` beside it.
+
+Switch to **From an Excel list** when you want to *add* symbols you have no files
+for yet.
 
 Today's bar is deliberately never written: while the market is open it is a
 partial, moving number, and storing it would corrupt every calculation that later

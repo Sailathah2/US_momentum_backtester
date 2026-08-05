@@ -40,7 +40,7 @@ import os
 import traceback
 import uuid
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 from flask import Flask, jsonify, request, send_file
@@ -333,15 +333,15 @@ def backfill_start():
         body = request.get_json(silent=True) or {}
         excel = (body.get("excel_path") or "").strip().strip('"')
         folder = (body.get("folder") or "").strip().strip('"')
-        if not excel:
-            return _fail("Please give the path of the Excel file holding your symbols.")
         if not folder:
             return _fail("Please give the folder your CSV files live in.")
 
         job_id = backfill.start_backfill(
-            excel, folder,
+            folder,
+            excel_path=excel or None,       # blank = auto-detect from the folder
             column=body.get("column") or None,
             full_history_years=float(body.get("history_years") or 5),
+            recursive=bool(body.get("recursive", True)),
         )
         status = backfill.job_status(job_id)
         return jsonify({"ok": True, "job_id": job_id, "status": status})
@@ -384,23 +384,40 @@ def backfill_preview():
     try:
         body = request.get_json(silent=True) or {}
         excel = (body.get("excel_path") or "").strip().strip('"')
-        if not excel:
-            return _fail("Please give the path of the Excel file holding your symbols.")
-        symbols, column = backfill.read_symbols(excel, body.get("column") or None)
-
         folder = (body.get("folder") or "").strip().strip('"')
-        have = missing = 0
-        if folder and os.path.isdir(folder):
-            for symbol in symbols:
-                if os.path.exists(backfill.csv_path_for(folder, symbol)):
-                    have += 1
-                else:
-                    missing += 1
+        if not folder:
+            return _fail("Please give the folder your CSV files live in.")
+
+        targets, skipped, column, source = backfill.resolve_targets(
+            folder, excel or None, body.get("column") or None,
+            bool(body.get("recursive", True)))
+
+        have = sum(1 for t in targets if os.path.exists(t["path"]))
+
+        # Show how stale things are, so the size of the job is obvious
+        # before starting it.
+        cutoff = (datetime.now() - timedelta(days=1)).replace(
+            hour=0, minute=0, second=0, microsecond=0)
+        checked = targets[:60]          # a sample is enough to characterise it
+        dates = [backfill.last_date_in(t["path"]) for t in checked]
+        dates = [d for d in dates if d is not None]
+        already_current = sum(1 for d in dates if d >= cutoff)
 
         return jsonify({
-            "ok": True, "column": column, "count": len(symbols),
-            "sample": symbols[:24],
-            "already_have": have, "new_files": missing,
+            "ok": True,
+            "source": source,
+            "column": column,
+            "count": len(targets),
+            "sample": [t["symbol"] for t in targets[:24]],
+            "already_have": have,
+            "new_files": len(targets) - have,
+            "skipped_files": skipped[:12],
+            "skipped_count": len(skipped),
+            "cutoff": cutoff.strftime("%Y-%m-%d"),
+            "oldest_file": min(dates).strftime("%Y-%m-%d") if dates else None,
+            "newest_file": max(dates).strftime("%Y-%m-%d") if dates else None,
+            "sampled": len(checked),
+            "sample_already_current": already_current,
         })
     except ValueError as exc:
         return _fail(str(exc))

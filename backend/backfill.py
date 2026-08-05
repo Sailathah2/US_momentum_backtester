@@ -124,6 +124,90 @@ def csv_path_for(folder, symbol):
     return os.path.join(folder, f"{safe}.csv")
 
 
+def symbol_inside(path):
+    """
+    Work out which symbol a CSV actually holds.
+
+    The file NAME is not reliable: this project's index files are called
+    things like INDEX_DJI.csv but hold the symbol ^DJI. Downloading '^DJI'
+    and saving it as '^DJI.csv' would leave a duplicate file sitting beside
+    the original, so we always trust the Ticker column when there is one and
+    fall back to the filename only when there is not.
+
+    Returns None for a CSV that is not price data at all.
+    """
+    try:
+        head = pd.read_csv(path, nrows=2)
+    except Exception:
+        return None
+
+    lowered = {str(c).strip().lower(): c for c in head.columns}
+    # Not a price file - no date and no close means it is something else.
+    if not ({"date", "datetime", "time"} & set(lowered)):
+        return None
+    if not ({"close", "adj close", "adj_close"} & set(lowered)):
+        return None
+
+    for name in ("ticker", "symbol"):
+        if name in lowered and len(head):
+            value = str(head[lowered[name]].iloc[0]).strip().upper()
+            if value and value.lower() != "nan":
+                return value
+
+    stem = os.path.splitext(os.path.basename(path))[0]
+    return stem.upper()
+
+
+def discover_targets(folder, recursive=True):
+    """
+    Find every price CSV already in a folder and say which symbol each holds.
+
+    This is the usual way to use the updater: you already have a folder of
+    files, and you want all of them brought up to date. No symbol list to
+    maintain.
+
+    Returns (targets, skipped) where each target is {"symbol", "path"} and
+    the file is updated IN PLACE, keeping its existing name.
+    """
+    if not os.path.isdir(folder):
+        raise ValueError(f"'{folder}' is not a folder on this computer.")
+
+    paths = []
+    if recursive:
+        for root, _dirs, names in os.walk(folder):
+            paths.extend(os.path.join(root, n) for n in sorted(names)
+                         if n.lower().endswith(".csv"))
+    else:
+        paths = [os.path.join(folder, n) for n in sorted(os.listdir(folder))
+                 if n.lower().endswith(".csv")]
+
+    targets, skipped, seen = [], [], {}
+    for path in paths:
+        symbol = symbol_inside(path)
+        if symbol is None:
+            skipped.append(os.path.basename(path))
+            continue
+        # The same symbol in two folders: update the longer file and leave
+        # the other alone, rather than downloading twice.
+        if symbol in seen:
+            keep = seen[symbol]
+            try:
+                if os.path.getsize(path) > os.path.getsize(keep["path"]):
+                    keep["path"] = path
+            except OSError:
+                pass
+            continue
+        entry = {"symbol": symbol, "path": path}
+        seen[symbol] = entry
+        targets.append(entry)
+
+    if not targets:
+        raise ValueError(
+            f"No price CSV files found in '{folder}'. Files need a date column "
+            "and a close column.")
+    return targets, skipped
+
+
 def last_date_in(path):
     """The most recent date already in a file, or None if there is no file."""
     if not os.path.exists(path):
@@ -168,14 +252,17 @@ def _download(symbol, start, end):
     return frame[COLUMNS].dropna(subset=["Close"])
 
 
-def update_symbol(symbol, folder, cutoff, full_history_years=5):
+def update_symbol(symbol, path, cutoff, full_history_years=5):
     """
-    Bring one symbol's file up to `cutoff`.
+    Bring one symbol's file up to `cutoff` by APPENDING the missing days.
+
+    `path` is the exact file to write, so a file called INDEX_DJI.csv keeps
+    that name even though it holds ^DJI. Nothing already in the file is
+    changed or re-downloaded - only newer rows are added.
 
     Returns (action, rows_added, note) where action is one of
     "created", "updated", "current" or "failed".
     """
-    path = csv_path_for(folder, symbol)
     have_until = last_date_in(path)
 
     if have_until is None:
@@ -202,14 +289,26 @@ def update_symbol(symbol, folder, cutoff, full_history_years=5):
         return "current", 0, f"nothing new since {have_until:%Y-%m-%d}"
 
     existing = pd.read_csv(path)
+
+    # Keep whatever the file already used as its symbol, so appending to
+    # INDEX_DJI.csv does not suddenly start writing a different Ticker value
+    # into the new rows than the old ones carry.
+    if "Ticker" in existing.columns and len(existing):
+        fresh = fresh.copy()
+        fresh["Ticker"] = existing["Ticker"].dropna().iloc[-1] if existing["Ticker"].notna().any() else symbol
+
     combined = pd.concat([existing, fresh], ignore_index=True)
 
     # Belt and braces: a duplicated date would quietly double-count a day.
     combined["Date"] = pd.to_datetime(combined["Date"]).dt.normalize()
     combined = combined.drop_duplicates(subset="Date", keep="last").sort_values("Date")
     combined["Date"] = combined["Date"].dt.strftime("%Y-%m-%d")
-    combined.to_csv(path, index=False)
-    return "updated", len(fresh), f"added through {fresh['Date'].max():%Y-%m-%d}"
+
+    # Preserve the file's original column order; only add columns it lacked.
+    ordered = [c for c in existing.columns if c in combined.columns]
+    ordered += [c for c in combined.columns if c not in ordered]
+    combined[ordered].to_csv(path, index=False)
+    return "updated", len(fresh), f"appended through {fresh['Date'].max():%Y-%m-%d}"
 
 
 # ======================================================================
@@ -224,18 +323,39 @@ def _sweep_old_jobs():
         JOBS.pop(job_id, None)
 
 
-def start_backfill(excel_path, folder, column=None, pause=0.12, full_history_years=5):
+def resolve_targets(folder, excel_path=None, column=None, recursive=True):
+    """
+    Work out which files to update, from whichever source was chosen.
+
+    FOLDER mode (the usual one): every price CSV already in the folder is
+    updated in place, keeping its existing filename.
+
+    EXCEL mode: the symbols come from a spreadsheet instead, which also lets
+    you ADD symbols you do not have files for yet.
+    """
+    if not os.path.isdir(folder):
+        raise ValueError(f"'{folder}' is not a folder on this computer.")
+    if not os.access(folder, os.W_OK):
+        raise ValueError(f"'{folder}' is not writable.")
+
+    if excel_path:
+        symbols, used_column = read_symbols(excel_path, column)
+        targets = [{"symbol": s, "path": csv_path_for(folder, s)} for s in symbols]
+        return targets, [], used_column, "excel"
+
+    targets, skipped = discover_targets(folder, recursive=recursive)
+    return targets, skipped, None, "folder"
+
+
+def start_backfill(folder, excel_path=None, column=None, pause=0.12,
+                   full_history_years=5, recursive=True):
     """
     Kick off a backfill and return its job id immediately.
 
     The caller polls `JOBS[job_id]` to watch it run.
     """
-    symbols, used_column = read_symbols(excel_path, column)
-
-    if not os.path.isdir(folder):
-        raise ValueError(f"'{folder}' is not a folder on this computer.")
-    if not os.access(folder, os.W_OK):
-        raise ValueError(f"'{folder}' is not writable.")
+    targets, skipped, used_column, source = resolve_targets(
+        folder, excel_path, column, recursive)
 
     # Yesterday, by the calendar. Weekend runs simply find nothing new for
     # Saturday and Sunday, which is correct rather than an error.
@@ -245,11 +365,13 @@ def start_backfill(excel_path, folder, column=None, pause=0.12, full_history_yea
     job_id = uuid.uuid4().hex[:12]
     job = {
         "id": job_id, "status": "running",
-        "total": len(symbols), "done": 0,
+        "total": len(targets), "done": 0,
         "created": 0, "updated": 0, "current": 0, "failed": 0,
         "rows_added": 0,
         "cutoff": cutoff.strftime("%Y-%m-%d"),
         "folder": folder, "excel": excel_path, "column": used_column,
+        "source": source, "skipped_files": skipped[:20],
+        "skipped_count": len(skipped),
         "current_symbol": None,
         "failures": [], "log": [],
         "started_at": time.time(), "finished_at": None,
@@ -260,13 +382,14 @@ def start_backfill(excel_path, folder, column=None, pause=0.12, full_history_yea
         JOBS[job_id] = job
 
     def run():
-        for symbol in symbols:
+        for target in targets:
+            symbol, path = target["symbol"], target["path"]
             if job["cancel"]:
                 job["status"] = "cancelled"
                 break
             job["current_symbol"] = symbol
             try:
-                action, rows, note = update_symbol(symbol, folder, cutoff,
+                action, rows, note = update_symbol(symbol, path, cutoff,
                                                    full_history_years)
             except Exception as exc:                      # one bad symbol
                 action, rows, note = "failed", 0, str(exc)[:120]   # must not
