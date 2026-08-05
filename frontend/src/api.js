@@ -193,6 +193,68 @@ export async function uploadFiles(fileList, sessionId = null) {
   }
 }
 
+/**
+ * Read the symbol list out of an Excel file WITHOUT downloading anything,
+ * so the user can check the right column was found before a long job.
+ */
+export async function previewSymbols(excelPath, folder, column) {
+  try {
+    const { data } = await http.post("/backfill/preview", {
+      excel_path: excelPath,
+      folder,
+      column: column || null,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(readableError(error));
+  }
+}
+
+/** Start bringing every symbol's CSV up to yesterday's close. */
+export async function startBackfill(excelPath, folder, options = {}) {
+  try {
+    const { data } = await http.post("/backfill/start", {
+      excel_path: excelPath,
+      folder,
+      column: options.column || null,
+      history_years: options.historyYears || 5,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(readableError(error));
+  }
+}
+
+/** How is the update going? Polled while it runs. */
+export async function backfillStatus(jobId) {
+  try {
+    const { data } = await http.get(`/backfill/status/${jobId}`);
+    return data.status;
+  } catch (error) {
+    throw new Error(readableError(error));
+  }
+}
+
+/** Stop the update after the symbol currently in flight. */
+export async function cancelBackfill(jobId) {
+  try {
+    await http.post(`/backfill/cancel/${jobId}`, {});
+    return true;
+  } catch (error) {
+    throw new Error(readableError(error));
+  }
+}
+
+/** The full stock ranking exactly as it stood on one historical date. */
+export async function checkRank(payload) {
+  try {
+    const { data } = await http.post("/rank-check", payload);
+    return data;
+  } catch (error) {
+    throw new Error(readableError(error));
+  }
+}
+
 /** Ask the server to read every CSV inside a folder on this computer. */
 export async function scanFolder(folder) {
   try {

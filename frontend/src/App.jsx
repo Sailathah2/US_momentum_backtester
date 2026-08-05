@@ -29,7 +29,9 @@ import {
   signOut,
   uploadFiles,
 } from "./api";
+import BackfillPanel from "./components/BackfillPanel";
 import LoginScreen from "./components/LoginScreen";
+import RankChecker from "./components/RankChecker";
 import BacktestControls from "./components/BacktestControls";
 import ComparisonMetricsCard from "./components/ComparisonMetricsCard";
 import DrawdownChart from "./components/DrawdownChart";
@@ -110,6 +112,9 @@ export default function App() {
   const [result, setResult] = useState(null);
   // The filter-ON-vs-OFF comparison, when the user runs that instead.
   const [regimeResult, setRegimeResult] = useState(null);
+
+  // Which top-level screen is showing: backtest | ranks | data
+  const [view, setView] = useState("backtest");
 
   // --- Transient UI state ----------------------------------------------
   const [loadingFiles, setLoadingFiles] = useState(false);
@@ -335,6 +340,32 @@ export default function App() {
         onSignOut={handleSignOut}
       />
 
+      {/* ---------- The three screens ------------------------------- */}
+      <nav className="border-b border-brief-line bg-brief-bg/80 backdrop-blur">
+        <div className="mx-auto flex max-w-[1600px] gap-1 px-6">
+          {[
+            ["backtest", "Backtest"],
+            ["ranks", "Rank Checker"],
+            ["data", "Data"],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => setView(id)}
+              // The active tab carries an underline as well as a colour, so
+              // the current screen is not signalled by colour alone.
+              className={`-mb-px border-b-2 px-4 py-2.5 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-precision-400 ${
+                view === id
+                  ? "border-precision-500 text-cream-50"
+                  : "border-transparent text-brief-muted hover:text-cream-200"
+              }`}
+              aria-current={view === id ? "page" : undefined}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
       <main className="mx-auto max-w-[1600px] px-6 py-6">
         {/* ---------- A DIFFERENT app is sitting on our port ------------ */}
         {wrongService && (
@@ -380,7 +411,21 @@ export default function App() {
           </div>
         )}
 
+        {/* ---------- DATA: top the price files up ------------------- */}
+        {view === "data" && <BackfillPanel defaultFolder={DEFAULT_DATA_FOLDER} />}
+
+        {/* ---------- RANK CHECKER: one historical snapshot ---------- */}
+        {view === "ranks" && (
+          <RankChecker
+            sessionId={sessionId}
+            symbols={symbols}
+            settings={settings}
+            onChange={setSettings}
+          />
+        )}
+
         {/* ================= THE TWO-COLUMN LAYOUT ==================== */}
+        {view === "backtest" && (
         <div className="grid gap-5 xl:grid-cols-[380px_1fr]">
           {/* ---- LEFT: the controls, which stay put while you scroll --- */}
           <div className="space-y-5 xl:sticky xl:top-24 xl:self-start">
@@ -501,6 +546,7 @@ export default function App() {
             )}
           </div>
         </div>
+        )}
 
         <footer className="mt-10 border-t border-brief-line pt-5 text-center text-2xs leading-relaxed text-brief-muted">
           Momentum Backtest Portal &middot; Tradewithsai Morning Brief

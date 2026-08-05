@@ -159,7 +159,8 @@ def build_rebalance_dates(calendar, cadence, every_n_days, first_valid_position)
 def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
                     cash_buffer, min_roc, stock_ema=None, rolling_sd=None,
                     risk_measure="stddev", alive=None, exit_rank=0,
-                    held=None, reweight_mode="rebalance"):
+                    held=None, reweight_mode="rebalance",
+                    with_diagnostics=False):
     """
     Do steps 1-4 of the strategy for a SINGLE rebalance day.
 
@@ -185,7 +186,10 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
 
     # A stock is only tradable if we have a real price at BOTH ends of the
     # window (a company that listed last month has no 252-day history).
-    tradable = today_prices.notna() & past_prices.notna() & (past_prices > 0) & (today_prices > 0)
+    # The two gates are kept as SEPARATE masks so the Rank Checker screen can
+    # say which one a stock actually fell at, rather than just "excluded".
+    has_history = (today_prices.notna() & past_prices.notna()
+                   & (past_prices > 0) & (today_prices > 0))
 
     # ---- STEP 1b: the stock's own health check ------------------------
     # Optional gate: the stock must be trading above its OWN moving average.
@@ -193,10 +197,14 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     # falling too - this insists each pick is in its own uptrend as well.
     # Stocks without enough history have a blank EMA and are excluded, which
     # is the safe choice.
+    ema_row = None
+    above_own_ema = pd.Series(True, index=today_prices.index)
     if stock_ema is not None:
         ema_row = stock_ema.iloc[position]
-        tradable = tradable & ema_row.notna() & (today_prices > ema_row)
+        above_own_ema = ema_row.notna() & (today_prices > ema_row)
 
+    tradable = has_history & above_own_ema
+    roc_all = roc          # every stock's momentum, before any gate
     roc = roc[tradable]
 
     benchmark_roc = (benchmark.iloc[position] / benchmark.iloc[position - lookback]) - 1.0
@@ -212,6 +220,7 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     # of whoever already qualified.
     hurdle = max(float(benchmark_roc), float(min_roc)) if min_roc is not None else float(benchmark_roc)
     survivors = roc[roc > hurdle]
+    beat_index = set(survivors.index)
 
     # ---- STEP 3: RANK strongest first and keep the top X --------------
     stddev_values = None
@@ -270,6 +279,56 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
     # above is not in here at all, and therefore has no rank - which the
     # Keep/Exit rules below read as "it stopped beating the index".
     rank_of = {ticker: place for place, ticker in enumerate(ranking.index, start=1)}
+
+    # ------------------------------------------------------------------
+    # THE DIAGNOSTIC VIEW (built only when asked for)
+    # ------------------------------------------------------------------
+    # The Rank Checker screen needs the WHOLE league table plus a note on
+    # why each rejected stock missed out. It is assembled here, inside the
+    # same function that does the real selection, so the screen and the
+    # backtest can never drift apart and disagree about a given date.
+    diagnostics = None
+    if with_diagnostics:
+        ranked_set = set(ranking.index)
+        rows = []
+        for ticker in today_prices.index:
+            reason, stage = None, "ranked"
+            if ticker not in ranked_set:
+                if not bool(has_history.get(ticker, False)):
+                    reason, stage = "not enough price history for this lookback", "history"
+                elif not bool(above_own_ema.get(ticker, True)):
+                    reason, stage = "trading below its own EMA", "stock_ema"
+                elif ticker not in beat_index:
+                    reason, stage = "did not beat the index", "relative_strength"
+                else:
+                    reason, stage = "no usable volatility (halted or flat)", "volatility"
+            rows.append({
+                "ticker": str(ticker),
+                "rank": rank_of.get(ticker),
+                "close": _clean(today_prices.get(ticker)),
+                "roc": _clean(roc_all.get(ticker)),
+                "stddev": _clean(stddev_values.get(ticker)) if stddev_values is not None else None,
+                "score": _clean(ranking.get(ticker)),
+                "own_ema": _clean(ema_row.get(ticker)) if ema_row is not None else None,
+                "above_own_ema": bool(above_own_ema.get(ticker, True)),
+                "relative_strength": _clean(
+                    (roc_all.get(ticker) - benchmark_roc)
+                    if pd.notna(roc_all.get(ticker)) else None),
+                "stage": stage,
+                "reason": reason,
+            })
+        diagnostics = {
+            "rows": rows,
+            "benchmark_roc": _clean(benchmark_roc),
+            "hurdle": _clean(hurdle),
+            "funnel": {
+                "universe": int(len(today_prices)),
+                "enough_history": int(has_history.sum()),
+                "above_own_ema": int((has_history & above_own_ema).sum()),
+                "beat_index": int(len(beat_index)),
+                "ranked": int(len(ranking)),
+            },
+        }
 
     # ------------------------------------------------------------------
     # THE RANK CUSHION: keep, exit, enter
@@ -338,7 +397,8 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
         # Nothing beat the index today - the strategy sits 100% in cash.
         return {"picks": [], "cash_weight": 1.0, "benchmark_roc": float(benchmark_roc),
                 "actions": actions, "kept": [], "entered": [],
-                "exited": [a["ticker"] for a in actions if a["action"] == "EXIT"]}
+                "exited": [a["ticker"] for a in actions if a["action"] == "EXIT"],
+                "diagnostics": diagnostics}
 
     # ---- STEP 4: WEIGHT the chosen stocks ------------------------------
     if weighting == "roc":
@@ -437,6 +497,7 @@ def select_holdings(prices, benchmark, position, lookback, top_n, weighting,
         "kept": [str(t) for t in kept],
         "entered": [str(t) for t in newcomers],
         "exited": [a["ticker"] for a in actions if a["action"] == "EXIT"],
+        "diagnostics": diagnostics,
     }
 
 

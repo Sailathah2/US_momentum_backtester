@@ -263,6 +263,40 @@ log gains Kept / In / Out columns, and both exports carry the full audit trail.
 > and saved about 20% of all trading costs, at the price of a deeper drawdown as
 > winners are left to grow unchecked.
 
+## The other two tabs
+
+### Data — keep your price files current
+
+Point it at an Excel file of symbols and a folder of CSVs, then press **Update
+now**. It downloads only the days each file is missing, up to and including
+**yesterday's close**.
+
+Today's bar is deliberately never written: while the market is open it is a
+partial, moving number, and storing it would corrupt every calculation that later
+reads it. Run this in the evening for a complete set.
+
+It is incremental — re-running tomorrow fetches one more bar per symbol, not the
+whole history again. The symbol column is found automatically if it is headed
+*Symbol*, *Ticker*, *Scrip* or similar; otherwise column A is used. **Check the
+list first** reads the file without downloading anything, so you can confirm the
+right column was picked up before starting a long run. A symbol that fails —
+renamed, delisted, mistyped — is logged and the rest of the run carries on.
+
+### Rank Checker — the league table on any single day
+
+Pick a date and your settings, and see how **every** stock in the universe scored
+that day, including the ones that were rejected and why. It answers the question a
+backtest cannot: *why wasn't X picked that month?*
+
+The funnel across the top shows where the field narrowed — universe → enough
+history → above its own EMA → beat the index → ranked → selected — so a surprising
+result traces straight back to the filter that caused it.
+
+It runs the same selection code the backtest uses, so the two cannot disagree
+about a given date. One nuance: with an exit cushion set, this screen shows what
+you would buy **starting from cash**. A running backtest would keep some positions
+you already held instead, which is history this screen has no way to know.
+
 ### Step 3 · (Optional) Add the index regime filter
 
 The momentum strategy decides *which* stocks to buy. The regime filter decides
@@ -410,6 +444,7 @@ day_4/
 │   ├── indicators.py     # EMA, ATR, Supertrend and the Risk-ON/Risk-OFF state machine.
 │   ├── data_loader.py    # The CSV translator: column mapping, date parsing, calendar alignment.
 │   ├── auth.py           # Password hashing, signed tokens, route protection.
+│   ├── backfill.py       # Reads an Excel symbol list and tops up CSV files.
 │   ├── manage_users.py   # Create / list / remove logins.
 │   ├── requirements.txt  # The Python libraries to install.
 │   └── verify_all.py     # Regression suite - run after any backend change.
@@ -427,6 +462,9 @@ day_4/
 │           ├── UploadZone.jsx        # Step 1: drag-drop and folder scanning.
 │           ├── BacktestControls.jsx  # Step 2: every strategy setting.
 │           ├── RegimeControls.jsx    # Step 3: the macro filter settings.
+│           ├── BackfillPanel.jsx     # Data tab: update price files.
+│           ├── RankChecker.jsx       # Rank Checker tab: one day's league table.
+│           ├── LoginScreen.jsx       # Sign-in page.
 │           ├── MetricCards.jsx       # The row of headline numbers.
 │           ├── EquityChart.jsx       # Portfolio vs benchmark growth.
 │           ├── EquityComparisonChart.jsx  # Filter ON vs OFF vs benchmark + regime strip.

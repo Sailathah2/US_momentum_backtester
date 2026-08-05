@@ -48,6 +48,7 @@ from flask_cors import CORS
 
 # Our own helper modules, both in this same folder.
 import auth
+import backfill
 import data_loader
 import engine
 import indicators
@@ -311,6 +312,101 @@ def upload():
     except Exception as exc:
         traceback.print_exc()
         return _fail(f"Upload failed: {exc}", 500)
+
+
+# ======================================================================
+# ENDPOINT 2b - BACKFILL: top every symbol's file up to yesterday
+# ======================================================================
+
+@app.post("/api/backfill/start")
+@login_required
+def backfill_start():
+    """
+    Read a symbol list from an Excel file and bring every one of those
+    symbols' CSV files up to yesterday's close.
+
+    Returns a job id straight away; the work carries on in the background
+    because several hundred symbols takes minutes. Poll
+    /api/backfill/status/<job_id> to follow it.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        excel = (body.get("excel_path") or "").strip().strip('"')
+        folder = (body.get("folder") or "").strip().strip('"')
+        if not excel:
+            return _fail("Please give the path of the Excel file holding your symbols.")
+        if not folder:
+            return _fail("Please give the folder your CSV files live in.")
+
+        job_id = backfill.start_backfill(
+            excel, folder,
+            column=body.get("column") or None,
+            full_history_years=float(body.get("history_years") or 5),
+        )
+        status = backfill.job_status(job_id)
+        return jsonify({"ok": True, "job_id": job_id, "status": status})
+
+    except ValueError as exc:
+        return _fail(str(exc))
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"Could not start the update: {exc}", 500)
+
+
+@app.get("/api/backfill/status/<job_id>")
+@login_required
+def backfill_status(job_id):
+    """How is the update going? The page polls this while it runs."""
+    status = backfill.job_status(job_id)
+    if status is None:
+        return _fail("That update is no longer running (the server may have restarted).", 404)
+    return jsonify({"ok": True, "status": status})
+
+
+@app.post("/api/backfill/cancel/<job_id>")
+@login_required
+def backfill_cancel(job_id):
+    """Stop after the symbol currently in flight."""
+    job = backfill.JOBS.get(job_id)
+    if job is None:
+        return _fail("That update is no longer running.", 404)
+    job["cancel"] = True
+    return jsonify({"ok": True})
+
+
+@app.post("/api/backfill/preview")
+@login_required
+def backfill_preview():
+    """
+    Read the symbol list WITHOUT downloading anything, so the user can check
+    the right column was picked up before starting a long job.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        excel = (body.get("excel_path") or "").strip().strip('"')
+        if not excel:
+            return _fail("Please give the path of the Excel file holding your symbols.")
+        symbols, column = backfill.read_symbols(excel, body.get("column") or None)
+
+        folder = (body.get("folder") or "").strip().strip('"')
+        have = missing = 0
+        if folder and os.path.isdir(folder):
+            for symbol in symbols:
+                if os.path.exists(backfill.csv_path_for(folder, symbol)):
+                    have += 1
+                else:
+                    missing += 1
+
+        return jsonify({
+            "ok": True, "column": column, "count": len(symbols),
+            "sample": symbols[:24],
+            "already_have": have, "new_files": missing,
+        })
+    except ValueError as exc:
+        return _fail(str(exc))
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"Could not read that file: {exc}", 500)
 
 
 # ======================================================================
@@ -817,6 +913,138 @@ def _csv_response(buffer, name):
         as_attachment=True,
         download_name=f"momentum_{name}_{stamp}.csv",
     )
+
+
+# ======================================================================
+# ENDPOINT 5c - RANK CHECKER: the league table on one historical day
+# ======================================================================
+
+@app.post("/api/rank-check")
+@login_required
+def rank_check():
+    """
+    Show the full stock ranking exactly as it stood on one chosen date.
+
+    This answers "why was X not picked that month?" without having to read a
+    whole backtest. It runs the SAME selection code the backtest uses - the
+    diagnostics come out of `select_holdings` itself - so the two can never
+    disagree about what the ranking was.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        session = _get_session(body.get("session_id"))
+
+        prices, benchmark, settings, benchmark_ticker, universe = _prepare_backtest(session, body)
+
+        # ---- Which day are we looking at? -----------------------------
+        wanted = body.get("date")
+        if not wanted:
+            raise ValueError("Please choose a date to inspect.")
+        stamp = pd.to_datetime(wanted)
+
+        # Snap to the last trading day on or before the request. Picking a
+        # Sunday should show you Friday, not an error.
+        calendar = prices.index
+        earlier = calendar[calendar <= stamp]
+        if len(earlier) == 0:
+            raise ValueError(
+                f"{stamp:%Y-%m-%d} is before the data starts "
+                f"({calendar.min():%Y-%m-%d}). Choose a later date."
+            )
+        as_of = earlier[-1]
+        position = calendar.get_loc(as_of)
+
+        # ---- Is there enough run-up behind that day? ------------------
+        warmup = max(settings["lookback"], settings["stock_ema_period"],
+                     settings["stddev_period"])
+        if position < warmup:
+            raise ValueError(
+                f"{as_of:%Y-%m-%d} is only {position} trading days into the data, "
+                f"but the settings need {warmup} days of history behind them. "
+                "Choose a later date, or shorten the lookback."
+            )
+
+        # ---- Build the same helper tables the backtest builds ---------
+        stock_ema = None
+        if settings["stock_ema_period"] >= 2:
+            stock_ema = prices.ewm(span=settings["stock_ema_period"], adjust=False,
+                                   min_periods=settings["stock_ema_period"]).mean()
+
+        rolling_sd = rolling_alive = None
+        if settings["stddev_period"] >= 2 and settings["risk_measure"] != "none":
+            daily = prices.pct_change(fill_method=None)
+            rolling_alive = daily.rolling(settings["stddev_period"],
+                                          min_periods=settings["stddev_period"]).std()
+            if settings["risk_measure"] == "downside":
+                losses = daily.clip(upper=0.0)
+                rolling_sd = (losses ** 2).rolling(
+                    settings["stddev_period"],
+                    min_periods=settings["stddev_period"]).mean() ** 0.5
+            else:
+                rolling_sd = rolling_alive
+
+        decision = engine.select_holdings(
+            prices, benchmark, position,
+            settings["lookback"], settings["top_n"], settings["weighting"],
+            settings["cash_buffer"], settings["min_roc"],
+            stock_ema=stock_ema, rolling_sd=rolling_sd,
+            risk_measure=settings["risk_measure"], alive=rolling_alive,
+            exit_rank=settings["exit_rank"], held=None,
+            reweight_mode=settings["reweight_mode"],
+            with_diagnostics=True,
+        )
+
+        diag = decision.get("diagnostics") or {"rows": [], "funnel": {}}
+        picked = {p["ticker"] for p in decision["picks"]}
+        weight_of = {p["ticker"]: p["weight"] for p in decision["picks"]}
+
+        # Label every row so the table can be read at a glance.
+        top_n = settings["top_n"]
+        cushion = settings["exit_rank"]
+        for row in diag["rows"]:
+            place = row.get("rank")
+            if row["ticker"] in picked:
+                row["status"] = "SELECTED"
+                row["weight"] = weight_of.get(row["ticker"])
+            elif place is None:
+                row["status"] = "REJECTED"
+                row["weight"] = None
+            elif cushion and place <= cushion:
+                # Not bought today, but close enough that it would be KEPT
+                # if you already held it.
+                row["status"] = "IN CUSHION"
+                row["weight"] = None
+            else:
+                row["status"] = "RANKED"
+                row["weight"] = None
+
+        # Ranked names first, in order; rejects afterwards, best ROC first.
+        diag["rows"].sort(key=lambda r: (r["rank"] is None,
+                                         r["rank"] if r["rank"] is not None else 0,
+                                         -(r["roc"] if r["roc"] is not None else -9e9)))
+
+        return jsonify({
+            "ok": True,
+            "as_of": as_of.strftime("%Y-%m-%d"),
+            "requested": stamp.strftime("%Y-%m-%d"),
+            "snapped": as_of.strftime("%Y-%m-%d") != stamp.strftime("%Y-%m-%d"),
+            "position": int(position),
+            "benchmark": benchmark_ticker,
+            "universe_size": len(universe),
+            "rows": diag["rows"],
+            "funnel": diag["funnel"],
+            "benchmark_roc": diag.get("benchmark_roc"),
+            "hurdle": diag.get("hurdle"),
+            "settings": {**settings, "benchmark": benchmark_ticker},
+            "selected": [p["ticker"] for p in decision["picks"]],
+            "cash_weight": decision["cash_weight"],
+        })
+
+    except ValueError as exc:
+        return _fail(str(exc))
+    except Exception as exc:
+        traceback.print_exc()
+        return _fail(f"The rank check failed: {exc}", 500)
 
 
 # ======================================================================

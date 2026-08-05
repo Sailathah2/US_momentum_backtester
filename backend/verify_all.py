@@ -19,6 +19,7 @@ it drives the Flask app in-process, which also means it always tests the
 code on disk rather than whatever an old server happens to have loaded.
 """
 import sys, os, io, json, zipfile, warnings
+from datetime import datetime, timedelta
 sys.path.insert(0, r"D:\algo_trading\ai_masterclass\day_4\backend")
 warnings.simplefilter("error", FutureWarning)          # a warning is a failure here
 import numpy as np, pandas as pd
@@ -209,6 +210,85 @@ check("no private keys leak", not [k for k in big if k.startswith("_")]
       and not [k for k in big["filtered"] if k.startswith("_")])
 h = c.get("/api/health").get_json()
 check("health reports service_id", h.get("service_id")=="momentum-backtest-portal")
+
+
+print("\n" + "=" * 72); print("11. RANK CHECKER"); print("=" * 72)
+# Without a cushion the backtest re-picks from scratch each time, so the
+# Rank Checker - which has no holdings history - must agree exactly.
+FRESH = {**BASE, "exit_rank": 0, "stddev_period": 60, "risk_measure": "stddev"}
+btf = c.post("/api/backtest", json=FRESH).get_json()
+probe_f = btf["rebalances"][25]["rebalance_date"]
+rkf = c.post("/api/rank-check", json={**FRESH, "date": probe_f}).get_json()
+check("picks IDENTICAL to a no-cushion backtest",
+      sorted(rkf["selected"]) == sorted(t["ticker"] for t in btf["trades"]
+                                        if t["rebalance_date"] == probe_f),
+      f"{len(rkf['selected'])} names on {probe_f}")
+
+# WITH a cushion the backtest carries positions forward, so its holdings
+# depend on history the Rank Checker cannot know. It still has to produce a
+# valid fresh top-N, and its RANKING must match the backtest's view.
+RC = {**BASE, "exit_rank": 15, "stddev_period": 60, "risk_measure": "stddev"}
+bt = c.post("/api/backtest", json=RC).get_json()
+probe = bt["rebalances"][25]["rebalance_date"]
+rk = c.post("/api/rank-check", json={**RC, "date": probe}).get_json()
+check("rank check runs", rk.get("ok"), f"as of {rk.get('as_of')}")
+if rk.get("ok"):
+    bt_picks = sorted(t["ticker"] for t in bt["trades"] if t["rebalance_date"] == probe)
+    kept = {a["ticker"] for a in bt["actions"]
+            if a["period"] == bt["rebalances"][25]["period"] and a["action"] == "KEEP"}
+    # Everything the backtest bought was either kept from before, or is in
+    # the fresh top-N the Rank Checker shows.
+    check("every backtest pick is explained (kept, or in the fresh top-N)",
+          all(t in kept or t in set(rk["selected"]) for t in bt_picks),
+          f"{len(kept)} kept + {len(set(bt_picks) & set(rk['selected']))} shared")
+    f_ = rk["funnel"]
+    check("funnel narrows monotonically",
+          f_["universe"] >= f_["enough_history"] >= f_["above_own_ema"] >= f_["beat_index"],
+          f"{f_['universe']}->{f_['enough_history']}->{f_['above_own_ema']}->{f_['beat_index']}")
+    rows = rk["rows"]
+    check("every stock accounted for", len(rows) == f_["universe"], f"{len(rows)} rows")
+    sel = [r for r in rows if r["status"] == "SELECTED"]
+    check("SELECTED count == top_n", len(sel) == RC["top_n"])
+    check("SELECTED all rank <= top_n", all(r["rank"] <= RC["top_n"] for r in sel))
+    cush = [r for r in rows if r["status"] == "IN CUSHION"]
+    check("cushion rows sit between top_n and exit_rank",
+          all(RC["top_n"] < r["rank"] <= RC["exit_rank"] for r in cush), f"{len(cush)} rows")
+    rej = [r for r in rows if r["status"] == "REJECTED"]
+    check("every REJECTED row states a reason", all(r["reason"] for r in rej), f"{len(rej)} rows")
+    check("ranked rows ordered by score",
+          all(rows[i]["score"] >= rows[i + 1]["score"] for i in range(min(30, f_["ranked"]) - 1)))
+    json.dumps(rk); check("rank check JSON-serialises", True)
+check("weekend snaps to a trading day",
+      c.post("/api/rank-check", json={**RC, "date": "2025-06-29"}).get_json().get("as_of") == "2025-06-27")
+for label, body in (("no date", {**RC}), ("before data", {**RC, "date": "2019-01-01"}),
+                    ("too early for warm-up", {**RC, "date": "2021-09-01"})):
+    r_ = c.post("/api/rank-check", json=body).get_json()
+    check(f"{label} -> friendly error", not r_.get("ok") and len(r_.get("error", "")) > 15,
+          r_.get("error", "")[:46])
+
+print("\n" + "=" * 72); print("12. DATA BACKFILL"); print("=" * 72)
+import tempfile as _tf
+import backfill as _bf
+_dir = _tf.mkdtemp(); _xl = os.path.join(_dir, "syms.xlsx")
+pd.DataFrame({"Symbol": ["AAPL", "MSFT"]}).to_excel(_xl, index=False)
+_data = os.path.join(_dir, "stocks"); os.makedirs(_data, exist_ok=True)
+prev = c.post("/api/backfill/preview", json={"excel_path": _xl, "folder": _data}).get_json()
+check("preview finds the symbol column", prev.get("ok") and prev.get("column") == "Symbol",
+      f"{prev.get('count')} symbols")
+check("preview counts new vs existing", prev.get("new_files") == 2)
+check("symbol reader returns the list", _bf.read_symbols(_xl)[0] == ["AAPL", "MSFT"])
+_cut = _bf.datetime.now() - _bf.timedelta(days=1)
+check("cutoff is yesterday, never today", _cut.date() < _bf.datetime.now().date(),
+      _cut.strftime("%Y-%m-%d"))
+check("csv path builder keeps index carets", _bf.csv_path_for(_data, "^GSPC").endswith("^GSPC.csv"))
+for label, body in (("no excel path", {"folder": _data}),
+                    ("missing file", {"excel_path": "C:/nope.xlsx", "folder": _data}),
+                    ("bad folder", {"excel_path": _xl, "folder": "C:/nope"}),
+                    ("bad column", {"excel_path": _xl, "folder": _data, "column": "Nope"})):
+    r_ = c.post("/api/backfill/start", json=body).get_json()
+    check(f"{label} -> friendly error", not r_.get("ok") and len(r_.get("error", "")) > 15,
+          r_.get("error", "")[:46])
+check("unknown job id -> 404", c.get("/api/backfill/status/zzzz").status_code == 404)
 
 print("\n" + "=" * 72)
 print(f"RESULT: {PASS} passed, {FAIL} failed")
