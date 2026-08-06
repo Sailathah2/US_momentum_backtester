@@ -62,7 +62,85 @@ function Tile({ icon: Icon, label, value, sub, tone = "neutral", hint }) {
   );
 }
 
-export default function MetricCards({ metrics, benchmarkMetrics, outperformance, summary }) {
+/**
+ * The secondary strip: how the individual TRADES did, plus the ratios that
+ * do not fit in the headline tiles.
+ *
+ * These answer a different question from the tiles above. The tiles say how
+ * your money did; these say how good the individual picks were - which is
+ * what tells you whether the edge is broad or whether a couple of lucky
+ * names carried the whole record.
+ */
+function StatStrip({ metrics, stats }) {
+  if (!stats || !stats.total_trades) return null;
+
+  const items = [
+    { label: "Win rate (trades)", value: pct(stats.trade_win_rate, 2), tone: "neutral",
+      hint: `${stats.winners} winners, ${stats.losers} losers. Counts individual trades — the tile above counts rebalance periods, so the two differ.` },
+    { label: "Avg winner", value: pct(stats.avg_winner), tone: "up",
+      hint: "Average return of the trades that made money." },
+    { label: "Avg loser", value: pct(stats.avg_loser), tone: "down",
+      hint: "Average return of the trades that lost money." },
+    { label: "Biggest winner", value: pct(stats.biggest_winner), tone: "up",
+      hint: stats.biggest_winner_ticker
+        ? `${stats.biggest_winner_ticker}, bought ${stats.biggest_winner_date}`
+        : "" },
+    { label: "Biggest loser", value: pct(stats.biggest_loser), tone: "down",
+      hint: stats.biggest_loser_ticker
+        ? `${stats.biggest_loser_ticker}, bought ${stats.biggest_loser_date}`
+        : "" },
+    { label: "Risk to reward", value: ratio(stats.risk_reward), tone: "neutral",
+      hint: "Average winner divided by the average loser. Above 1 means winners are bigger than losers." },
+    { label: "Profit factor", value: ratio(stats.profit_factor), tone: "neutral",
+      hint: "Everything won divided by everything lost. Below 1 loses money overall." },
+    { label: "Trades per year", value: stats.avg_trades_per_year?.toFixed(1) ?? "—",
+      tone: "neutral", hint: "How much work this strategy is to run." },
+    { label: "Calmar ratio", value: ratio(metrics.calmar), tone: "neutral",
+      hint: "CAGR divided by the worst drawdown — return per unit of pain." },
+    { label: "XIRR", value: pct(metrics.xirr), tone: "neutral",
+      hint: "Annualised return from the actual cash flows. Identical to CAGR when there is a single lump sum and no deposits." },
+  ];
+
+  return (
+    <section className="brief-card px-5 py-4">
+      <p className="brief-eyebrow mb-3">Trade quality</p>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-5">
+        {items.map((item) => (
+          <div key={item.label} title={item.hint}>
+            <p className="text-2xs uppercase tracking-wider text-brief-muted">
+              {item.label}
+            </p>
+            <p
+              className={`mt-1 font-mono text-lg font-bold leading-none ${
+                item.tone === "up"
+                  ? "text-market-up"
+                  : item.tone === "down"
+                  ? "text-market-down"
+                  : "text-cream-50"
+              }`}
+            >
+              {item.value}
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-2xs leading-relaxed text-brief-muted">
+        A high <strong className="text-cream-100">biggest winner</strong> next to a
+        modest <strong className="text-cream-100">average winner</strong> is the
+        signature of a strategy carried by a handful of trades — check the trade log
+        before trusting the headline return.
+      </p>
+    </section>
+  );
+}
+
+export default function MetricCards({
+  metrics,
+  benchmarkMetrics,
+  outperformance,
+  summary,
+  tradeStats,
+}) {
   if (!metrics) return null;
 
   const m = metrics;
@@ -76,6 +154,7 @@ export default function MetricCards({ metrics, benchmarkMetrics, outperformance,
   };
 
   return (
+    <div className="space-y-3">
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
       <Tile
         icon={m.total_return >= 0 ? ArrowUpRight : ArrowDownRight}
@@ -141,6 +220,9 @@ export default function MetricCards({ metrics, benchmarkMetrics, outperformance,
         tone={m.end_value >= m.start_value ? "up" : "down"}
         hint="What the starting capital turned into by the last day."
       />
+    </div>
+
+    <StatStrip metrics={metrics} stats={tradeStats} />
     </div>
   );
 }

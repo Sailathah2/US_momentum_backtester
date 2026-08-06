@@ -40,7 +40,7 @@ import EquityComparisonChart from "./components/EquityComparisonChart";
 import ExposureChart from "./components/ExposureChart";
 import Header from "./components/Header";
 import MetricCards from "./components/MetricCards";
-import MonthlyHeatmap from "./components/MonthlyHeatmap";
+import PerformanceBreakup from "./components/PerformanceBreakup";
 import RegimeControls from "./components/RegimeControls";
 import TradeLogTable from "./components/TradeLogTable";
 import UploadZone from "./components/UploadZone";
@@ -478,6 +478,7 @@ export default function App() {
                   benchmarkMetrics={result.benchmark_metrics}
                   outperformance={result.outperformance}
                   summary={result.summary}
+                  tradeStats={result.trade_stats}
                 />
 
                 <RunSummary result={result} regimeResult={regimeResult} />
@@ -531,7 +532,7 @@ export default function App() {
                   </>
                 )}
 
-                <MonthlyHeatmap rows={result.monthly} />
+                <PerformanceBreakup performance={result.performance} />
 
                 <TradeLogTable
                   rebalances={result.rebalances}

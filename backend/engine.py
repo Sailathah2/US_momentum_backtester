@@ -1050,6 +1050,154 @@ def compute_metrics(equity, risk_free=0.0, period_returns=None):
     }
 
 
+def trade_statistics(trade_rows, years):
+    """
+    Summarise the individual TRADES, as opposed to the whole portfolio.
+
+    The portfolio metrics answer "how did my money do?". These answer "how
+    good were the individual picks?" - which is a different question, and
+    the one that tells you whether the edge is real or whether a couple of
+    lucky names carried everything.
+
+    Note the win rate here counts TRADES, while the win rate in the headline
+    metrics counts rebalance PERIODS. Both are legitimate and they will not
+    match: a period can be profitable while most of its stocks lost.
+    """
+    if not trade_rows:
+        return {}
+
+    returns = [row["trade_return"] for row in trade_rows
+               if row.get("trade_return") is not None]
+    if not returns:
+        return {}
+
+    winners = [r for r in returns if r > 0]
+    losers = [r for r in returns if r < 0]
+
+    avg_win = sum(winners) / len(winners) if winners else 0.0
+    avg_loss = sum(losers) / len(losers) if losers else 0.0
+
+    # Risk-to-reward: how much the average winner makes for every unit the
+    # average loser costs. Above 1 means winners outrun losers in size.
+    risk_reward = (avg_win / abs(avg_loss)) if avg_loss else None
+
+    # Profit factor: total won divided by total lost. Below 1 loses money.
+    gross_win = sum(winners)
+    gross_loss = abs(sum(losers))
+    profit_factor = (gross_win / gross_loss) if gross_loss else None
+
+    best = max(returns)
+    worst = min(returns)
+    best_row = next(r for r in trade_rows if r.get("trade_return") == best)
+    worst_row = next(r for r in trade_rows if r.get("trade_return") == worst)
+
+    return {
+        "total_trades": len(returns),
+        "winners": len(winners),
+        "losers": len(losers),
+        "trade_win_rate": _clean(len(winners) / len(returns)),
+        "avg_winner": _clean(avg_win),
+        "avg_loser": _clean(avg_loss),
+        "biggest_winner": _clean(best),
+        "biggest_winner_ticker": best_row.get("ticker"),
+        "biggest_winner_date": best_row.get("rebalance_date"),
+        "biggest_loser": _clean(worst),
+        "biggest_loser_ticker": worst_row.get("ticker"),
+        "biggest_loser_date": worst_row.get("rebalance_date"),
+        "risk_reward": _clean(risk_reward),
+        "profit_factor": _clean(profit_factor),
+        "avg_trades_per_year": _clean(len(returns) / years) if years else None,
+        "avg_trade": _clean(sum(returns) / len(returns)),
+    }
+
+
+def xirr(equity):
+    """
+    The annualised rate of return implied by the actual cash flows.
+
+    A backtest has exactly two flows: money in on day one, money out on the
+    last day. With a single lump sum and nothing added afterwards, XIRR is
+    mathematically the SAME number as CAGR - which is why the two agree in
+    the dashboard. It is reported separately because it stays correct if you
+    ever model deposits or withdrawals, where CAGR would not.
+    """
+    if len(equity) < 2:
+        return None
+    start_value = float(equity.iloc[0])
+    end_value = float(equity.iloc[-1])
+    days = (equity.index[-1] - equity.index[0]).days
+    if days <= 0 or start_value <= 0 or end_value <= 0:
+        return None
+    return _clean((end_value / start_value) ** (365.25 / days) - 1.0)
+
+
+def period_return_tables(equity):
+    """
+    Build the Monthly / Quarterly / Yearly performance grids.
+
+    Each cell carries BOTH the percentage return and the money made or lost,
+    so the dashboard can switch between "ROI %" and "P&L" without asking the
+    server again.
+    """
+    def grid(rule, labeller, slots):
+        ends = equity.resample(rule).last()
+        # Seed with the opening value so the first period is measured from
+        # the day the strategy actually began, not from the period before.
+        seed = pd.Series([float(equity.iloc[0])],
+                         index=[equity.index[0] - pd.Timedelta(days=1)])
+        chain = pd.concat([seed, ends])
+        rets = chain.pct_change().dropna()
+        pnl = chain.diff().dropna()
+
+        rows = {}
+        for stamp, value in rets.items():
+            year = int(stamp.year)
+            rows.setdefault(year, {"ret": {}, "pnl": {}})
+            key = labeller(stamp)
+            rows[year]["ret"][key] = _clean(float(value))
+            rows[year]["pnl"][key] = _clean(round(float(pnl.loc[stamp]), 2))
+
+        table = []
+        for year in sorted(rows):
+            cells = rows[year]
+            growth, money = 1.0, 0.0
+            for slot in slots:
+                v = cells["ret"].get(slot)
+                if v is not None:
+                    growth *= (1.0 + v)
+                p = cells["pnl"].get(slot)
+                if p is not None:
+                    money += p
+            table.append({
+                "year": year,
+                "cells": {s: cells["ret"].get(s) for s in slots},
+                "pnl": {s: cells["pnl"].get(s) for s in slots},
+                "total": _clean(growth - 1.0),
+                "total_pnl": _clean(round(money, 2)),
+            })
+        return table
+
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    quarters = ["Q1", "Q2", "Q3", "Q4"]
+
+    monthly = grid("ME", lambda s: months[s.month - 1], months)
+    quarterly = grid("QE", lambda s: f"Q{(s.month - 1) // 3 + 1}", quarters)
+
+    # Yearly is just one cell per year, taken straight from the monthly grid
+    # so the two can never disagree.
+    yearly = [{"year": row["year"], "cells": {"Year": row["total"]},
+               "pnl": {"Year": row["total_pnl"]},
+               "total": row["total"], "total_pnl": row["total_pnl"]}
+              for row in monthly]
+
+    return {
+        "monthly": {"slots": months, "rows": monthly},
+        "quarterly": {"slots": quarters, "rows": quarterly},
+        "yearly": {"slots": ["Year"], "rows": yearly},
+    }
+
+
 def monthly_return_table(equity):
     """
     Build the calendar grid: one row per year, one column per month, plus a
@@ -1155,11 +1303,21 @@ def analyse(prices, benchmark, settings, regime=None, defensive=None):
     )
 
     return {
-        "metrics": portfolio_metrics,
+        "metrics": {
+            **portfolio_metrics,
+            # Same number as CAGR for a single lump sum, but kept separate
+            # because it stays correct if deposits are ever modelled.
+            "xirr": xirr(equity),
+        },
         "benchmark_metrics": benchmark_metrics,
         "outperformance": outperformance,
+        # How the individual PICKS did, as opposed to the whole portfolio.
+        "trade_stats": trade_statistics(
+            result["trade_rows"], portfolio_metrics.get("years") or 0),
         "curve": curve,
         "monthly": monthly_return_table(equity),
+        # Monthly / quarterly / yearly grids, each carrying both % and money.
+        "performance": period_return_tables(equity),
         "rebalances": result["rebalance_rows"],
         "trades": result["trade_rows"],
         "actions": result["action_rows"],

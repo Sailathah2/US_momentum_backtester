@@ -174,12 +174,12 @@ for kind in ("trades","rebalances","timeseries","monthly","actions"):
     check(f"CSV '{kind}'", e.status_code==200 and len(e.data)>50, f"{len(e.data):,} bytes")
 rep = c.post("/api/export-report", json={"session_id":SID,"format":"xlsx"})
 xl = pd.ExcelFile(io.BytesIO(rep.data))
-check("Excel report: 8 sheets", len(xl.sheet_names)==8, str(len(xl.sheet_names)))
+check("Excel report: 9 sheets", len(xl.sheet_names)==9, str(len(xl.sheet_names)))
 for s_ in xl.sheet_names:
     check(f"  sheet '{s_}' populated", xl.parse(s_).shape[0] > 0, f"{xl.parse(s_).shape[0]} rows")
 zp = c.post("/api/export-report", json={"session_id":SID,"format":"csv"})
 zf = zipfile.ZipFile(io.BytesIO(zp.data))
-check("ZIP report: 8 CSVs + README", len(zf.namelist())==9, str(len(zf.namelist())))
+check("ZIP report: 9 CSVs + README", len(zf.namelist())==10, str(len(zf.namelist())))
 
 print("\n" + "=" * 72); print("9. ERROR HANDLING"); print("=" * 72)
 cases = [
@@ -332,6 +332,68 @@ for _ in range(120):
 check("re-run appends nothing (incremental)", _s2["rows_added"] == 0)
 check("folder mode with no folder -> friendly error",
       not c.post("/api/backfill/start", json={}).get_json().get("ok"))
+
+
+print("\n" + "=" * 72); print("13. DASHBOARD STATS (trade quality + performance breakup)"); print("=" * 72)
+_res = c.post("/api/backtest", json={**BASE, "cost_bps": 20}).get_json()
+_ts = _res.get("trade_stats") or {}
+_perf = _res.get("performance") or {}
+
+# Every headline figure the dashboard prints must actually arrive.
+for _k in ("total_trades", "winners", "losers", "trade_win_rate", "avg_winner", "avg_loser",
+           "biggest_winner", "biggest_loser", "risk_reward", "profit_factor",
+           "avg_trades_per_year", "avg_trade"):
+    check(f"trade stat '{_k}' present", _ts.get(_k) is not None, str(_ts.get(_k)))
+
+# The counts have to add up, or the win rate on the tile is meaningless.
+check("winners + losers <= total trades", _ts["winners"] + _ts["losers"] <= _ts["total_trades"])
+check("win rate matches the counts",
+      abs(_ts["trade_win_rate"] - _ts["winners"] / _ts["total_trades"]) < 1e-9)
+check("avg winner positive, avg loser negative", _ts["avg_winner"] > 0 > _ts["avg_loser"])
+check("biggest winner >= avg winner", _ts["biggest_winner"] >= _ts["avg_winner"])
+check("biggest loser <= avg loser", _ts["biggest_loser"] <= _ts["avg_loser"])
+check("risk to reward = avg win / |avg loss|",
+      abs(_ts["risk_reward"] - _ts["avg_winner"] / abs(_ts["avg_loser"])) < 1e-6)
+
+_trades = [t for t in _res["trades"] if t.get("trade_return") is not None]
+check("trade count matches the trade log", _ts["total_trades"] == len(_trades))
+check("biggest winner really is the maximum",
+      abs(_ts["biggest_winner"] - max(t["trade_return"] for t in _trades)) < 1e-12)
+check("biggest winner names its ticker and date",
+      bool(_ts.get("biggest_winner_ticker") and _ts.get("biggest_winner_date")),
+      f"{_ts.get('biggest_winner_ticker')} {_ts.get('biggest_winner_date')}")
+
+# XIRR on a single lump sum with no deposits IS the CAGR; a difference would
+# mean one of the two is computed wrongly.
+check("XIRR equals CAGR for a lump sum",
+      abs(_res["metrics"]["xirr"] - _res["metrics"]["cagr"]) < 1e-9,
+      f"{_res['metrics']['xirr']:.6f}")
+check("Calmar present for its tile", _res["metrics"].get("calmar") is not None)
+
+# The three calendar grids must agree with each other and with the curve.
+for _g, _n in (("monthly", 12), ("quarterly", 4), ("yearly", 1)):
+    check(f"'{_g}' grid has {_n} slot(s) and rows",
+          len(_perf[_g]["slots"]) == _n and len(_perf[_g]["rows"]) > 0,
+          f"{len(_perf[_g]['rows'])} rows")
+
+_yearly = {r["year"]: r["cells"]["Year"] for r in _perf["yearly"]["rows"]}
+_qtotal = {r["year"]: r["total"] for r in _perf["quarterly"]["rows"]}
+_mtotal = {r["year"]: r["total"] for r in _perf["monthly"]["rows"]}
+check("quarters compound to the yearly figure",
+      all(abs(_qtotal[y] - _yearly[y]) < 1e-6 for y in _yearly))
+check("months compound to the yearly figure",
+      all(abs(_mtotal[y] - _yearly[y]) < 1e-6 for y in _yearly))
+
+_chain = 1.0
+for _y in sorted(_yearly):
+    _chain *= 1 + _yearly[_y]
+check("years compound to the total return",
+      abs(_chain - (1 + _res["metrics"]["total_return"])) < 1e-6, f"{_chain - 1:.6f}")
+
+# Money and percentage must tell the same story, or the P&L toggle lies.
+_r0 = _perf["monthly"]["rows"][-1]
+check("P&L sign always matches the ROI sign",
+      all(v is None or (v >= 0) == (_r0["pnl"][k] >= 0) for k, v in _r0["cells"].items()))
 
 print("\n" + "=" * 72)
 print(f"RESULT: {PASS} passed, {FAIL} failed")

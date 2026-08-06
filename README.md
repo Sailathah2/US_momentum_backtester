@@ -420,8 +420,19 @@ filter and without — so you can see exactly what it cost and what it saved:
   an early 20% gain look the same size as a late one, which is the honest view.
 - **Underwater chart** — how far below its own previous peak the portfolio was, day
   by day. This is the chart that tells you whether you could have *stuck with it*.
-- **Monthly grid** — one row per year. Every cell prints its real percentage, so
-  the colours are only a quick summary, never the only way to read it.
+- **Trade quality strip** — the tiles above tell you how your *money* did; this
+  row tells you how good the individual *picks* were. Win rate across trades,
+  average and biggest winner and loser, risk-to-reward, profit factor, trades per
+  year, Calmar and XIRR. A 400% biggest winner sitting next to a 27% average
+  winner is the signature of a strategy carried by a handful of names — worth
+  knowing before you trust the headline return.
+- **Performance breakup** — one row per year, with two switches above it:
+  **Monthly / Quarterly / Yearly** changes how finely the calendar is sliced, and
+  **ROI % / P&L** flips between percentages and the actual money made and lost.
+  Every cell prints its real figure, so the red/green shading is only a quick
+  summary and never the only way to read it. A dot (·) means the strategy was not
+  running yet — the opening months go on building enough history to measure
+  momentum.
 - **Rebalance & trade log** — every decision the strategy made, searchable, with
   four **Download CSV** buttons.
 
@@ -438,6 +449,19 @@ filter and without — so you can see exactly what it cost and what it saved:
 | **Max drawdown** | The worst peak-to-trough fall in the whole test. | If this number would have made you quit, the strategy is too aggressive for you. |
 | **Win rate** | Share of rebalance periods that ended in profit. | 50–60% is normal and perfectly healthy. |
 | **vs Benchmark** | Your total return minus the index's. | The only number that says whether the work was worth it. |
+| **Calmar ratio** | CAGR divided by the worst drawdown — return per unit of pain. | Above 1 means a year's gain outweighs the worst fall. |
+| **XIRR** | Annualised return worked out from the actual cash flows. | Identical to CAGR here, because the backtest invests one lump sum and never adds to it. |
+
+And the trade-quality strip, which measures the **picks** rather than the money:
+
+| Metric | Plain English | Rough guide |
+|--------|---------------|-------------|
+| **Win rate (trades)** | Share of individual trades that made money. | Lower than the period win rate above, and that is normal — one good name can carry a whole period. |
+| **Avg winner / Avg loser** | The average size of a winning and a losing trade. | Momentum usually wins bigger than it loses, but wins less often. |
+| **Biggest winner / loser** | The single best and worst trade, with its ticker and buy date. | If the biggest winner dwarfs the average, the record leans on luck. |
+| **Risk to reward** | Average winner ÷ average loser. | Above 1 means winners are bigger than losers. |
+| **Profit factor** | Everything won ÷ everything lost. | Below 1 loses money overall; 1.5–2 is a healthy momentum book. |
+| **Trades per year** | How much work the strategy is to actually run. | Multiply by your broker's per-trade cost before you commit. |
 
 ---
 
@@ -478,7 +502,7 @@ day_4/
 │           ├── ComparisonMetricsCard.jsx  # The head-to-head metrics table.
 │           ├── ExposureChart.jsx     # Time in market vs time in cash.
 │           ├── DrawdownChart.jsx     # The underwater chart (also does ON-vs-OFF).
-│           ├── MonthlyHeatmap.jsx    # The calendar grid of returns.
+│           ├── PerformanceBreakup.jsx # Monthly/quarterly/yearly grid, % or money.
 │           └── TradeLogTable.jsx     # Rebalance log, trade log, CSV exports.
 │
 ├── data/
@@ -585,17 +609,19 @@ run in one file — settings, metrics and every table together:
 A single CSV file cannot contain multiple sheets, so the CSV option bundles one
 file per sheet instead — same content, same order.
 
-Both contain seven sheets:
+Both contain nine sheets:
 
 | Sheet | Contents |
 |-------|----------|
 | **1. Inputs** | Every setting that produced the run, each with a plain-English note explaining what it does |
-| **2. Metrics** | Total return, CAGR, Sharpe, Sortino, max drawdown, Calmar, win rate — portfolio beside benchmark |
+| **2. Metrics** | Total return, CAGR, Sharpe, Sortino, max drawdown, Calmar, XIRR, win rate — portfolio beside benchmark — followed by the trade-quality figures (average and biggest winner/loser, risk-to-reward, profit factor, trades per year) |
 | **3. Regime Comparison** | Filter ON vs OFF with the difference, plus exposure and switch counts *(only when you ran the regime comparison)* |
 | **4. Equity Curve** | The daily series behind the charts, including both drawdown lines |
 | **5. Rebalance Log** | One row per rebalance period |
 | **6. Trade Log** | One row per stock per period, including the risk figure and rank score |
-| **7. Monthly Returns** | The calendar grid, one row per year |
+| **7. Keep Exit Enter** | Every hold / sell / buy decision and the reason for it *(rank cushion runs)* |
+| **8. Monthly Returns** | The calendar grid, one row per year |
+| **9. Performance Breakup** | The same calendar at three zoom levels — monthly, quarterly and yearly — each period as both a percentage and a money figure, laid out as one long table a spreadsheet can filter and pivot |
 
 The four smaller buttons beside them still export a single table each, if that is
 all you need.

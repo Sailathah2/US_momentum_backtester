@@ -652,6 +652,12 @@ def backtest():
             "benchmark": benchmark_ticker,
             "universe_size": len(universe),
         }
+        # A plain backtest has no regime comparison. Clearing it matters:
+        # without this, running a plain backtest after a regime comparison
+        # left the OLD comparison in place, and the full report then paired
+        # sheet 2 (this run) with sheet 3 (the previous one) - two different
+        # backtests presented as though they were the same.
+        session["last_regime"] = None
 
         result.update({
             "ok": True,
@@ -1079,6 +1085,7 @@ REPORT_SHEETS = (
     ("6. Trade Log", "one row per stock per period"),
     ("7. Keep Exit Enter", "every hold/sell/buy decision and why (rank cushion)"),
     ("8. Monthly Returns", "the calendar grid"),
+    ("9. Performance Breakup", "monthly / quarterly / yearly, in % and in money"),
 )
 
 # How each setting should be labelled and explained on the Inputs sheet, so
@@ -1154,7 +1161,7 @@ def _report_tables(session):
         ("total_return", "Total return", "pct"), ("cagr", "CAGR", "pct"),
         ("annual_volatility", "Volatility (annual)", "pct"),
         ("sharpe", "Sharpe ratio", "num"), ("sortino", "Sortino ratio", "num"),
-        ("max_drawdown", "Max drawdown", "pct"), ("calmar", "Calmar ratio", "num"),
+        ("max_drawdown", "Max drawdown", "pct"), ("calmar", "Calmar ratio", "num"), ("xirr", "XIRR", "pct"),
         ("win_rate", "Win rate", "pct"), ("best_period", "Best period", "pct"),
         ("worst_period", "Worst period", "pct"), ("start_value", "Starting value", "raw"),
         ("end_value", "Final value", "raw"), ("years", "Years tested", "num"),
@@ -1177,6 +1184,30 @@ def _report_tables(session):
             "Portfolio": fmt(mine.get(key), kind),
             "Benchmark": fmt(theirs.get(key), kind),
         })
+    # Trade-quality figures, which describe the PICKS rather than the money.
+    ts = result.get("trade_stats") or {}
+    for key, label, kind in (
+            ("trade_win_rate", "Win rate, trades", "pct"),
+            ("avg_winner", "Average winner", "pct"),
+            ("avg_loser", "Average loser", "pct"),
+            ("biggest_winner", "Biggest winner", "pct"),
+            ("biggest_loser", "Biggest loser", "pct"),
+            ("risk_reward", "Risk to reward", "num"),
+            ("profit_factor", "Profit factor", "num"),
+            ("avg_trades_per_year", "Trades per year", "num"),
+            ("avg_trade", "Average trade", "pct")):
+        if ts.get(key) is not None:
+            metrics.append({"Metric": label + (" (%)" if kind == "pct" else ""),
+                            "Portfolio": fmt(ts[key], kind), "Benchmark": ""})
+    if ts.get("biggest_winner_ticker"):
+        metrics.append({"Metric": "Biggest winner was",
+                        "Portfolio": f"{ts['biggest_winner_ticker']} on {ts.get('biggest_winner_date')}",
+                        "Benchmark": ""})
+    if ts.get("biggest_loser_ticker"):
+        metrics.append({"Metric": "Biggest loser was",
+                        "Portfolio": f"{ts['biggest_loser_ticker']} on {ts.get('biggest_loser_date')}",
+                        "Benchmark": ""})
+
     summary = result.get("summary", {})
     for key, label in (("total_rebalances", "Rebalance periods"),
                        ("total_trades", "Trades placed"),
@@ -1196,6 +1227,7 @@ def _report_tables(session):
         "6. Trade Log": result.get("trades", []),
         "7. Keep Exit Enter": result.get("actions", []),
         "8. Monthly Returns": [],
+        "9. Performance Breakup": [],
     }
 
     # ---- Sheet 3: the filter ON vs OFF table, when there was one ------
@@ -1250,6 +1282,35 @@ def _report_tables(session):
                               else round(row["year_total"] * 100, 4))
         monthly.append(flat)
     tables["8. Monthly Returns"] = monthly
+
+    # ---- Sheet 9: the same calendar at three zoom levels --------------
+    # One long, tidy table rather than three grids, because a long table is
+    # what a spreadsheet can actually filter and pivot on.
+    breakup = []
+    performance = result.get("performance") or {}
+    for grain in ("monthly", "quarterly", "yearly"):
+        table = performance.get(grain) or {}
+        for row in table.get("rows", []):
+            for slot in table.get("slots", []):
+                roi = (row.get("cells") or {}).get(slot)
+                if roi is None:
+                    continue          # the strategy was not running yet
+                breakup.append({
+                    "Grain": grain.capitalize(),
+                    "Year": row["year"],
+                    "Period": slot,
+                    "ROI (%)": round(roi * 100, 4),
+                    "P&L": round((row.get("pnl") or {}).get(slot) or 0.0, 2),
+                })
+            if row.get("total") is not None and grain != "yearly":
+                breakup.append({
+                    "Grain": grain.capitalize(),
+                    "Year": row["year"],
+                    "Period": "Year total",
+                    "ROI (%)": round(row["total"] * 100, 4),
+                    "P&L": round(row.get("total_pnl") or 0.0, 2),
+                })
+    tables["9. Performance Breakup"] = breakup
 
     return tables
 

@@ -27,9 +27,16 @@ env/
 #   data/         ~1 year of daily bars   (736 symbols,  10 MB)
 #   data_5y/      ~5 years of daily bars  (753 files,    41 MB)
 #   small_micro/  small & micro caps      (1637 files,   20 MB)
+#   data_634_5y/  5 years, mid & large cap (634 symbols)
+#   data_949_10y/ 10 years, US + ADRs      (949 symbols)
+#
+# The downloader also drops a _README.txt and a _manifest.json beside the
+# CSVs; those describe the download, not the project, so they go too.
 #
 # Want to commit a data set anyway? Delete its line below.
 *.csv
+_manifest.json
+_README.txt
 !frontend/**/*.csv
 
 # ---- Editors / OS --------------------------------------------------
