@@ -1131,6 +1131,131 @@ def xirr(equity):
     return _clean((end_value / start_value) ** (365.25 / days) - 1.0)
 
 
+def drawdown_episodes(equity, min_depth=0.01, limit=250):
+    """
+    Break the equity curve into individual DRAWDOWN EPISODES.
+
+    The "max drawdown" tile gives you one number: the single worst fall. It
+    says nothing about how OFTEN falls happen or how long they last, and those
+    two questions are what actually decide whether you could live with the
+    strategy. A single -40% dip that recovered in three weeks is a very
+    different experience from twelve -15% dips that each dragged on for months.
+
+    WHAT AN EPISODE IS
+    ------------------
+    An episode starts the day after the curve sets a new all-time high, and
+    ends the day it gets back to that same high. In between:
+
+        PEAK      the last all-time high before the fall began
+        TROUGH    the lowest point reached during the fall
+        DECLINE   trading days from the peak down to the trough
+        RECOVERED the day the curve climbed back to the old peak
+        RECOVERY  trading days from the trough back up to that peak
+
+    An episode still under water on the final day has no recovery date; it is
+    marked `ongoing` so the UI can label it honestly rather than pretending it
+    healed. DEPTH is reported twice - as a percentage and as money - because a
+    -20% fall on a small book and on a large one feel nothing alike.
+
+    `min_depth` throws away the noise. Every trading day that closes a shade
+    below yesterday's peak is technically a drawdown, and a portfolio has
+    thousands of them; 1% is the floor at which a dip is worth looking at.
+    `limit` keeps the deepest ones when there are still a great many.
+    """
+    equity = equity.dropna()
+    if len(equity) < 3:
+        return []
+
+    values = equity.to_numpy(dtype=float)
+    dates = equity.index
+    episodes = []
+
+    peak_value = values[0]
+    peak_position = 0
+    trough_value = values[0]
+    trough_position = 0
+    under_water = False
+
+    def close_episode(recovered_position):
+        """Record the episode we have just finished measuring."""
+        depth_pct = (trough_value / peak_value) - 1.0
+        if depth_pct > -min_depth:
+            return                      # too shallow to be worth a row
+        episodes.append({
+            "peak_date": dates[peak_position].strftime("%Y-%m-%d"),
+            "peak_value": _clean(peak_value),
+            "trough_date": dates[trough_position].strftime("%Y-%m-%d"),
+            "trough_value": _clean(trough_value),
+            "depth": _clean(depth_pct),
+            "depth_money": _clean(trough_value - peak_value),
+            # Trading days, not calendar days: the gap between two positions
+            # in the index IS the number of sessions, weekends excluded.
+            "decline_days": int(trough_position - peak_position),
+            "recovered_date": (dates[recovered_position].strftime("%Y-%m-%d")
+                               if recovered_position is not None else None),
+            "recovery_days": (int(recovered_position - trough_position)
+                              if recovered_position is not None else None),
+            "total_days": int((recovered_position if recovered_position is not None
+                               else len(values) - 1) - peak_position),
+            "ongoing": recovered_position is None,
+        })
+
+    for position in range(1, len(values)):
+        value = values[position]
+        if value >= peak_value:
+            # A new high. If we were under water, the old episode just healed.
+            if under_water:
+                close_episode(position)
+                under_water = False
+            peak_value = value
+            peak_position = position
+        else:
+            if not under_water:
+                # First day below the peak: a new episode begins here.
+                under_water = True
+                trough_value = value
+                trough_position = position
+            elif value < trough_value:
+                trough_value = value
+                trough_position = position
+
+    # Still below the old high on the very last day - report it as ongoing.
+    if under_water:
+        close_episode(None)
+
+    # Deepest first, and only as many as the UI can sensibly show.
+    episodes.sort(key=lambda item: item["depth"])
+    return episodes[:limit]
+
+
+def drawdown_profile(episodes):
+    """
+    One-paragraph summary of a set of drawdown episodes.
+
+    The UI recomputes this whenever the depth filter changes, so the wording
+    always describes exactly the rows on screen. This copy is the fallback
+    used by the exported report, where there is no filter to move.
+    """
+    if not episodes:
+        return {}
+    healed = [e for e in episodes if e["recovery_days"] is not None]
+    recoveries = [e["recovery_days"] for e in healed]
+    deepest = min(episodes, key=lambda e: e["depth"])
+    return {
+        "episodes": len(episodes),
+        "ongoing": sum(1 for e in episodes if e["ongoing"]),
+        "average_recovery": (sum(recoveries) / len(recoveries)) if recoveries else None,
+        "median_recovery": (float(np.median(recoveries)) if recoveries else None),
+        "longest_recovery": max(recoveries) if recoveries else None,
+        "average_decline": sum(e["decline_days"] for e in episodes) / len(episodes),
+        "average_depth": _clean(sum(e["depth"] for e in episodes) / len(episodes)),
+        "deepest_depth": deepest["depth"],
+        "deepest_money": deepest["depth_money"],
+        "deepest_recovered_date": deepest["recovered_date"],
+        "deepest_recovery_days": deepest["recovery_days"],
+    }
+
+
 def period_return_tables(equity):
     """
     Build the Monthly / Quarterly / Yearly performance grids.
@@ -1318,6 +1443,9 @@ def analyse(prices, benchmark, settings, regime=None, defensive=None):
         "monthly": monthly_return_table(equity),
         # Monthly / quarterly / yearly grids, each carrying both % and money.
         "performance": period_return_tables(equity),
+        # Every dip worth naming, with how long it took to heal. The whole
+        # list is sent once so the depth filter in the UI is instant.
+        "drawdowns": drawdown_episodes(equity),
         "rebalances": result["rebalance_rows"],
         "trades": result["trade_rows"],
         "actions": result["action_rows"],

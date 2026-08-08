@@ -35,6 +35,7 @@ import RankChecker from "./components/RankChecker";
 import BacktestControls from "./components/BacktestControls";
 import ComparisonMetricsCard from "./components/ComparisonMetricsCard";
 import DrawdownChart from "./components/DrawdownChart";
+import DrawdownRecovery from "./components/DrawdownRecovery";
 import EquityChart from "./components/EquityChart";
 import EquityComparisonChart from "./components/EquityComparisonChart";
 import ExposureChart from "./components/ExposureChart";
@@ -531,6 +532,11 @@ export default function App() {
                     />
                   </>
                 )}
+
+                {/* Sits directly under the underwater chart: the chart shows
+                    the shape of the falls, this names each one and says how
+                    long it took to get back to even. */}
+                <DrawdownRecovery episodes={result.drawdowns} />
 
                 <PerformanceBreakup performance={result.performance} />
 

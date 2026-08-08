@@ -1086,6 +1086,7 @@ REPORT_SHEETS = (
     ("7. Keep Exit Enter", "every hold/sell/buy decision and why (rank cushion)"),
     ("8. Monthly Returns", "the calendar grid"),
     ("9. Performance Breakup", "monthly / quarterly / yearly, in % and in money"),
+    ("10. Drawdowns", "every fall over 1%, with how long it took to recover"),
 )
 
 # How each setting should be labelled and explained on the Inputs sheet, so
@@ -1208,6 +1209,18 @@ def _report_tables(session):
                         "Portfolio": f"{ts['biggest_loser_ticker']} on {ts.get('biggest_loser_date')}",
                         "Benchmark": ""})
 
+    # How the falls behaved as a group, not just the single worst one.
+    profile = engine.drawdown_profile(result.get("drawdowns") or [])
+    for key, label, kind in (("episodes", "Drawdowns over 1%", "num"),
+                             ("average_depth", "Average drawdown", "pct"),
+                             ("average_decline", "Average days peak to trough", "num"),
+                             ("average_recovery", "Average days trough to recovery", "num"),
+                             ("longest_recovery", "Longest recovery (days)", "num"),
+                             ("ongoing", "Still under water at the end", "num")):
+        if profile.get(key) is not None:
+            metrics.append({"Metric": label + (" (%)" if kind == "pct" else ""),
+                            "Portfolio": fmt(profile[key], kind), "Benchmark": ""})
+
     summary = result.get("summary", {})
     for key, label in (("total_rebalances", "Rebalance periods"),
                        ("total_trades", "Trades placed"),
@@ -1228,6 +1241,7 @@ def _report_tables(session):
         "7. Keep Exit Enter": result.get("actions", []),
         "8. Monthly Returns": [],
         "9. Performance Breakup": [],
+        "10. Drawdowns": [],
     }
 
     # ---- Sheet 3: the filter ON vs OFF table, when there was one ------
@@ -1311,6 +1325,26 @@ def _report_tables(session):
                     "P&L": round(row.get("total_pnl") or 0.0, 2),
                 })
     tables["9. Performance Breakup"] = breakup
+
+    # ---- Sheet 10: one row per drawdown episode -----------------------
+    # Deepest first, matching the panel on screen. "Days" throughout means
+    # TRADING days, which is why the column headings say so.
+    drawdowns = []
+    for e in result.get("drawdowns") or []:
+        drawdowns.append({
+            "Depth (%)": round(e["depth"] * 100, 4),
+            "Depth (money)": round(e["depth_money"], 2),
+            "Peak date": e["peak_date"],
+            "Peak value": e["peak_value"],
+            "Trough date": e["trough_date"],
+            "Trough value": e["trough_value"],
+            "Decline (trading days)": e["decline_days"],
+            "Recovered on": e["recovered_date"] or "still under water",
+            "Recovery (trading days)": ("" if e["recovery_days"] is None
+                                        else e["recovery_days"]),
+            "Peak to recovery (trading days)": e["total_days"],
+        })
+    tables["10. Drawdowns"] = drawdowns
 
     return tables
 

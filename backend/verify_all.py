@@ -174,12 +174,12 @@ for kind in ("trades","rebalances","timeseries","monthly","actions"):
     check(f"CSV '{kind}'", e.status_code==200 and len(e.data)>50, f"{len(e.data):,} bytes")
 rep = c.post("/api/export-report", json={"session_id":SID,"format":"xlsx"})
 xl = pd.ExcelFile(io.BytesIO(rep.data))
-check("Excel report: 9 sheets", len(xl.sheet_names)==9, str(len(xl.sheet_names)))
+check("Excel report: 10 sheets", len(xl.sheet_names)==10, str(len(xl.sheet_names)))
 for s_ in xl.sheet_names:
     check(f"  sheet '{s_}' populated", xl.parse(s_).shape[0] > 0, f"{xl.parse(s_).shape[0]} rows")
 zp = c.post("/api/export-report", json={"session_id":SID,"format":"csv"})
 zf = zipfile.ZipFile(io.BytesIO(zp.data))
-check("ZIP report: 9 CSVs + README", len(zf.namelist())==10, str(len(zf.namelist())))
+check("ZIP report: 10 CSVs + README", len(zf.namelist())==11, str(len(zf.namelist())))
 
 print("\n" + "=" * 72); print("9. ERROR HANDLING"); print("=" * 72)
 cases = [
@@ -394,6 +394,88 @@ check("years compound to the total return",
 _r0 = _perf["monthly"]["rows"][-1]
 check("P&L sign always matches the ROI sign",
       all(v is None or (v >= 0) == (_r0["pnl"][k] >= 0) for k, v in _r0["cells"].items()))
+
+
+print("\n" + "=" * 72); print("14. DRAWDOWN RECOVERY ANALYSIS"); print("=" * 72)
+_dd = _res.get("drawdowns") or []
+check("episodes returned", len(_dd) > 0, f"{len(_dd)} episodes over 1%")
+
+# The deepest episode MUST be the max drawdown the metrics tile reports -
+# they are two routes to the same fact, so a mismatch means one is wrong.
+check("deepest episode == max_drawdown metric",
+      abs(_dd[0]["depth"] - _res["metrics"]["max_drawdown"]) < 1e-8,
+      f'{_dd[0]["depth"]:.6f} vs {_res["metrics"]["max_drawdown"]:.6f}')
+check("deepest trough date == max_drawdown_date",
+      _dd[0]["trough_date"] == _res["metrics"]["max_drawdown_date"],
+      _dd[0]["trough_date"])
+check("sorted deepest first",
+      all(_dd[i]["depth"] <= _dd[i + 1]["depth"] for i in range(len(_dd) - 1)))
+
+# Shape of every row.
+check("every episode is a real fall", all(e["depth"] <= -0.01 for e in _dd))
+check("trough never before its peak", all(e["trough_date"] > e["peak_date"] for e in _dd))
+check("decline is at least one day", all(e["decline_days"] >= 1 for e in _dd))
+check("trough value below peak value",
+      all(e["trough_value"] < e["peak_value"] for e in _dd))
+check("money depth agrees with percent depth",
+      all(abs(e["depth_money"] - (e["peak_value"] * e["depth"])) < 0.5 for e in _dd))
+check("recovery only where there is a recovery date",
+      all((e["recovery_days"] is None) == (e["recovered_date"] is None) for e in _dd))
+check("recovered episodes recover after the trough",
+      all(e["recovered_date"] > e["trough_date"] for e in _dd if e["recovered_date"]))
+check("total days = decline + recovery, when healed",
+      all(e["total_days"] == e["decline_days"] + e["recovery_days"]
+          for e in _dd if e["recovery_days"] is not None))
+check("at most one ongoing episode", sum(1 for e in _dd if e["ongoing"]) <= 1)
+
+# Episodes are separate falls, so once sorted by date they must not overlap:
+# one has to be fully healed before the next peak can be set.
+_bydate = sorted(_dd, key=lambda e: e["peak_date"])
+check("episodes never overlap",
+      all(_bydate[i]["recovered_date"] is None
+          or _bydate[i]["recovered_date"] <= _bydate[i + 1]["peak_date"]
+          for i in range(len(_bydate) - 1)))
+
+# Cross-check against the raw curve: the deepest trough value really is the
+# lowest the equity ever got between that peak and that recovery.
+_curve = {row["date"]: row["portfolio"] for row in _res["curve"]}
+_d0 = _dd[0]
+_window = [v for d, v in _curve.items()
+           if _d0["peak_date"] <= d <= (_d0["recovered_date"] or "9999")]
+check("deepest trough is the lowest point in its own window",
+      abs(min(_window) - _d0["trough_value"]) < 0.01, f"{min(_window):,.2f}")
+check("peak value is the running high at the peak date",
+      abs(_curve[_d0["peak_date"]] - _d0["peak_value"]) < 0.01)
+
+# The UI filter is a simple threshold, so deeper filters must be subsets.
+_prev = None
+for _lvl in (0.01, 0.05, 0.10, 0.15, 0.20):
+    _sub = [e for e in _dd if e["depth"] <= -_lvl]
+    check(f"filter > {_lvl:.0%} is a subset of the looser one",
+          _prev is None or set(id(x) for x in _sub) <= _prev, f"{len(_sub)} rows")
+    _prev = set(id(x) for x in _sub)
+
+# The summary paragraph must be arithmetic, not decoration.
+_prof = engine.drawdown_profile(_dd)
+_healed = [e["recovery_days"] for e in _dd if e["recovery_days"] is not None]
+check("profile counts every episode", _prof["episodes"] == len(_dd))
+check("profile average recovery matches the rows",
+      abs(_prof["average_recovery"] - sum(_healed) / len(_healed)) < 1e-9,
+      f'{_prof["average_recovery"]:.2f} days')
+check("profile longest recovery matches the rows",
+      _prof["longest_recovery"] == max(_healed))
+check("profile deepest matches the first row", _prof["deepest_depth"] == _dd[0]["depth"])
+check("empty input gives an empty profile", engine.drawdown_profile([]) == {})
+
+# A curve that only ever rises has no drawdowns at all.
+_rising = pd.Series(range(100, 200), dtype=float,
+                    index=pd.bdate_range("2024-01-01", periods=100))
+check("a curve that only rises has no episodes",
+      engine.drawdown_episodes(_rising) == [])
+check("too short a curve returns nothing",
+      engine.drawdown_episodes(_rising.head(2)) == [])
+
+check("drawdowns JSON-serialise", bool(json.dumps(_dd)))
 
 print("\n" + "=" * 72)
 print(f"RESULT: {PASS} passed, {FAIL} failed")

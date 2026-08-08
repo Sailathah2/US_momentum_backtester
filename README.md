@@ -420,6 +420,21 @@ filter and without — so you can see exactly what it cost and what it saved:
   an early 20% gain look the same size as a late one, which is the honest view.
 - **Underwater chart** — how far below its own previous peak the portfolio was, day
   by day. This is the chart that tells you whether you could have *stuck with it*.
+- **Drawdown recovery analysis** — the underwater chart shows the *shape* of the
+  falls; this table names each one. Depth (in percent and money), the peak it fell
+  from, the trough, how many trading days the decline took, the day it got back to
+  even, and how many days that recovery took. The **Deeper than** buttons across the
+  top — All, 5%, 10%, 15%, 20% — set how deep a dip has to be to earn a row, and the
+  count beside each button tells you how many rows you will get. The Recovery
+  profile beside it is recalculated from whatever is on screen, so the paragraph and
+  the table can never disagree.
+
+  > The max-drawdown tile gives you one number: the single worst fall. This panel
+  > answers the two questions that actually decide whether you could hold the
+  > strategy — *how often* does it fall, and *how long* does it stay down. One −40%
+  > dip that healed in three weeks is a completely different experience from twelve
+  > −15% dips that each dragged on for months.
+
 - **Trade quality strip** — the tiles above tell you how your *money* did; this
   row tells you how good the individual *picks* were. Win rate across trades,
   average and biggest winner and loser, risk-to-reward, profit factor, trades per
@@ -463,6 +478,15 @@ And the trade-quality strip, which measures the **picks** rather than the money:
 | **Profit factor** | Everything won ÷ everything lost. | Below 1 loses money overall; 1.5–2 is a healthy momentum book. |
 | **Trades per year** | How much work the strategy is to actually run. | Multiply by your broker's per-trade cost before you commit. |
 
+And the drawdown episodes, which measure **how long the pain lasted**:
+
+| Metric | Plain English | Rough guide |
+|--------|---------------|-------------|
+| **Depth** | How far below the old high the fall went. | Shown in percent *and* money; the percent is what compares across years. |
+| **Decline** | Trading days from the peak down to the trough. | Roughly 21 trading days to a month. |
+| **Recovered** | The day the curve got back to the old high. | "Still under water" means it never did within the test. |
+| **Recovery** | Trading days from the trough back up to that high. | This is the number people underestimate — falling is fast, healing is slow. |
+
 ---
 
 ## What's in each file
@@ -503,6 +527,7 @@ day_4/
 │           ├── ExposureChart.jsx     # Time in market vs time in cash.
 │           ├── DrawdownChart.jsx     # The underwater chart (also does ON-vs-OFF).
 │           ├── PerformanceBreakup.jsx # Monthly/quarterly/yearly grid, % or money.
+│           ├── DrawdownRecovery.jsx  # Every fall, and how long it took to heal.
 │           └── TradeLogTable.jsx     # Rebalance log, trade log, CSV exports.
 │
 ├── data/
@@ -609,7 +634,7 @@ run in one file — settings, metrics and every table together:
 A single CSV file cannot contain multiple sheets, so the CSV option bundles one
 file per sheet instead — same content, same order.
 
-Both contain nine sheets:
+Both contain ten sheets:
 
 | Sheet | Contents |
 |-------|----------|
@@ -622,6 +647,7 @@ Both contain nine sheets:
 | **7. Keep Exit Enter** | Every hold / sell / buy decision and the reason for it *(rank cushion runs)* |
 | **8. Monthly Returns** | The calendar grid, one row per year |
 | **9. Performance Breakup** | The same calendar at three zoom levels — monthly, quarterly and yearly — each period as both a percentage and a money figure, laid out as one long table a spreadsheet can filter and pivot |
+| **10. Drawdowns** | One row per fall over 1%: depth in percent and money, peak, trough, decline, recovery date and recovery length — deepest first |
 
 The four smaller buttons beside them still export a single table each, if that is
 all you need.
